@@ -8,7 +8,7 @@
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
 </template>
-  
+
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
 export default defineComponent({
@@ -25,7 +25,7 @@ export default defineComponent({
   }
 })
 </script>
-  
+
 <style scoped>
 a {
   color: #42b983;
@@ -43,5 +43,3 @@ code {
   color: #304455;
 }
 </style>
-    
-    

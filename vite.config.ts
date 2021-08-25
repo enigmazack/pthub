@@ -1,7 +1,60 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import importElementPlus from 'vite-plugin-element-plus'
+import { port, isDev, r } from './scripts/utils'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [vue()]
+export default defineConfig(({ command }) => {
+  return {
+    root: r('src'),
+    base: command === 'serve' ? `http://localhost:${port}/` : undefined,
+    resolve: {
+      alias: {
+        '@/': `${r('src')}/`
+      }
+    },
+    server: {
+      port,
+      hmr: {
+        host: 'localhost'
+      }
+    },
+    build: {
+      outDir: r('extension/dist'),
+      emptyOutDir: false,
+      sourcemap: isDev ? 'inline' : false,
+      // https://developer.chrome.com/docs/webstore/program_policies/#:~:text=Code%20Readability%20Requirements
+      terserOptions: {
+        mangle: false
+      },
+      rollupOptions: {
+        input: {
+          background: r('src/background/index.html'),
+          view: r('src/view/index.html')
+        }
+      }
+
+    },
+    plugins: [
+      vue(),
+      importElementPlus({
+        useSource: false
+      }),
+      // rewrite assets to use relative path
+      {
+        name: 'assets-rewrite',
+        enforce: 'post',
+        apply: 'build',
+        transformIndexHtml (html) {
+          return html.replace(/"\/assets\//g, '"../assets/')
+        }
+      }
+    ],
+    optimizeDeps: {
+      include: [
+        'vue',
+        'element-plus'
+      ]
+    }
+  }
 })

@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import importElementPlus from 'vite-plugin-element-plus'
 import { port, isDev, r } from './scripts/utils'
 
 // https://vitejs.dev/config/
@@ -37,9 +36,6 @@ export default defineConfig(({ command }) => {
     },
     plugins: [
       vue(),
-      importElementPlus({
-        useSource: false
-      }),
       // rewrite assets to use relative path
       {
         name: 'assets-rewrite',
@@ -52,8 +48,7 @@ export default defineConfig(({ command }) => {
     ],
     optimizeDeps: {
       include: [
-        'vue',
-        'element-plus'
+        'vue'
       ]
     }
   }

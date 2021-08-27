@@ -54,6 +54,16 @@ export default defineConfig(({ command }) => {
       include: [
         'vue'
       ]
+    },
+    css: {
+      preprocessorOptions: {
+        less: {
+          modifyVars: {
+            'layout-header-padding': '0 10px'
+          },
+          javascriptEnabled: true
+        }
+      }
     }
   }
 })

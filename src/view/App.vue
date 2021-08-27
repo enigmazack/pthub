@@ -1,17 +1,9 @@
 <template>
   <a-layout>
-    <a-layout-header style="height: 64px">
-      <Header />
-    </a-layout-header>
+    <Header />
     <a-layout>
-      <a-layout-sider
-        v-model:collapsed="collapsed"
-        collapsible
-        theme="light"
-      >
-        <Sider />
-      </a-layout-sider>
-      <a-layout-content>Content</a-layout-content>
+      <Sider />
+      <a-layout-content></a-layout-content>
     </a-layout>
   </a-layout>
 </template>
@@ -33,5 +25,4 @@ export default defineComponent({
 })
 </script>
 <style>
-
 </style>

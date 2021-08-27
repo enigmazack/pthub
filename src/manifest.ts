@@ -36,7 +36,7 @@ export async function getManifest (): Promise<Manifest.WebExtensionManifest> {
     ],
     // this is required on dev for Vite script to load
     content_security_policy: isDev
-      ? `script-src 'self' http://localhost:${port}; object-src 'self'`
-      : undefined
+      ? `script-src 'self' http://localhost:${port} 'unsafe-eval'; object-src 'self'`
+      : 'script-src \'self\' \'unsafe-eval\''
   }
 }

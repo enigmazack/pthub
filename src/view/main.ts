@@ -1,16 +1,21 @@
 import { createApp } from 'vue'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/lib/components'
-import * as directives from 'vuetify/lib/directives'
 import App from './App.vue'
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/lib/styles/main.sass'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+import { createI18n } from 'vue-i18n'
+import zhCN from '../locale/zh_CN.json'
+import en from '../locale/en.json'
 
-const vuetify = createVuetify({
-  components,
-  directives
+const i18n = createI18n({
+  locale: 'zh_CN',
+  fallbackLocale: 'en',
+  messages: {
+    zh_CN: zhCN,
+    en
+  }
 })
 
 createApp(App)
-  .use(vuetify)
+  .use(i18n)
+  .use(Antd)
   .mount('#app')

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 export enum SiteCatagory {
   general = 'general',
@@ -25,12 +25,19 @@ export interface SiteConfig {
   tags?: SiteCatagory[],
 }
 
+export interface requestCache {
+  url: string,
+  response: Promise<AxiosResponse<any>>
+  time: number
+}
+
 export default class Site {
   name: string
   url: URL
   abbreviation: string
   catagory: SiteCatagory
   tags: SiteCatagory[]
+  requestCache: requestCache[]
 
   constructor (config:SiteConfig) {
     this.name = config.name
@@ -38,25 +45,50 @@ export default class Site {
     this.abbreviation = config.abbreviation || ''
     this.catagory = config.catagory || SiteCatagory.other
     this.tags = config.tags || []
+    this.requestCache = []
   }
 
-  async get<T = any, R = AxiosResponse<T>> (url: string, config?: AxiosRequestConfig): Promise<R> {
-    if (config) {
-      return await axios.get(url, config)
-    } else {
-      return await axios.get(url, {
-        baseURL: this.url.toString()
-      })
+  get<T = any> (url: string, useCache = true): Promise<AxiosResponse<T>> {
+    if (useCache) {
+      const requestCache = this.getFromRequestCache(url)
+      if (requestCache) {
+        return requestCache.response
+      }
+    }
+    const r = axios.get(url, {
+      baseURL: this.url.toString()
+    })
+    this.pushToRequestCache(url, r)
+    return r
+  }
+
+  post<T = any> (url: string, data?: any): Promise<AxiosResponse<T>> {
+    return axios.post(url, data, {
+      baseURL: this.url.toString()
+    })
+  }
+
+  cleanRequestCache () {
+    this.requestCache = []
+  }
+
+  pushToRequestCache (url: string, response: Promise<AxiosResponse<any>>) {
+    const time = Date.now()
+    const l = this.requestCache.unshift({ url, response, time })
+    // cache only 10 request history
+    if (l > 10) {
+      this.requestCache.pop()
     }
   }
 
-  async post<T = any, R = AxiosResponse<T>> (url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
-    if (config) {
-      return await axios.post(url, data, config)
-    } else {
-      return await axios.post(url, data, {
-        baseURL: this.url.toString()
-      })
+  getFromRequestCache (url: string): requestCache | null {
+    const now = Date.now()
+    for (let i = 0; i < this.requestCache.length; i++) {
+      const cache = this.requestCache[i]
+      if (cache.url === url && now - cache.time < 10 * 60 * 1000) {
+        return cache
+      }
     }
+    return null
   }
 }

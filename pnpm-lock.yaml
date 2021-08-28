@@ -12,6 +12,7 @@ specifiers:
   '@vue/eslint-config-standard': ^6.1.0
   '@vue/eslint-config-typescript': ^7.0.0
   ant-design-vue: ^2.2.6
+  axios: ^0.21.1
   chokidar: ^3.5.2
   cross-env: ^7.0.3
   eslint: ^7.32.0
@@ -40,6 +41,7 @@ specifiers:
 dependencies:
   '@ant-design/icons-vue': 6.0.1_vue@3.2.4
   ant-design-vue: 2.2.6_a9a95998e5760bedb49fb6f4c004d86c
+  axios: 0.21.1
   vue: 3.2.4
   vue-i18n: 9.1.7_vue@3.2.4
   vuex: 4.0.2_vue@3.2.4
@@ -719,6 +721,14 @@ packages:
 
   /async-validator/3.5.2:
     resolution: {integrity: sha512-8eLCg00W9pIRZSB781UUX/H6Oskmm8xloZfr09lz5bikRpBVDlJ3hRVuxxP1SxcwsEYfJ4IU8Q19Y8/893r3rQ==}
+    dev: false
+
+  /axios/0.21.1:
+    resolution: {integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==}
+    dependencies:
+      follow-redirects: 1.14.2
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /babel-walk/3.0.0-canary-5:
@@ -1459,6 +1469,16 @@ packages:
   /flatted/3.2.2:
     resolution: {integrity: sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==}
     dev: true
+
+  /follow-redirects/1.14.2:
+    resolution: {integrity: sha512-yLR6WaE2lbF0x4K2qE2p9PEXKLDjUjnR/xmjS3wHAYxtlsI9MLLBJUZirAHKzUZDGLxje7w/cXR49WOUo4rbsA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
 
   /fs-extra/10.0.0:
     resolution: {integrity: sha512-C5owb14u9eJwizKGdchcDUQeFtlSHHthBk8pbX9Vc1PFZrLombudjDnNns88aYslCyF6IY5SUw3Roz6xShcEIQ==}

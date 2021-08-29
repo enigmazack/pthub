@@ -2,7 +2,7 @@
 // import { sendMessage, onMessage } from 'webext-bridge'
 import browser from 'webextension-polyfill'
 import axios, { AxiosStatic } from 'axios'
-import { ourbits } from '@/sites'
+import * as sites from '@/sites'
 import * as $ from 'jquery'
 
 if (import.meta.hot) {
@@ -18,11 +18,11 @@ browser.browserAction.onClicked.addListener(function () {
 declare global {
   interface Window {
     axios: AxiosStatic;
-    ourbits: any;
+    sites: any;
     $: any
   }
 }
 
 window.axios = axios
-window.ourbits = ourbits
+window.sites = sites
 window.$ = $

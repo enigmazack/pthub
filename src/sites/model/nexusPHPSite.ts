@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Site, { userInfo } from './site'
-
-interface SeedingInfo {
-  seeding: number,
-  seedingSize: number,
-  seedingList: string[]
-}
+import Site, { userInfo, SeedingInfo } from './site'
 
 export default class NexusPHPSite extends Site {
   async checkConnection (): Promise<string> {
@@ -51,7 +45,7 @@ export default class NexusPHPSite extends Site {
       'td.rowhead:contains("傳送")',
       'td.rowhead:contains("Transfers")'
     ]).next().text()
-    const uploadMatch = transfersString.match(/(上[传傳]量|Uploaded).+?(\d*\.?\d* *[ZEPTGMK]?i?B)/)
+    const uploadMatch = transfersString.match(/(上[传傳]量|Uploaded).+?(\d+\.?\d* *[ZEPTGMK]?i?B)/)
     const uploadString = uploadMatch ? uploadMatch[2] : ''
     const upload = this.parseSize(uploadString)
     return upload
@@ -63,7 +57,7 @@ export default class NexusPHPSite extends Site {
       'td.rowhead:contains("傳送")',
       'td.rowhead:contains("Transfers")'
     ]).next().text()
-    const downloadMatch = transfersString.match(/(下[载載]量|Downloaded).+?(\d*\.?\d* *[ZEPTGMK]?i?B)/)
+    const downloadMatch = transfersString.match(/(下[载載]量|Downloaded).+?(\d+\.?\d* *[ZEPTGMK]?i?B)/)
     const downloadString = downloadMatch ? downloadMatch[2] : ''
     const download = this.parseSize(downloadString)
     return download
@@ -87,7 +81,9 @@ export default class NexusPHPSite extends Site {
     return bonus
   }
 
-  protected parseSeedingInfo (query: JQuery<any>): SeedingInfo {
+  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
+    const rSeeding = await this.get(`/getusertorrentlistajax.php?userid=${id}&type=seeding`)
+    const query = this.parseHTML(rSeeding.data)
     const seedingString = query.find('b').first().text()
     const seeding = parseInt(seedingString)
     const rows = query.find('tr')
@@ -126,9 +122,7 @@ export default class NexusPHPSite extends Site {
       // bonus
       const bonus = this.parseBonus(query)
       // seeding size list
-      const rSeeding = await this.get(`/getusertorrentlistajax.php?userid=${id}&type=seeding`)
-      const qSeeding = this.parseHTML(rSeeding.data)
-      const seedingInfo = this.parseSeedingInfo(qSeeding)
+      const seedingInfo = await this.getSeedingInfo(id)
       return {
         name,
         id,

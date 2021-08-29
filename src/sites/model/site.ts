@@ -46,6 +46,12 @@ export interface userInfo {
   seedingList?: string[]
 }
 
+export interface SeedingInfo {
+  seeding: number,
+  seedingSize: number,
+  seedingList: string[]
+}
+
 export default class Site {
   name: string
   url: URL

@@ -53,7 +53,7 @@ export interface userInfo {
 export interface SeedingInfo {
   seeding: number,
   seedingSize: number,
-  seedingList: string[]
+  seedingList?: string[]
 }
 
 export interface torrentInfo {

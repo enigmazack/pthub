@@ -92,15 +92,19 @@ export default class NexusPHPSite extends Site {
     return bonus
   }
 
-  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    // use URL
+  protected async getSeedingInfoQuery (id: string): Promise<JQuery<any>> {
     const url = new URL(this.url.href)
     url.pathname = this.userTorrentPath
     url.searchParams.set('userid', id)
     url.searchParams.set('type', 'seeding')
     const rSeeding = await this.get(url.pathname + url.search)
     const query = this.parseHTML(rSeeding.data)
-    const seedingString = query.find('b').first().text()
+    return query
+  }
+
+  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
+    const query = await this.getSeedingInfoQuery(id)
+    const seedingString = this.someSelector(query, ['b', 'p']).first().text()
     const seeding = parseInt(seedingString)
     const rows = query.find('tr')
     let seedingSize = 0

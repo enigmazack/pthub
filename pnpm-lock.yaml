@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@ant-design/icons-vue': ^6.0.1
   '@types/fs-extra': ^9.0.12
+  '@types/jquery': ^3.5.6
   '@types/node': ^16.7.1
   '@types/webextension-polyfill': ^0.8.0
   '@typescript-eslint/eslint-plugin': ^4.29.2
@@ -23,6 +24,7 @@ specifiers:
   eslint-plugin-vue: ^7.16.0
   esno: ^0.9.1
   fs-extra: ^10.0.0
+  jquery: ^3.6.0
   kolorist: ^1.5.0
   less: ^4.1.1
   less-loader: ^10.0.1
@@ -42,6 +44,7 @@ dependencies:
   '@ant-design/icons-vue': 6.0.1_vue@3.2.4
   ant-design-vue: 2.2.6_a9a95998e5760bedb49fb6f4c004d86c
   axios: 0.21.1
+  jquery: 3.6.0
   vue: 3.2.4
   vue-i18n: 9.1.7_vue@3.2.4
   vuex: 4.0.2_vue@3.2.4
@@ -50,6 +53,7 @@ dependencies:
 
 devDependencies:
   '@types/fs-extra': 9.0.12
+  '@types/jquery': 3.5.6
   '@types/node': 16.7.1
   '@types/webextension-polyfill': 0.8.0
   '@typescript-eslint/eslint-plugin': 4.29.2_b01b7137116ac50f0745961d9cf72d34
@@ -287,6 +291,12 @@ packages:
       '@types/node': 16.7.1
     dev: true
 
+  /@types/jquery/3.5.6:
+    resolution: {integrity: sha512-SmgCQRzGPId4MZQKDj9Hqc6kSXFNWZFHpELkyK8AQhf8Zr6HKfCzFv9ZC1Fv3FyQttJZOlap3qYb12h61iZAIg==}
+    dependencies:
+      '@types/sizzle': 2.3.3
+    dev: true
+
   /@types/json-schema/7.0.9:
     resolution: {integrity: sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==}
     dev: true
@@ -297,6 +307,10 @@ packages:
 
   /@types/node/16.7.1:
     resolution: {integrity: sha512-ncRdc45SoYJ2H4eWU9ReDfp3vtFqDYhjOsKlFFUDEn8V1Bgr2RjYal8YT5byfadWIRluhPFU6JiDOl0H6Sl87A==}
+    dev: true
+
+  /@types/sizzle/2.3.3:
+    resolution: {integrity: sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==}
     dev: true
 
   /@types/webextension-polyfill/0.8.0:
@@ -1812,6 +1826,10 @@ packages:
   /isexe/2.0.0:
     resolution: {integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=}
     dev: true
+
+  /jquery/3.6.0:
+    resolution: {integrity: sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==}
+    dev: false
 
   /js-stringify/1.0.2:
     resolution: {integrity: sha1-Fzb939lyTyijaCrcYjCufk6Weds=}

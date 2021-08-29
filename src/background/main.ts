@@ -2,6 +2,7 @@
 import browser from 'webextension-polyfill'
 import axios, { AxiosStatic } from 'axios'
 import ourbits from '../sites/ourbits.club'
+import * as $ from 'jquery'
 
 if (import.meta.hot) {
   // @ts-expect-error for background HMR on dev
@@ -18,8 +19,11 @@ declare global {
     axios: AxiosStatic;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ourbits: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    $: any
   }
 }
 
 window.axios = axios
 window.ourbits = ourbits
+window.$ = $

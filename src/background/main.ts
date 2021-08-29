@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // import { sendMessage, onMessage } from 'webext-bridge'
 import browser from 'webextension-polyfill'
 import axios, { AxiosStatic } from 'axios'
-import ourbits from '../sites/ourbits.club'
+import { ourbits } from '@/sites'
 import * as $ from 'jquery'
 
 if (import.meta.hot) {
@@ -17,9 +18,7 @@ browser.browserAction.onClicked.addListener(function () {
 declare global {
   interface Window {
     axios: AxiosStatic;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ourbits: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     $: any
   }
 }

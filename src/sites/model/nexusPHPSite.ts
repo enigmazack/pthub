@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Site, { userInfo, SeedingInfo } from './site'
+import Site, {
+  userInfo,
+  SeedingInfo,
+  searchConfig,
+  torrentInfo
+} from './site'
 
 export default class NexusPHPSite extends Site {
   protected indexPath = '/index.php'
   protected userPath = '/userdetails.php'
   protected userTorrentPath = '/getusertorrentlistajax.php'
+  protected torrentPath = '/torrents.php'
+  protected torrentDetailsPath = '/details.php'
+  protected torrentDownloadPath = '/download.php'
   async checkConnection (): Promise<string> {
     try {
       let isLogin = false
@@ -151,5 +159,103 @@ export default class NexusPHPSite extends Site {
     }
   }
 
-  // async search (keywords: string, params: string): Promise<torrentInfo[]> { }
+  // parse torrent catagory left blank
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseTorrentCatagory (query: JQuery<any>): string {
+    return ''
+  }
+
+  protected parseTorrentId (query: JQuery<any>): string {
+    const idString = query.find('a[href*="details.php?id="]').attr('href')
+    const idMatch = idString ? idString.match(/id=(\d+)/) : undefined
+    const id = idMatch ? idMatch[1] : ''
+    return id
+  }
+
+  protected parseTorrentTitle (query: JQuery<any>): string {
+    return query.find('a[href*="details.php?id="]').attr('title') || ''
+  }
+
+  protected parseTorrentSubTitle (query: JQuery<any>): string {
+    const titleString = query.find('a[href*="details.php?id="]').parent().html()
+    const subTitle = titleString.split('<br>')[1] || ''
+    return subTitle
+  }
+
+  protected parseTorrentReleaseDate (query: JQuery<any>): number {
+    const dateString = query.find('> td').eq(3).find('span').attr('title')
+    const releaseDate = dateString ? Date.parse(dateString) : 0
+    return releaseDate
+  }
+
+  protected parseTorrentSize (query: JQuery<any>): number {
+    const sizeString = query.find('> td').eq(4).text()
+    const size = sizeString ? this.parseSize(sizeString) : 0
+    return size
+  }
+
+  protected parseTorrentSeeders (query: JQuery<any>): number {
+    const seedersString = query.find('> td').eq(5).text()
+    const seeders = seedersString ? parseInt(seedersString) : -1
+    return seeders
+  }
+
+  protected parseTorrentLeechers (query: JQuery<any>): number {
+    const leechersString = query.find('> td').eq(6).text()
+    const leechers = leechersString ? parseInt(leechersString) : -1
+    return leechers
+  }
+
+  async search (keywords: string, config: searchConfig): Promise<torrentInfo[]> {
+    const url = new URL(this.url.href)
+    url.pathname = config.path ? config.path : this.torrentPath
+    for (const p of config.params) {
+      url.searchParams.set(p.key, p.value)
+    }
+    url.searchParams.set('search', keywords)
+    const torrents: torrentInfo[] = []
+    const r = await this.get(url.pathname + url.search)
+    const query = this.parseHTML(r.data)
+    const table = this.someSelector(query, [
+      'table.torrents'
+    ]).last()
+    const rows = table.find('> tbody > tr')
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows.eq(i)
+      // catagory
+      const catagory = this.parseTorrentCatagory(row)
+      // id
+      const id = this.parseTorrentId(row)
+      // detail url
+      let url = new URL(this.url.href)
+      url.pathname = this.torrentDetailsPath
+      url.searchParams.set('id', id)
+      url.searchParams.set('hit', '1')
+      const detailUrl = url.href
+      // download url
+      url = new URL(this.url.href)
+      url.pathname = this.torrentDownloadPath
+      url.searchParams.set('id', id)
+      const downloadUrl = url.href
+      const title = this.parseTorrentTitle(row)
+      const subTitle = this.parseTorrentSubTitle(row)
+      const releaseDate = this.parseTorrentReleaseDate(row)
+      const size = this.parseTorrentSize(row)
+      const seeders = this.parseTorrentSeeders(row)
+      const leechers = this.parseTorrentLeechers(row)
+      torrents.push({
+        id,
+        title,
+        subTitle,
+        detailUrl,
+        downloadUrl,
+        size,
+        seeders,
+        leechers,
+        releaseDate,
+        catagory
+      })
+    }
+    return torrents
+  }
 }

@@ -71,6 +71,17 @@ export interface torrentInfo {
   tags?: string[]
 }
 
+interface searchConfigParams {
+  key: string,
+  value: string
+}
+
+export interface searchConfig {
+  name?: string,
+  path?: string,
+  params: searchConfigParams[]
+}
+
 export default class Site {
   name: string
   url: URL

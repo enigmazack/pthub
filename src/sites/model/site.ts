@@ -9,11 +9,15 @@ export enum SiteCatagory {
   hd = 'hd',
   movies = 'movies',
   tv = 'tv',
-  learning = 'learning',
   music = 'music',
+  mv = 'mv',
+  documentry = 'documentry',
+  learning = 'learning',
+  ebook = 'ebook',
   animation = 'animation',
   adult = 'adult',
   games = 'games',
+  app = 'app',
   sports = 'sports',
   other = 'other'
 }
@@ -52,6 +56,21 @@ export interface SeedingInfo {
   seedingList: string[]
 }
 
+export interface torrentInfo {
+  id: string,
+  downloadUrl: string,
+  detailUrl: string,
+  title: string,
+  releaseDate: number,
+  subTitle?: string,
+  catagory?: string,
+  size: number,
+  seeders: number,
+  leechers: number,
+  seeding?: boolean,
+  tags?: string[]
+}
+
 export default class Site {
   name: string
   url: URL
@@ -77,7 +96,7 @@ export default class Site {
       }
     }
     const r = axios.get(url, {
-      baseURL: this.url.toString()
+      baseURL: this.url.href
     })
     this.pushToRequestCache(url, r)
     return r
@@ -85,15 +104,15 @@ export default class Site {
 
   post<T = any> (url: string, data?: any): Promise<AxiosResponse<T>> {
     return axios.post(url, data, {
-      baseURL: this.url.toString()
+      baseURL: this.url.href
     })
   }
 
-  cleanRequestCache () {
+  protected cleanRequestCache () {
     this.requestCache = []
   }
 
-  pushToRequestCache (url: string, response: Promise<AxiosResponse<any>>) {
+  private pushToRequestCache (url: string, response: Promise<AxiosResponse<any>>) {
     const time = Date.now()
     for (let i = 0; i < this.requestCache.length; i++) {
       const cache = this.requestCache[i]
@@ -109,7 +128,7 @@ export default class Site {
     }
   }
 
-  getFromRequestCache (url: string): requestCache | null {
+  private getFromRequestCache (url: string): requestCache | null {
     const now = Date.now()
     for (let i = 0; i < this.requestCache.length; i++) {
       const cache = this.requestCache[i]

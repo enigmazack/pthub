@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
-import { SeedingInfo } from './model/site'
+import { SeedingInfo, SiteCatagory } from './model/site'
 
 class MT extends NexusPHPSite {
+  protected userTorrentPath = '/getusertorrentlist.php'
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    const rSeeding = await this.get(`/getusertorrentlist.php?userid=${id}&type=seeding`)
+    const url = new URL(this.url.href)
+    url.pathname = this.userTorrentPath
+    url.searchParams.set('userid', id)
+    url.searchParams.set('type', 'seeding')
+    const rSeeding = await this.get(url.pathname + url.search)
     const query = this.parseHTML(rSeeding.data)
     let seeding = 0
     let seedingSize = 0
@@ -19,7 +24,8 @@ class MT extends NexusPHPSite {
     const maxPage = pageMatch ? parseInt(pageMatch[1]) : 0
     if (maxPage) {
       for (let i = 1; i <= maxPage; i++) {
-        const rPage = await this.get(`/getusertorrentlist.php?userid=${id}&type=seeding&page=${i}`)
+        url.searchParams.set('page', i.toString())
+        const rPage = await this.get(url.pathname + url.search)
         const qPage = this.parseHTML(rPage.data)
         currentPage = this.parseSeedingInfoPage(qPage)
         seeding += currentPage.seeding
@@ -54,7 +60,18 @@ class MT extends NexusPHPSite {
 const mteam = new MT({
   name: 'kp.m-team.cc',
   url: 'https://kp.m-team.cc/',
-  abbreviation: 'MT'
+  abbreviation: 'MT',
+  catagory: SiteCatagory.general,
+  tags: [
+    SiteCatagory.movies,
+    SiteCatagory.tv,
+    SiteCatagory.adult,
+    SiteCatagory.music,
+    SiteCatagory.animation,
+    SiteCatagory.app,
+    SiteCatagory.ebook,
+    SiteCatagory.sports
+  ]
 })
 
 export default mteam

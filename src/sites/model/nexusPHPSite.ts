@@ -2,10 +2,13 @@
 import Site, { userInfo, SeedingInfo } from './site'
 
 export default class NexusPHPSite extends Site {
+  protected indexPath = '/index.php'
+  protected userPath = '/userdetails.php'
+  protected userTorrentPath = '/getusertorrentlistajax.php'
   async checkConnection (): Promise<string> {
     try {
       let isLogin = false
-      const r = await this.get('/index.php', false)
+      const r = await this.get(this.indexPath, false)
       if (r.request && r.request.responseURL) {
         isLogin = r.request.responseURL.match(/index\.php/)
       }
@@ -17,7 +20,7 @@ export default class NexusPHPSite extends Site {
 
   async getUserId (): Promise<string> {
     try {
-      const r = await this.get('/index.php')
+      const r = await this.get(this.indexPath)
       const id = r.data.match(/userdetails\.php\?id=(\d+)/)[1]
       return id
     } catch {
@@ -82,7 +85,12 @@ export default class NexusPHPSite extends Site {
   }
 
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    const rSeeding = await this.get(`/getusertorrentlistajax.php?userid=${id}&type=seeding`)
+    // use URL
+    const url = new URL(this.url.href)
+    url.pathname = this.userTorrentPath
+    url.searchParams.set('userid', id)
+    url.searchParams.set('type', 'seeding')
+    const rSeeding = await this.get(url.pathname + url.search)
     const query = this.parseHTML(rSeeding.data)
     const seedingString = query.find('b').first().text()
     const seeding = parseInt(seedingString)
@@ -107,7 +115,10 @@ export default class NexusPHPSite extends Site {
   async getUserInfo (): Promise<userInfo|string> {
     try {
       const id = await this.getUserId()
-      const r = await this.get(`/userdetails.php?id=${id}`)
+      const url = new URL(this.url.href)
+      url.pathname = this.userPath
+      url.searchParams.set('id', id)
+      const r = await this.get(url.pathname + url.search)
       const query = this.parseHTML(r.data)
       // user name
       const name = this.parseUserName(query)
@@ -139,4 +150,6 @@ export default class NexusPHPSite extends Site {
       return 'failed'
     }
   }
+
+  // async search (keywords: string, params: string): Promise<torrentInfo[]> { }
 }

@@ -13,6 +13,7 @@ export default class NexusPHPSite extends Site {
   protected torrentPath = '/torrents.php'
   protected torrentDetailsPath = '/details.php'
   protected torrentDownloadPath = '/download.php'
+
   async checkConnection (): Promise<string> {
     try {
       let isLogin = false
@@ -102,10 +103,23 @@ export default class NexusPHPSite extends Site {
     return query
   }
 
+  // parse size of a seeding torrent
+  protected parseSeedingInfoSize (query: JQuery<any>): number {
+    const torrentSizeString = query.find('td').eq(2).text()
+    const torrentSizeThis = torrentSizeString ? this.parseSize(torrentSizeString) : 0
+    return torrentSizeThis
+  }
+
+  // parse seeding torrent counts
+  protected parseSeedingInfoSeeding (query: JQuery<any>): number {
+    const seedingString = query.find('body > b').first().text()
+    const seeding = seedingString ? parseInt(seedingString) : 0
+    return seeding
+  }
+
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
     const query = await this.getSeedingInfoQuery(id)
-    const seedingString = this.someSelector(query, ['b', 'p']).first().text()
-    const seeding = parseInt(seedingString)
+    const seeding = this.parseSeedingInfoSeeding(query)
     const rows = query.find('tr')
     let seedingSize = 0
     const seedingList: string[] = []
@@ -117,8 +131,7 @@ export default class NexusPHPSite extends Site {
       if (torrentId) {
         seedingList.push(torrentId)
       }
-      const torrentSizeString = row.find('td').eq(2).text()
-      const torrentSizeThis = torrentSizeString ? this.parseSize(torrentSizeString) : 0
+      const torrentSizeThis = this.parseSeedingInfoSize(row)
       seedingSize += torrentSizeThis
     }
     return { seeding, seedingSize, seedingList }

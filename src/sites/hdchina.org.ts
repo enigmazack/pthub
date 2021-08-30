@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
 import { SiteCatagory } from './model/site'
 
 class HDC extends NexusPHPSite {
   protected userTorrentPath = '/ajax_getusertorrentlist.php'
 
-  protected async getSeedingInfoQuery (id: string): Promise<JQuery<any>> {
+  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
     // get x-csrf fire from index
     const rIndex = await this.get(this.indexPath)
     const qIndex = this.parseHTML(rIndex.data)
@@ -18,7 +17,7 @@ class HDC extends NexusPHPSite {
     return query
   }
 
-  protected parseSeedingInfoSeeding (query: JQuery<any>): number {
+  protected parseSeedingInfoSeeding (query: JQuery<Document>): number {
     const seedingString = query.find('body > p').first().text()
     const seeding = seedingString ? parseInt(seedingString) : -1
     return seeding

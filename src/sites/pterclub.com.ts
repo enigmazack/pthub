@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
 import { SiteCatagory } from './model/site'
 
 class PTer extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
 
-  protected parseUserName (query: JQuery<any>): string {
+  protected parseUserName (query: JQuery<Document>): string {
     const name = query.find('table#info_block').find('a[href*="userdetails.php?id="]').first().text()
     return name
   }
 
-  protected parseBonus (query: JQuery<any>): number {
+  protected parseBonus (query: JQuery<Document>): number {
     const bonusString = this.someSelector(query, [
       'td.rowhead:contains("猫粮")',
       'td.rowhead:contains("貓糧")',
@@ -20,15 +19,14 @@ class PTer extends NexusPHPSite {
     return bonus
   }
 
-  protected parseSeedingInfoSize (query: JQuery<any>): number {
+  protected parseSeedingInfoSize (query: JQuery<HTMLElement>): number {
     // td 3 not 2 for pterclub
     const torrentSizeString = query.find('td').eq(3).text()
     const torrentSizeThis = torrentSizeString ? this.parseSize(torrentSizeString) : 0
     return torrentSizeThis
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected async getSeedingInfoQuery (id: string): Promise<JQuery<any>> {
+  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
     const url = new URL(this.url.href)
     url.pathname = this.userTorrentPath
     url.searchParams.set('do_ajax', '1')

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
 import { SeedingInfo, SiteCatagory } from './model/site'
 
@@ -17,7 +16,9 @@ class MT extends NexusPHPSite {
     let currentPage = this.parseSeedingInfoPage(query)
     seeding += currentPage.seeding
     seedingSize += currentPage.seedingSize
-    seedingList = seedingList.concat(currentPage.seedingList)
+    if (currentPage.seedingList) {
+      seedingList = seedingList.concat(currentPage.seedingList)
+    }
     // if more pages
     const pageString = query.find('a[href*="type=seeding"]:contains("1")').last().attr('href')
     const pageMatch = pageString ? pageString.match(/page=(\d+)/) : undefined
@@ -30,13 +31,15 @@ class MT extends NexusPHPSite {
         currentPage = this.parseSeedingInfoPage(qPage)
         seeding += currentPage.seeding
         seedingSize += currentPage.seedingSize
-        seedingList = seedingList.concat(currentPage.seedingList)
+        if (currentPage.seedingList) {
+          seedingList = seedingList.concat(currentPage.seedingList)
+        }
       }
     }
     return { seeding, seedingSize, seedingList }
   }
 
-  private parseSeedingInfoPage (query: JQuery<any>): SeedingInfo {
+  private parseSeedingInfoPage (query: JQuery<Document>): SeedingInfo {
     let seeding = 0
     let seedingSize = 0
     const seedingList: string[] = []

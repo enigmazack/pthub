@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
 import { SiteCatagory } from './model/site'
 
 class FRDS extends NexusPHPSite {
-  protected parseBonus (query: JQuery<any>): number {
+  protected parseBonus (query: JQuery<Document>): number {
     const bonusString = this.someSelector(query, [
       'td.rowhead:contains("魔力值")',
       'td.rowhead:contains("Karma"):contains("Points")'

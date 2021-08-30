@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
@@ -30,13 +29,13 @@ export interface SiteConfig {
   tags?: SiteCatagory[],
 }
 
-export interface requestCache {
+export interface RequestCache {
   url: string,
   response: Promise<AxiosResponse<any>>
   time: number
 }
 
-export interface userInfo {
+export interface UserInfo {
   name: string,
   id?: string,
   joinDate?: number,
@@ -56,7 +55,7 @@ export interface SeedingInfo {
   seedingList?: string[]
 }
 
-export interface torrentInfo {
+export interface TorrentInfo {
   id: string,
   downloadUrl: string,
   detailUrl: string,
@@ -71,15 +70,15 @@ export interface torrentInfo {
   tags?: string[]
 }
 
-interface searchConfigParams {
+interface SearchConfigParams {
   key: string,
   value: string
 }
 
-export interface searchConfig {
+export interface SearchConfig {
   name?: string,
   path?: string,
-  params: searchConfigParams[]
+  params: SearchConfigParams[]
 }
 
 export default class Site {
@@ -88,7 +87,7 @@ export default class Site {
   abbreviation: string
   catagory: SiteCatagory
   tags: SiteCatagory[]
-  requestCache: requestCache[]
+  requestCache: RequestCache[]
 
   constructor (config:SiteConfig) {
     this.name = config.name
@@ -113,13 +112,14 @@ export default class Site {
     return r
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   post<T = any> (url: string, data?: any): Promise<AxiosResponse<T>> {
     return axios.post(url, data, {
       baseURL: this.url.href
     })
   }
 
-  protected cleanRequestCache () {
+  protected cleanRequestCache (): void {
     this.requestCache = []
   }
 
@@ -139,7 +139,7 @@ export default class Site {
     }
   }
 
-  private getFromRequestCache (url: string): requestCache | null {
+  private getFromRequestCache (url: string): RequestCache | null {
     const now = Date.now()
     for (let i = 0; i < this.requestCache.length; i++) {
       const cache = this.requestCache[i]

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
 import { SiteCatagory } from './model/site'
 
 class OpenCD extends NexusPHPSite {
-  protected parseUserName (query: JQuery<any>): string {
+  protected parseUserName (query: JQuery<Document>): string {
     const name = query.find('div.infos-bar').find('a[href*="userdetails.php?id="]').first().text()
     return name
   }

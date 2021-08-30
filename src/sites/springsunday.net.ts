@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import NexusPHPSite from './model/nexusPHPSite'
 import { SiteCatagory } from './model/site'
 
 class SSD extends NexusPHPSite {
-  protected parseBonus (query: JQuery<any>): number {
+  protected parseBonus (query: JQuery<Document>): number {
     let bonusString = this.someSelector(query, [
       'td.rowhead:contains("积分")',
       'td.rowhead:contains("積分")',

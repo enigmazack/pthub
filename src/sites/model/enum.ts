@@ -18,6 +18,7 @@ export enum ESiteCatagory {
 
 export enum ETorrentCatagory {
   movies = 'movies',
+  tv = 'tv',
   tvEpisode = 'tv.episode',
   tvSeason = 'tv.season',
   tvShow = 'tv.show',
@@ -31,8 +32,6 @@ export enum ETorrentCatagory {
   audio = 'audio',
   other = 'other'
 }
-
-export enum ETorrentTag {}
 
 export enum ETorrentPromotion {
   free = 'Free',

@@ -3,7 +3,6 @@ import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
 import {
   ETorrentCatagory,
-  ETorrentTag,
   ETorrentPromotion,
   ESiteCatagory
 } from './enum'
@@ -62,7 +61,6 @@ export interface TorrentInfo {
   seeders: number,
   leechers: number,
   seeding?: boolean,
-  tags?: ETorrentTag[],
   promotion?: TorrentPromotion,
 }
 

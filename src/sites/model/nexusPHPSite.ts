@@ -1,6 +1,6 @@
 import {
   ETorrentCatagory,
-  ETorrentTag
+  ETorrentPromotion
 } from './enum'
 import Site, {
   UserInfo,
@@ -187,18 +187,29 @@ export default class NexusPHPSite extends Site {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentTags (query: JQuery<HTMLElement>): ETorrentTag[]|undefined {
-    return undefined
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
     return undefined
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
-    return undefined
+    const map = new Map()
+    map.set('pro_free', ETorrentPromotion.free)
+    map.set('pro_2up', ETorrentPromotion.double)
+    map.set('pro_free2up', ETorrentPromotion.doubleFree)
+    map.set('pro_50pctdown', ETorrentPromotion.half)
+    map.set('pro_50pctdown2up', ETorrentPromotion.doubleHalf)
+    map.set('pro_30pctdown', ETorrentPromotion.thirtyPercent)
+    const promotionString = this.someSelector(query, [
+      'img.pro_free',
+      'img.pro_2up',
+      'img.pro_free2up',
+      'img.pro_50pctdown',
+      'img.pro_50pctdown2up',
+      'img.pro_30pctdown'
+    ]).attr('class')
+    const status = map.get(promotionString)
+    const promotion = status ? this.genTorrentPromotion(status) : undefined
+    return promotion
   }
 
   protected parseTorrentId (query: JQuery<HTMLElement>): string {
@@ -212,9 +223,9 @@ export default class NexusPHPSite extends Site {
     return query.find('a[href*="details.php?id="]').attr('title') || ''
   }
 
-  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string {
+  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
     const titleString = query.find('a[href*="details.php?id="]').parent().html()
-    const subTitle = titleString.split('>').pop() || ''
+    const subTitle = titleString ? titleString.split('>').pop() : undefined
     return subTitle
   }
 
@@ -296,7 +307,6 @@ export default class NexusPHPSite extends Site {
       const size = this.parseTorrentSize(row)
       const seeders = this.parseTorrentSeeders(row)
       const leechers = this.parseTorrentLeechers(row)
-      const tags = this.parseTorrentTags(row)
       const seeding = this.parseTorrentSeeding(row)
       const promotion = this.parseTorrentPromotion(row)
       const data = {
@@ -310,7 +320,6 @@ export default class NexusPHPSite extends Site {
         leechers,
         releaseDate,
         catagory,
-        tags,
         seeding,
         promotion
       }

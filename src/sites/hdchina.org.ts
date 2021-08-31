@@ -136,21 +136,19 @@ class HDC extends NexusPHPSite {
   }
 
   protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
-    const promotionString = query.find('td.discount > p > img').attr('class')
-    if (!promotionString) {
-      return undefined
-    }
-    // TODO: more map need to set
     const map = new Map()
     map.set('pro_free', ETorrentPromotion.free)
+    map.set('pro_2up', ETorrentPromotion.double)
+    map.set('pro_free2up', ETorrentPromotion.doubleFree)
     map.set('pro_50pctdown', ETorrentPromotion.half)
-    const status = map.get(promotionString)
-    if (!status) {
-      return undefined
-    }
+    map.set('pro_50pctdown2up', ETorrentPromotion.doubleHalf)
+    map.set('pro_30pctdown', ETorrentPromotion.thirtyPercent)
+    const statusString = query.find('td.discount > p > img').attr('class')
+    const status = statusString ? map.get(statusString) : undefined
     const expireString = query.find('td.discount > span').attr('title')
     const expire = expireString ? Date.parse(expireString) : undefined
-    return this.genTorrentPromotion(status, expire)
+    const promotion = status ? this.genTorrentPromotion(status, expire) : undefined
+    return promotion
   }
 
   protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {

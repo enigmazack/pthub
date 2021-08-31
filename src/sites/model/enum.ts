@@ -18,18 +18,20 @@ export enum ESiteCatagory {
 
 export enum ETorrentCatagory {
   movies = 'movies',
+  animation = 'animation',
+  documentary = 'documentary',
   tv = 'tv',
   tvEpisode = 'tv.episode',
   tvSeason = 'tv.season',
   tvShow = 'tv.show',
-  animation = 'animation',
-  documentary = 'documentary',
   music = 'music',
   mv = 'mv',
   ebook = 'ebook',
   sports = 'sports',
   opera = 'opera',
   audio = 'audio',
+  application = 'application',
+  games = 'games',
   other = 'other'
 }
 

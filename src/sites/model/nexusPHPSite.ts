@@ -181,6 +181,13 @@ export default class NexusPHPSite extends Site {
     }
   }
 
+  protected parseTorrentCatagoryKey (query: JQuery<HTMLElement>): string|undefined {
+    const cString = query.find('a[href*="?cat="]').first().attr('href')
+    const cMatch = cString ? cString.match(/\?cat=(\d+)/) : undefined
+    const cNum = cMatch ? cMatch[1] : undefined
+    return cNum
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory|undefined {
     return undefined

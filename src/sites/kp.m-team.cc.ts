@@ -1,3 +1,4 @@
+import { ETorrentCatagory } from './model/enum'
 import NexusPHPSite from './model/nexusPHPSite'
 import { SeedingInfo, ESiteCatagory } from './model/site'
 
@@ -59,7 +60,31 @@ class MT extends NexusPHPSite {
     }
     return { seeding, seedingSize, seedingList }
   }
+
+  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+    const map = new Map()
+    map.set('401', ETorrentCatagory.movies)
+    map.set('419', ETorrentCatagory.movies)
+    map.set('420', ETorrentCatagory.movies)
+    map.set('421', ETorrentCatagory.movies)
+    map.set('439', ETorrentCatagory.movies)
+    map.set('404', ETorrentCatagory.documentary)
+    map.set('403', ETorrentCatagory.tv)
+    map.set('402', ETorrentCatagory.tv)
+    map.set('435', ETorrentCatagory.tv)
+    map.set('438', ETorrentCatagory.tv)
+    map.set('405', ETorrentCatagory.animation)
+    map.set('407', ETorrentCatagory.sports)
+    map.set('422', ETorrentCatagory.application)
+    map.set('423', ETorrentCatagory.games)
+    map.set('427', ETorrentCatagory.ebook)
+    map.set('409', ETorrentCatagory.other)
+    const cKey = this.parseTorrentCatagoryKey(query)
+    const catagory = cKey ? map.get(cKey) : undefined
+    return catagory || ETorrentCatagory.other
+  }
 }
+
 const mteam = new MT({
   name: 'kp.m-team.cc',
   url: 'https://kp.m-team.cc/',

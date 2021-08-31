@@ -95,13 +95,6 @@ class HDC extends NexusPHPSite {
     return subTitle
   }
 
-  protected parseTorrentCatagoryKey (query: JQuery<HTMLElement>): string {
-    const cString = query.find('a[href*="?cat="]').attr('href')
-    const cMatch = cString ? cString.match(/\?cat=(\d+)/) : undefined
-    const cNum = cMatch ? cMatch[1] : undefined
-    return cNum || ''
-  }
-
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
     const map = new Map()
     map.set('20', ETorrentCatagory.movies)
@@ -131,7 +124,7 @@ class HDC extends NexusPHPSite {
     map.set('411', ETorrentCatagory.other)
     map.set('412', ETorrentCatagory.other)
     const cKey = this.parseTorrentCatagoryKey(query)
-    const catagory = map.get(cKey)
+    const catagory = cKey ? map.get(cKey) : undefined
     return catagory || ETorrentCatagory.other
   }
 

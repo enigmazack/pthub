@@ -83,6 +83,12 @@ class MT extends NexusPHPSite {
     const catagory = cKey ? map.get(cKey) : undefined
     return catagory || ETorrentCatagory.other
   }
+
+  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
+    const titleString = query.find('a[href*="details.php?id="]').eq(1).parent().html()
+    const subTitle = titleString ? titleString.split('>').pop() : undefined
+    return subTitle
+  }
 }
 
 const mteam = new MT({

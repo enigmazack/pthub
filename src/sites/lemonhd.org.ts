@@ -82,12 +82,6 @@ class LHD extends NexusPHPSite {
     return promotion
   }
 
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {
-    const seedingString = query.find('td.peer-active').text()
-    const seeding = seedingString ? seedingString.trim() === '100%' : false
-    return seeding
-  }
-
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
     const map = new Map()
     map.set('cat_movie', ETorrentCatagory.movies)

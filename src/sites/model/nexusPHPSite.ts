@@ -193,9 +193,10 @@ export default class NexusPHPSite extends Site {
     return undefined
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
-    return undefined
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {
+    const seedingString = query.find('td.peer-active').text()
+    const seeding = seedingString ? seedingString.trim() === '100%' : false
+    return seeding
   }
 
   protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
@@ -231,7 +232,7 @@ export default class NexusPHPSite extends Site {
   }
 
   protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
-    const titleString = query.find('a[href*="details.php?id="]').parent().html()
+    const titleString = query.find('a[href*="details.php?id="]').first().parent().html()
     const subTitle = titleString ? titleString.split('>').pop() : undefined
     return subTitle
   }

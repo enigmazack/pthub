@@ -1,15 +1,16 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { SiteCatagory } from './model/site'
+import { ESiteCatagory } from './model/site'
 
-const ourbits = new NexusPHPSite({
+class OB extends NexusPHPSite {}
+
+const ourbits = new OB({
   name: 'ourbits.club',
   url: 'https://ourbits.club/',
   abbreviation: 'OB',
-  catagory: SiteCatagory.hd,
+  catagory: ESiteCatagory.hd,
   tags: [
-    SiteCatagory.movies,
-    SiteCatagory.tv,
-    SiteCatagory.animation
+    ESiteCatagory.movies,
+    ESiteCatagory.tv
   ]
 })
 

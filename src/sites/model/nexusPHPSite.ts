@@ -1,3 +1,4 @@
+import { ETorrentCatagory } from './enum'
 import Site, {
   UserInfo,
   SeedingInfo,
@@ -175,10 +176,19 @@ export default class NexusPHPSite extends Site {
     }
   }
 
-  // parse torrent catagory left blank
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): string {
-    return ''
+  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory|undefined {
+    return undefined
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseTorrentTags (query: JQuery<HTMLElement>): undefined {
+    return undefined
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): undefined {
+    return undefined
   }
 
   protected parseTorrentId (query: JQuery<HTMLElement>): string {
@@ -194,7 +204,7 @@ export default class NexusPHPSite extends Site {
 
   protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string {
     const titleString = query.find('a[href*="details.php?id="]').parent().html()
-    const subTitle = titleString.split('<br>')[1] || ''
+    const subTitle = titleString.split('>').pop() || ''
     return subTitle
   }
 
@@ -222,41 +232,62 @@ export default class NexusPHPSite extends Site {
     return leechers
   }
 
+  protected getTorrentTable (query: JQuery<Document>): JQuery<HTMLElement> {
+    return query.find('table.torrents').last()
+  }
+
+  protected parseTorrentDetailsUrl (query: JQuery<HTMLElement>): string {
+    const id = this.parseTorrentId(query)
+    const url = new URL(this.url.href)
+    url.pathname = this.torrentDetailsPath
+    url.searchParams.set('id', id)
+    url.searchParams.set('hit', '1')
+    const detailUrl = url.href
+    return detailUrl
+  }
+
+  protected parseTorrentDownloadUrl (query: JQuery<HTMLElement>): string {
+    const id = this.parseTorrentId(query)
+    const url = new URL(this.url.href)
+    url.pathname = this.torrentDownloadPath
+    url.searchParams.set('id', id)
+    const downloadUrl = url.href
+    return downloadUrl
+  }
+
+  protected async getTorrentPageQuery (path: string): Promise<JQuery<Document>> {
+    const r = await this.get(path)
+    const query = this.parseHTML(r.data)
+    return query
+  }
+
   async search (keywords: string, config: SearchConfig): Promise<TorrentInfo[]> {
     const url = new URL(this.url.href)
     url.pathname = config.path ? config.path : this.torrentPath
-    for (const p of config.params) {
-      url.searchParams.set(p.key, p.value)
+    if (config.params) {
+      for (const p of config.params) {
+        url.searchParams.set(p.key, p.value)
+      }
     }
     url.searchParams.set('search', keywords)
     const torrents: TorrentInfo[] = []
-    const r = await this.get(url.pathname + url.search)
-    const query = this.parseHTML(r.data)
-    const table = query.find('table.torrents').last()
+    const query = await this.getTorrentPageQuery(url.pathname + url.search)
+    const table = this.getTorrentTable(query)
     const rows = table.find('> tbody > tr')
     for (let i = 1; i < rows.length; i++) {
       const row = rows.eq(i)
-      // catagory
       const catagory = this.parseTorrentCatagory(row)
-      // id
       const id = this.parseTorrentId(row)
-      // detail url
-      let url = new URL(this.url.href)
-      url.pathname = this.torrentDetailsPath
-      url.searchParams.set('id', id)
-      url.searchParams.set('hit', '1')
-      const detailUrl = url.href
-      // download url
-      url = new URL(this.url.href)
-      url.pathname = this.torrentDownloadPath
-      url.searchParams.set('id', id)
-      const downloadUrl = url.href
+      const detailUrl = this.parseTorrentDetailsUrl(row)
+      const downloadUrl = this.parseTorrentDownloadUrl(row)
       const title = this.parseTorrentTitle(row)
       const subTitle = this.parseTorrentSubTitle(row)
       const releaseDate = this.parseTorrentReleaseDate(row)
       const size = this.parseTorrentSize(row)
       const seeders = this.parseTorrentSeeders(row)
       const leechers = this.parseTorrentLeechers(row)
+      const tags = this.parseTorrentTags(row)
+      const seeding = this.parseTorrentSeeding(row)
       torrents.push({
         id,
         title,
@@ -267,7 +298,9 @@ export default class NexusPHPSite extends Site {
         seeders,
         leechers,
         releaseDate,
-        catagory
+        catagory,
+        tags,
+        seeding
       })
     }
     return torrents

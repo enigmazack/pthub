@@ -1,5 +1,5 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { SeedingInfo, SiteCatagory } from './model/site'
+import { SeedingInfo, ESiteCatagory } from './model/site'
 
 class MT extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
@@ -64,16 +64,12 @@ const mteam = new MT({
   name: 'kp.m-team.cc',
   url: 'https://kp.m-team.cc/',
   abbreviation: 'MT',
-  catagory: SiteCatagory.general,
+  catagory: ESiteCatagory.general,
   tags: [
-    SiteCatagory.movies,
-    SiteCatagory.tv,
-    SiteCatagory.adult,
-    SiteCatagory.music,
-    SiteCatagory.animation,
-    SiteCatagory.app,
-    SiteCatagory.ebook,
-    SiteCatagory.sports
+    ESiteCatagory.hd,
+    ESiteCatagory.movies,
+    ESiteCatagory.tv,
+    ESiteCatagory.adult
   ]
 })
 

@@ -1,5 +1,5 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { SiteCatagory, SeedingInfo } from './model/site'
+import { ESiteCatagory, SeedingInfo } from './model/site'
 
 class LHD extends NexusPHPSite {
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
@@ -23,11 +23,11 @@ const lemonhd = new LHD({
   name: 'lemonhd.org',
   url: 'https://lemonhd.org/',
   abbreviation: 'LHD',
-  catagory: SiteCatagory.general,
+  catagory: ESiteCatagory.general,
   tags: [
-    SiteCatagory.movies,
-    SiteCatagory.tv,
-    SiteCatagory.animation
+    ESiteCatagory.hd,
+    ESiteCatagory.movies,
+    ESiteCatagory.tv
   ]
 })
 

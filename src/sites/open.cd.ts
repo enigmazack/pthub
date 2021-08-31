@@ -1,5 +1,5 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { SiteCatagory } from './model/site'
+import { ESiteCatagory } from './model/site'
 
 class OpenCD extends NexusPHPSite {
   protected parseUserName (query: JQuery<Document>): string {
@@ -12,9 +12,9 @@ const opencd = new OpenCD({
   name: 'opencd',
   url: 'https://open.cd/',
   abbreviation: 'OpenCD',
-  catagory: SiteCatagory.music,
+  catagory: ESiteCatagory.music,
   tags: [
-    SiteCatagory.music
+    ESiteCatagory.music
   ]
 })
 

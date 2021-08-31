@@ -1,5 +1,5 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { SiteCatagory } from './model/site'
+import { ESiteCatagory } from './model/site'
 
 class PTer extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
@@ -42,11 +42,10 @@ const pterclub = new PTer({
   name: 'pterclub',
   url: 'https://pterclub.com/',
   abbreviation: 'PTer',
-  catagory: SiteCatagory.general,
+  catagory: ESiteCatagory.general,
   tags: [
-    SiteCatagory.movies,
-    SiteCatagory.tv,
-    SiteCatagory.animation
+    ESiteCatagory.movies,
+    ESiteCatagory.tv
   ]
 })
 

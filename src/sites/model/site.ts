@@ -1,32 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
+import {
+  ETorrentCatagory,
+  ETorrentTag,
+  ETorrentPromotion,
+  ESiteCatagory
+} from './enum'
 
-export enum SiteCatagory {
-  general = 'general',
-  scene = 'scene',
-  hd = 'hd',
-  movies = 'movies',
-  tv = 'tv',
-  music = 'music',
-  mv = 'mv',
-  documentry = 'documentry',
-  learning = 'learning',
-  ebook = 'ebook',
-  animation = 'animation',
-  adult = 'adult',
-  games = 'games',
-  app = 'app',
-  sports = 'sports',
-  other = 'other'
-}
+export { ESiteCatagory }
 
 export interface SiteConfig {
   name: string,
   url: string,
   abbreviation?: string,
-  catagory?: SiteCatagory,
-  tags?: SiteCatagory[],
+  catagory?: ESiteCatagory,
+  tags?: ESiteCatagory[],
 }
 
 export interface RequestCache {
@@ -55,6 +44,12 @@ export interface SeedingInfo {
   seedingList?: string[]
 }
 
+export interface TorrentPromotion {
+  status: ETorrentPromotion,
+  type: 'temporary'|'permanent'
+  expire?: number
+}
+
 export interface TorrentInfo {
   id: string,
   downloadUrl: string,
@@ -62,12 +57,13 @@ export interface TorrentInfo {
   title: string,
   releaseDate: number,
   subTitle?: string,
-  catagory?: string,
+  catagory?: ETorrentCatagory,
   size: number,
   seeders: number,
   leechers: number,
   seeding?: boolean,
-  tags?: string[]
+  tags?: ETorrentTag[],
+  promotion?: TorrentPromotion,
 }
 
 interface SearchConfigParams {
@@ -85,15 +81,15 @@ export default class Site {
   name: string
   url: URL
   abbreviation: string
-  catagory: SiteCatagory
-  tags: SiteCatagory[]
+  catagory: ESiteCatagory
+  tags: ESiteCatagory[]
   requestCache: RequestCache[]
 
   constructor (config:SiteConfig) {
     this.name = config.name
     this.url = new URL(config.url)
     this.abbreviation = config.abbreviation || ''
-    this.catagory = config.catagory || SiteCatagory.other
+    this.catagory = config.catagory || ESiteCatagory.other
     this.tags = config.tags || []
     this.requestCache = []
   }
@@ -113,7 +109,7 @@ export default class Site {
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  post<T = any> (url: string, data?: any): Promise<AxiosResponse<T>> {
+  post<T = any> (url: string, data: any): Promise<AxiosResponse<T>> {
     return axios.post(url, data, {
       baseURL: this.url.href
     })
@@ -166,7 +162,7 @@ export default class Site {
   }
 
   protected parseSize (sizeString: string): number {
-    const sizeMatch = sizeString.match(/^(\d*\.?\d*) *([ZEPTGMK]?i?B$)/i)
+    const sizeMatch = sizeString.match(/^(\d+\.?\d*).*?([ZEPTGMK]?i?B$)/i)
     if (sizeMatch) {
       const sizeNumber = parseFloat(sizeMatch[1])
       const sizeUnit = sizeMatch[2]
@@ -190,5 +186,13 @@ export default class Site {
       }
     }
     return 0
+  }
+
+  protected genTorrentPromotion (status: ETorrentPromotion, expire?: number): TorrentPromotion {
+    if (expire) {
+      return { status, expire, type: 'temporary' }
+    } else {
+      return { status, type: 'permanent' }
+    }
   }
 }

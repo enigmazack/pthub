@@ -1,9 +1,13 @@
-import { ETorrentCatagory } from './enum'
+import {
+  ETorrentCatagory,
+  ETorrentTag
+} from './enum'
 import Site, {
   UserInfo,
   SeedingInfo,
   SearchConfig,
-  TorrentInfo
+  TorrentInfo,
+  TorrentPromotion
 } from './site'
 
 export default class NexusPHPSite extends Site {
@@ -117,6 +121,7 @@ export default class NexusPHPSite extends Site {
     return seeding
   }
 
+  // get user seeding torrent info
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
     const query = await this.getSeedingInfoQuery(id)
     const seeding = this.parseSeedingInfoSeeding(query)
@@ -182,12 +187,17 @@ export default class NexusPHPSite extends Site {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentTags (query: JQuery<HTMLElement>): undefined {
+  protected parseTorrentTags (query: JQuery<HTMLElement>): ETorrentTag[]|undefined {
     return undefined
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): undefined {
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+    return undefined
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
     return undefined
   }
 
@@ -232,10 +242,6 @@ export default class NexusPHPSite extends Site {
     return leechers
   }
 
-  protected getTorrentTable (query: JQuery<Document>): JQuery<HTMLElement> {
-    return query.find('table.torrents').last()
-  }
-
   protected parseTorrentDetailsUrl (query: JQuery<HTMLElement>): string {
     const id = this.parseTorrentId(query)
     const url = new URL(this.url.href)
@@ -255,26 +261,30 @@ export default class NexusPHPSite extends Site {
     return downloadUrl
   }
 
+  protected parseTorrentMaxPage (query: JQuery<Document>): number {
+    const pageString = query.find('a[href*="&page="]').eq(-2).attr('href')
+    const p = pageString ? new URLSearchParams(pageString) : undefined
+    const nPage = p ? p.get('page') : undefined
+    const maxPage = nPage ? parseInt(nPage) : 0
+    return maxPage
+  }
+
+  protected findTorrentRows (query: JQuery<Document>): JQuery<HTMLElement> {
+    const table = query.find('table.torrents').last()
+    const rows = table.find('> tbody > tr:not(:eq(0))')
+    return rows
+  }
+
   protected async getTorrentPageQuery (path: string): Promise<JQuery<Document>> {
     const r = await this.get(path)
     const query = this.parseHTML(r.data)
     return query
   }
 
-  async search (keywords: string, config: SearchConfig): Promise<TorrentInfo[]> {
-    const url = new URL(this.url.href)
-    url.pathname = config.path ? config.path : this.torrentPath
-    if (config.params) {
-      for (const p of config.params) {
-        url.searchParams.set(p.key, p.value)
-      }
-    }
-    url.searchParams.set('search', keywords)
+  protected parseTorrentPage (query: JQuery<Document>): TorrentInfo[] {
     const torrents: TorrentInfo[] = []
-    const query = await this.getTorrentPageQuery(url.pathname + url.search)
-    const table = this.getTorrentTable(query)
-    const rows = table.find('> tbody > tr')
-    for (let i = 1; i < rows.length; i++) {
+    const rows = this.findTorrentRows(query)
+    for (let i = 0; i < rows.length; i++) {
       const row = rows.eq(i)
       const catagory = this.parseTorrentCatagory(row)
       const id = this.parseTorrentId(row)
@@ -288,7 +298,8 @@ export default class NexusPHPSite extends Site {
       const leechers = this.parseTorrentLeechers(row)
       const tags = this.parseTorrentTags(row)
       const seeding = this.parseTorrentSeeding(row)
-      torrents.push({
+      const promotion = this.parseTorrentPromotion(row)
+      const data = {
         id,
         title,
         subTitle,
@@ -300,8 +311,34 @@ export default class NexusPHPSite extends Site {
         releaseDate,
         catagory,
         tags,
-        seeding
-      })
+        seeding,
+        promotion
+      }
+      torrents.push(data)
+    }
+    return torrents
+  }
+
+  async search (keywords: string, config: SearchConfig): Promise<TorrentInfo[]> {
+    const url = new URL(this.url.href)
+    url.pathname = config.path ? config.path : this.torrentPath
+    if (config.params) {
+      for (const [key, value] of Object.entries(config.params)) {
+        url.searchParams.set(key, value)
+      }
+    }
+    url.searchParams.set('search', keywords)
+    const query = await this.getTorrentPageQuery(url.pathname + url.search)
+    const maxPage = this.parseTorrentMaxPage(query)
+    const maxWanted = config.maxWanted || 100
+    let currentPage = 0
+    let torrents = this.parseTorrentPage(query)
+    while (currentPage < maxPage && torrents.length < maxWanted) {
+      currentPage += 1
+      url.searchParams.set('page', currentPage.toString())
+      const query = await this.getTorrentPageQuery(url.pathname + url.search)
+      const moreTorrents = this.parseTorrentPage(query)
+      torrents = torrents.concat(moreTorrents)
     }
     return torrents
   }

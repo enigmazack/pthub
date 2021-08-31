@@ -1,5 +1,10 @@
-import { ETorrentCatagory, ESiteCatagory } from './model/enum'
+import {
+  ETorrentCatagory,
+  ESiteCatagory,
+  ETorrentPromotion
+} from './model/enum'
 import NexusPHPSite from './model/nexusPHPSite'
+import { TorrentPromotion } from './model/site'
 
 interface HDCPromotion {
   // eslint-disable-next-line camelcase
@@ -38,6 +43,7 @@ class HDC extends NexusPHPSite {
   protected async getTorrentPageQuery (path: string): Promise<JQuery<Document>> {
     const r = await this.get(path)
     const query = this.parseHTML(r.data)
+    // try get torrent promotion info
     try {
       const csrf = query.find('meta[name="x-csrf"]').attr('content') || ''
       const torrents = query.find('span.sp_state_placeholder').map(function () {
@@ -51,7 +57,7 @@ class HDC extends NexusPHPSite {
       const rPromotion = await this.post(this.promotionPath, params)
       const response: HDCPromotionData = rPromotion.data
       for (const [key, value] of Object.entries(response.message)) {
-        query.find('span#' + key + '.sp_state_placeholder').replaceWith('<p>' + value.sp_state + '</p>' + value.timeout)
+        query.find(`span#${key}.sp_state_placeholder`).replaceWith(`<p>${value.sp_state}</p>${value.timeout}`)
       }
     } catch {
       return query
@@ -65,8 +71,11 @@ class HDC extends NexusPHPSite {
     return seeding
   }
 
-  protected getTorrentTable (query: JQuery<Document>): JQuery<HTMLElement> {
-    return query.find('table.torrent_list').last()
+  // HDC use a different torrent table selector
+  protected findTorrentRows (query: JQuery<Document>): JQuery<HTMLElement> {
+    const table = query.find('table.torrent_list').last()
+    const rows = table.find('> tbody > tr:not(:eq(0))')
+    return rows
   }
 
   protected parseTorrentDownloadUrl (query: JQuery<HTMLElement>): string {
@@ -124,6 +133,30 @@ class HDC extends NexusPHPSite {
     const cKey = this.parseTorrentCatagoryKey(query)
     const catagory = map.get(cKey)
     return catagory || ETorrentCatagory.other
+  }
+
+  protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
+    const promotionString = query.find('td.discount > p > img').attr('class')
+    if (!promotionString) {
+      return undefined
+    }
+    // TODO: more map need to set
+    const map = new Map()
+    map.set('pro_free', ETorrentPromotion.free)
+    map.set('pro_50pctdown', ETorrentPromotion.half)
+    const status = map.get(promotionString)
+    if (!status) {
+      return undefined
+    }
+    const expireString = query.find('td.discount > span').attr('title')
+    const expire = expireString ? Date.parse(expireString) : undefined
+    return this.genTorrentPromotion(status, expire)
+  }
+
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {
+    const seedingString = query.find('div.progress >  div').attr('class')
+    const seeding = seedingString === 'progress_seeding'
+    return seeding
   }
 }
 

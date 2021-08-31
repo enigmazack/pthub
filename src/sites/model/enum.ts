@@ -35,7 +35,6 @@ export enum ETorrentCatagory {
 export enum ETorrentTag {}
 
 export enum ETorrentPromotion {
-  temporaryFree = '~Free',
   free = 'Free',
   double = '2x',
   doubleFree = '2xFree',

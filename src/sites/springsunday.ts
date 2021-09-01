@@ -1,5 +1,4 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { ESiteCatagory } from './model/site'
 
 class SSD extends NexusPHPSite {
   protected parseBonus (query: JQuery<Document>): number {
@@ -16,15 +15,8 @@ class SSD extends NexusPHPSite {
 }
 
 const springsunday = new SSD({
-  name: 'springsunday.net',
-  url: 'https://springsunday.net/',
-  abbreviation: 'SSD',
-  catagory: ESiteCatagory.general,
-  tags: [
-    ESiteCatagory.hd,
-    ESiteCatagory.movies,
-    ESiteCatagory.tv
-  ]
+  name: 'SSD',
+  url: 'https://springsunday.net/'
 })
 
 export default springsunday

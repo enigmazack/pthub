@@ -1,5 +1,4 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { ESiteCatagory } from './model/site'
 
 class FRDS extends NexusPHPSite {
   protected parseBonus (query: JQuery<Document>): number {
@@ -14,14 +13,8 @@ class FRDS extends NexusPHPSite {
 }
 
 const keepfrds = new FRDS({
-  name: 'keepfrds',
-  url: 'https://pt.keepfrds.com/',
-  abbreviation: 'FRDS',
-  catagory: ESiteCatagory.hd,
-  tags: [
-    ESiteCatagory.movies,
-    ESiteCatagory.tv
-  ]
+  name: 'Keepfrds',
+  url: 'https://pt.keepfrds.com/'
 })
 
 export default keepfrds

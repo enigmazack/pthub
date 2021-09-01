@@ -1,6 +1,5 @@
 import {
   ETorrentCatagory,
-  ESiteCatagory,
   ETorrentPromotion
 } from './model/enum'
 import NexusPHPSite from './model/nexusPHPSite'
@@ -152,14 +151,8 @@ class HDC extends NexusPHPSite {
 }
 
 const hdchina = new HDC({
-  name: 'hdchina.org',
-  url: 'https://hdchina.org/',
-  abbreviation: 'HDC',
-  catagory: ESiteCatagory.general,
-  tags: [
-    ESiteCatagory.movies,
-    ESiteCatagory.tv
-  ]
+  name: 'HDChina',
+  url: 'https://hdchina.org/'
 })
 
 export default hdchina

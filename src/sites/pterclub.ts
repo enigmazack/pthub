@@ -1,5 +1,4 @@
 import NexusPHPSite from './model/nexusPHPSite'
-import { ESiteCatagory } from './model/site'
 
 class PTer extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
@@ -39,14 +38,8 @@ class PTer extends NexusPHPSite {
 }
 
 const pterclub = new PTer({
-  name: 'pterclub',
-  url: 'https://pterclub.com/',
-  abbreviation: 'PTer',
-  catagory: ESiteCatagory.general,
-  tags: [
-    ESiteCatagory.movies,
-    ESiteCatagory.tv
-  ]
+  name: 'PTer',
+  url: 'https://pterclub.com/'
 })
 
 export default pterclub

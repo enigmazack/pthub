@@ -11,10 +11,7 @@ export { ESiteCatagory }
 
 export interface SiteConfig {
   name: string,
-  url: string,
-  abbreviation?: string,
-  catagory?: ESiteCatagory,
-  tags?: ESiteCatagory[],
+  url: string
 }
 
 export interface RequestCache {
@@ -77,17 +74,11 @@ export interface SearchConfig {
 export default class Site {
   name: string
   url: URL
-  abbreviation: string
-  catagory: ESiteCatagory
-  tags: ESiteCatagory[]
   requestCache: RequestCache[]
 
   constructor (config:SiteConfig) {
     this.name = config.name
     this.url = new URL(config.url)
-    this.abbreviation = config.abbreviation || ''
-    this.catagory = config.catagory || ESiteCatagory.other
-    this.tags = config.tags || []
     this.requestCache = []
   }
 

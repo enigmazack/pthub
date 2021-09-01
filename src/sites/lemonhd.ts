@@ -1,6 +1,6 @@
 import { ETorrentCatagory, ETorrentPromotion } from './model/enum'
 import NexusPHPSite from './model/nexusPHPSite'
-import { ESiteCatagory, SeedingInfo, TorrentPromotion } from './model/site'
+import { SeedingInfo, TorrentPromotion } from './model/site'
 
 class LHD extends NexusPHPSite {
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
@@ -98,15 +98,8 @@ class LHD extends NexusPHPSite {
 }
 
 const lemonhd = new LHD({
-  name: 'lemonhd.org',
-  url: 'https://lemonhd.org/',
-  abbreviation: 'LHD',
-  catagory: ESiteCatagory.general,
-  tags: [
-    ESiteCatagory.hd,
-    ESiteCatagory.movies,
-    ESiteCatagory.tv
-  ]
+  name: 'LemonHD',
+  url: 'https://lemonhd.org/'
 })
 
 export default lemonhd

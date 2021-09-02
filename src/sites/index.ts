@@ -1,3 +1,4 @@
+import Site from './model/site'
 import ourbits from './ourbits'
 import springsunday from './springsunday'
 import mteam from './mteam'
@@ -7,7 +8,11 @@ import pterclub from './pterclub'
 import opencd from './opencd'
 import keepfrds from './keepfrds'
 
-export {
+interface Sites {
+  [key: string]: Site
+}
+
+const sites:Sites = {
   ourbits,
   springsunday,
   mteam,
@@ -17,3 +22,5 @@ export {
   opencd,
   keepfrds
 }
+
+export default sites

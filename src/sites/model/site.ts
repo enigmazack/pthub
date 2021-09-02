@@ -3,15 +3,13 @@ import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
 import {
   ETorrentCatagory,
-  ETorrentPromotion,
-  ESiteCatagory
+  ETorrentPromotion
 } from './enum'
-
-export { ESiteCatagory }
 
 export interface SiteConfig {
   name: string,
-  url: string
+  url: string,
+  icon?: string
 }
 
 export interface RequestCache {
@@ -74,11 +72,23 @@ export interface SearchConfig {
 export default class Site {
   name: string
   url: URL
-  requestCache: RequestCache[]
+  icon: URL
+  private requestCache: RequestCache[]
 
   constructor (config:SiteConfig) {
     this.name = config.name
     this.url = new URL(config.url)
+    if (config.icon) {
+      try {
+        this.icon = new URL(config.icon)
+      } catch {
+        this.icon = new URL(this.url.href)
+        this.icon.pathname = config.icon
+      }
+    } else {
+      this.icon = new URL(this.url.href)
+      this.icon.pathname = 'favicon.ico'
+    }
     this.requestCache = []
   }
 

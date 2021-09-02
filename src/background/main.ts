@@ -4,6 +4,7 @@ import browser from 'webextension-polyfill'
 import axios, { AxiosStatic } from 'axios'
 import * as sites from '@/sites'
 import * as $ from 'jquery'
+import AppService from './service'
 
 if (import.meta.hot) {
   // @ts-expect-error for background HMR on dev
@@ -17,12 +18,14 @@ browser.browserAction.onClicked.addListener(function () {
 
 declare global {
   interface Window {
-    axios: AxiosStatic;
-    sites: any;
+    axios: AxiosStatic,
+    sites: any,
     $: any
+    app: AppService
   }
 }
 
 window.axios = axios
 window.sites = sites
 window.$ = $
+window.app = new AppService()

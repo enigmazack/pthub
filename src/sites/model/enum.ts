@@ -1,21 +1,3 @@
-export enum ESiteCatagory {
-  general = 'general',
-  scene = 'scene',
-  hd = 'hd',
-  movies = 'movies',
-  tv = 'tv',
-  music = 'music',
-  mv = 'mv',
-  learning = 'learning',
-  ebook = 'ebook',
-  animation = 'animation',
-  adult = 'adult',
-  games = 'games',
-  app = 'app',
-  sports = 'sports',
-  other = 'other'
-}
-
 export enum ETorrentCatagory {
   movies = 'movies',
   animation = 'animation',

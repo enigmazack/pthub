@@ -1,21 +1,26 @@
 <template>
   <a-layout>
-    <Header />
+    <AppHeader />
     <a-layout>
       <Sider />
-      <a-layout-content></a-layout-content>
+      <a-layout-content>
+        <ImportSites />
+        <ImportSites />
+      </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import Header from './components/Header.vue'
+import AppHeader from './components/AppHeader.vue'
 import Sider from './components/Sider.vue'
+import ImportSites from './routerViews/ImportSites.vue'
 export default defineComponent({
   name: 'app',
   components: {
-    Header,
-    Sider
+    AppHeader,
+    Sider,
+    ImportSites
   },
   data: () => {
     return {
@@ -24,5 +29,6 @@ export default defineComponent({
   }
 })
 </script>
+
 <style>
 </style>

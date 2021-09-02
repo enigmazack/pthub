@@ -4,6 +4,7 @@
     "sites": "站点",
     "setting": "设置",
     "batchSearchSetting": "搜索方案",
-    "customSearchSetting": "自定义搜索"
+    "customSearchSetting": "自定义搜索",
+    "addSite": "添加站点"
   }
 }

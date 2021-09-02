@@ -20,7 +20,6 @@
         }"
       >
         <ImportSites />
-        <ImportSites />
       </a-layout-content>
       </a-layout>
     </a-layout>
@@ -40,8 +39,9 @@ export default defineComponent({
   },
   setup () {
     const store = useStore()
+    const collapsed = computed(() => store.state.trigger.collapsed)
     return {
-      collapsed: computed(() => store.state.trigger.collapsed)
+      collapsed
     }
   }
 })

@@ -15,7 +15,6 @@ export const store = createStore<GlobalDataProps>({
   }
 })
 
-// 定义自己的 `useStore` 组合式函数
 export function useStore ():Store<GlobalDataProps> {
   return baseUseStore(key)
 }

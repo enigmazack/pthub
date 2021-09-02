@@ -44,9 +44,11 @@ export default defineComponent({
   },
   setup () {
     const store = useStore()
+    const collapsed = computed(() => store.state.trigger.collapsed)
+    const toggleCollapsed = () => store.commit('toggleCollapsed')
     return {
-      collapsed: computed(() => store.state.trigger.collapsed),
-      toggleCollapsed: () => store.commit('toggleCollapsed')
+      collapsed,
+      toggleCollapsed
     }
   },
   data () {

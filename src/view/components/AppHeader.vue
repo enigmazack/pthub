@@ -1,7 +1,7 @@
 <template>
   <a-row>
     <a-col :span="1">
-      <a-button @click="toggleCollapsed">
+      <a-button @click="toggleCollapsed" shape='circle' :style="{marginLeft: '10px'}">
         <MenuUnfoldOutlined v-if="collapsed" />
         <MenuFoldOutlined v-else />
       </a-button>

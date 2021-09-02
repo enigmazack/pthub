@@ -9,15 +9,14 @@
         :trigger="null"
         collapsible
         collapsedWidth=0
-        :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }"
+        :style="{ overflow: 'auto', height: '100vh', position: 'sticky', top: 0 }"
       >
         <Sider />
       </a-layout-sider>
       <a-layout-content
         :style="{
           padding: '24px 24px',
-          marginTop: '64px',
-          marginLeft: collapsed ? '0px' : '200px'
+          marginTop: '64px'
         }"
       >
         <ImportSites />

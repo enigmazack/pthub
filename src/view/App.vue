@@ -41,7 +41,7 @@ export default defineComponent({
   setup () {
     const store = useStore()
     return {
-      collapsed: computed(() => store.state.collapsed)
+      collapsed: computed(() => store.state.trigger.collapsed)
     }
   }
 })

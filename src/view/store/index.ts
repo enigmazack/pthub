@@ -1,26 +1,21 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
+import trigger, { TriggerProps } from './modules/trigger'
 
-export interface State {
-  collapsed: boolean
+export interface GlobalDataProps {
+  trigger: TriggerProps
 }
 
 // eslint-disable-next-line symbol-description
-export const key: InjectionKey<Store<State>> = Symbol()
+export const key: InjectionKey<Store<GlobalDataProps>> = Symbol()
 
-export const store = createStore<State>({
-  state: {
-    collapsed: false
-  },
-  mutations: {
-    toggleCollapsed (state) {
-      // 变更状态
-      state.collapsed = !state.collapsed
-    }
+export const store = createStore<GlobalDataProps>({
+  modules: {
+    trigger
   }
 })
 
 // 定义自己的 `useStore` 组合式函数
-export function useStore ():Store<State> {
+export function useStore ():Store<GlobalDataProps> {
   return baseUseStore(key)
 }

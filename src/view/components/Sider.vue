@@ -1,39 +1,32 @@
 <template>
-  <a-layout-sider
-    v-model:collapsed="collapsed"
-    :trigger="null"
-    collapsible
-  >
-    <a-menu theme="dark" mode="inline">
-      <a-menu-item key="1">
-        <template #icon>
-          <SearchOutlined />
-        </template>
-        {{ $t('menu.search') }}
-      </a-menu-item>
-      <a-menu-item key="2">
-        <template #icon>
-          <AppstoreOutlined />
-        </template>
-        {{ $t('menu.sites') }}
-      </a-menu-item>
-      <a-sub-menu key="sub1">
-        <template #icon>
-          <SettingOutlined />
-        </template>
-        <template #title>{{ $t('menu.setting') }}</template>
-        <a-menu-item key="3">{{ $t('menu.batchSearchSetting') }}</a-menu-item>
-        <a-menu-item key="4">{{ $t('menu.customSearchSetting') }}</a-menu-item>
-        <a-menu-item key="5">{{ $t('menu.addSite') }}</a-menu-item>
-      </a-sub-menu>
-    </a-menu>
-  </a-layout-sider>
+  <a-menu theme="dark" mode="inline" :style="{ marginTop: '64px' }">
+    <a-menu-item key="1">
+      <template #icon>
+        <SearchOutlined />
+      </template>
+      {{ $t('menu.search') }}
+    </a-menu-item>
+    <a-menu-item key="2">
+      <template #icon>
+        <AppstoreOutlined />
+      </template>
+      {{ $t('menu.sites') }}
+    </a-menu-item>
+    <a-sub-menu key="sub1">
+      <template #icon>
+        <SettingOutlined />
+      </template>
+      <template #title>{{ $t('menu.setting') }}</template>
+      <a-menu-item key="3">{{ $t('menu.batchSearchSetting') }}</a-menu-item>
+      <a-menu-item key="4">{{ $t('menu.customSearchSetting') }}</a-menu-item>
+      <a-menu-item key="5">{{ $t('menu.addSite') }}</a-menu-item>
+    </a-sub-menu>
+  </a-menu>
 </template>
 
 <script lang="ts">
 import { SearchOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue'
-import { computed, defineComponent } from 'vue'
-import { useStore } from '../store'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'sider',
@@ -41,12 +34,6 @@ export default defineComponent({
     SearchOutlined,
     AppstoreOutlined,
     SettingOutlined
-  },
-  setup () {
-    const store = useStore()
-    return {
-      collapsed: computed(() => store.state.collapsed)
-    }
   }
 })
 </script>

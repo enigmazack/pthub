@@ -1,5 +1,4 @@
 <template>
-<a-layout-header>
   <a-row>
     <a-col :span="1">
       <a-button @click="toggleCollapsed">
@@ -30,7 +29,6 @@
     </a-col>
     <a-col :span="10"></a-col>
   </a-row>
-</a-layout-header>
 </template>
 
 <script lang="ts">

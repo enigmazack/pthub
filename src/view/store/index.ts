@@ -1,20 +1,23 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import uiSettings, { UISettings } from './uiSettings'
+import siteData, { SiteData } from './siteData'
 
-export interface GlobalDataProps {
+export interface GlobalData {
   uiSettings: UISettings
+  siteData: SiteData
 }
 
 // eslint-disable-next-line symbol-description
-export const key: InjectionKey<Store<GlobalDataProps>> = Symbol()
+export const key: InjectionKey<Store<GlobalData>> = Symbol()
 
-export const store = createStore<GlobalDataProps>({
+export const store = createStore<GlobalData>({
   modules: {
-    uiSettings
+    uiSettings,
+    siteData
   }
 })
 
-export function useStore ():Store<GlobalDataProps> {
+export function useStore ():Store<GlobalData> {
   return baseUseStore(key)
 }

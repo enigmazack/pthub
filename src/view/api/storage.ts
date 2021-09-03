@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill'
 import { UISettings } from '../store/uiSettings'
+import { SiteData } from '../store/siteData'
 
 class LocalStorage<T> {
   key: string
@@ -8,23 +9,29 @@ class LocalStorage<T> {
   }
 
   async get (): Promise<T|undefined> {
+    let data: T
     try {
-      const data = await browser.storage.local.get(this.key)
-      return data[this.key]
+      const result = await browser.storage.local.get(this.key)
+      data = JSON.parse(result[this.key])
     } catch {
       return undefined
     }
+    return data
   }
 
   async set (data: T): Promise<void> {
-    const value = data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items: any = {}
-    items[this.key] = value
+    // store data as object is vary buggy, use JSON instead
+    items[this.key] = JSON.stringify(data)
     await browser.storage.local.set(items)
   }
 }
 
 const uiSettingsStorage: LocalStorage<UISettings> = new LocalStorage('uiSettings')
+const siteDataStorage: LocalStorage<SiteData> = new LocalStorage('siteData')
 
-export { uiSettingsStorage }
+export {
+  uiSettingsStorage,
+  siteDataStorage
+}

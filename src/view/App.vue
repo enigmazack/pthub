@@ -39,7 +39,9 @@ export default defineComponent({
   },
   setup () {
     const store = useStore()
-    const collapsed = computed(() => store.state.trigger.collapsed)
+    // get collapsed state from extention's local storage
+    store.dispatch('getSiderCollapsed')
+    const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed
     }

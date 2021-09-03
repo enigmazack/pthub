@@ -1,9 +1,9 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
-import trigger, { TriggerProps } from './modules/trigger'
+import uiSettings, { UISettings } from './uiSettings'
 
 export interface GlobalDataProps {
-  trigger: TriggerProps
+  uiSettings: UISettings
 }
 
 // eslint-disable-next-line symbol-description
@@ -11,7 +11,7 @@ export const key: InjectionKey<Store<GlobalDataProps>> = Symbol()
 
 export const store = createStore<GlobalDataProps>({
   modules: {
-    trigger
+    uiSettings
   }
 })
 

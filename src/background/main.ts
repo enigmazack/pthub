@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { sendMessage, onMessage } from 'webext-bridge'
 import browser from 'webextension-polyfill'
-import axios, { AxiosStatic } from 'axios'
-import * as sites from '@/sites'
-import * as $ from 'jquery'
+import sites from '@/sites'
 
 if (import.meta.hot) {
   // @ts-expect-error for background HMR on dev
@@ -17,12 +14,8 @@ browser.browserAction.onClicked.addListener(function () {
 
 declare global {
   interface Window {
-    axios: AxiosStatic,
-    sites: any,
-    $: any
+    sites: any
   }
 }
 
-window.axios = axios
 window.sites = sites
-window.$ = $

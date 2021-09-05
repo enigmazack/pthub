@@ -1,21 +1,37 @@
 <template>
+  <a-button @click="checkSiteStatus">Test</a-button>
   <a-table :columns="columns" :data-source="data">
+    <template #siteTitle>
+      {{ $t('tableHead.site') }}
+    </template>
+    <template #urlTitle>
+      {{ $t('tableHead.url') }}
+    </template>
+    <template #enableTitle>
+      {{ $t('tableHead.enable') }}
+    </template>
+    <template #statusTitle>
+      {{ $t('tableHead.status') }}
+    </template>
     <template #url="{ text }">
-      <a v-bind:href="text" target="_blank">{{ text }}</a>
+      <a :href="text" target="_blank">{{ text }}</a>
     </template>
     <template #enable="{ record }">
-      <SiteSwitch v-bind:site="record.siteKey"/>
+      <SiteSwitch :site="record.siteKey" />
+    </template>
+    <template #status="{ record }">
+      <SiteStatus :site="record.siteKey" />
     </template>
   </a-table>
-  <div>Test hdchina: {{test}}</div>
-  <div><SiteSwitch v-bind:site="testSite"/></div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent } from 'vue'
 import sites from '@/sites'
-import { useStore } from '../store'
 import SiteSwitch from '../components/SiteSwitch.vue'
+import SiteStatus from '../components/SiteStatus.vue'
+import { ColumnProps } from 'ant-design-vue/es/table/interface'
+import { store } from '../store'
 
 interface Data {
   key: string,
@@ -27,15 +43,31 @@ interface Data {
 export default defineComponent({
   name: 'importSites',
   components: {
-    SiteSwitch
+    SiteSwitch,
+    SiteStatus
   },
   setup () {
-    const testSite = 'hdchina'
-    const store = useStore()
-    const test = computed(() => {
-      const enabled = store.state.siteData.enabled.findIndex(s => s === 'hdchina') !== -1
-      return enabled ? 'True' : 'False'
-    })
+    const columns: ColumnProps[] = [
+      {
+        dataIndex: 'siteName',
+        key: 'siteName',
+        slots: { title: 'siteTitle' }
+      },
+      {
+        dataIndex: 'siteUrl',
+        key: 'siteUrl',
+        slots: { title: 'urlTitle', customRender: 'url' }
+      },
+      {
+        key: 'enable',
+        slots: { title: 'enableTitle', customRender: 'enable' }
+      },
+      {
+        key: 'status',
+        slots: { title: 'statusTitle', customRender: 'status' }
+      }
+    ]
+
     const data: Data[] = []
     let dataKey = 1
     for (const siteKey of Object.keys(sites)) {
@@ -48,28 +80,11 @@ export default defineComponent({
       dataKey += 1
     }
 
+    const checkSiteStatus = () => store.dispatch('getSiteStatus')
     return {
-      testSite,
-      test,
       data,
-      columns: [
-        {
-          title: '站点',
-          dataIndex: 'siteName',
-          key: 'siteName'
-        },
-        {
-          title: '地址',
-          dataIndex: 'siteUrl',
-          key: 'siteUrl',
-          slots: { customRender: 'url' }
-        },
-        {
-          title: '启用',
-          key: 'enable',
-          slots: { customRender: 'enable' }
-        }
-      ]
+      columns,
+      checkSiteStatus
     }
   }
 })

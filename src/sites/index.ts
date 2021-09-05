@@ -7,6 +7,9 @@ import hdchina from './hdchina'
 import pterclub from './pterclub'
 import opencd from './opencd'
 import keepfrds from './keepfrds'
+import { ESiteStatus } from './model/enum'
+
+export { ESiteStatus }
 
 interface Sites {
   [key: string]: Site

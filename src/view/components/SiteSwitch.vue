@@ -1,5 +1,5 @@
 <template>
-  <a-switch @click="toggleEnabled" v-bind:checked="checked" />
+  <a-switch @click="toggleEnabled" :checked="checked" />
 </template>
 
 <script lang="ts">
@@ -9,7 +9,7 @@ import { useStore } from '../store'
 export default defineComponent({
   name: 'siteSwitch',
   props: {
-    site: String
+    site: { type: String, required: true }
   },
   setup (props) {
     const store = useStore()

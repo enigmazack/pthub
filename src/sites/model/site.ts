@@ -3,7 +3,8 @@ import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
 import {
   ETorrentCatagory,
-  ETorrentPromotion
+  ETorrentPromotion,
+  ESiteStatus
 } from './enum'
 
 export interface SiteConfig {
@@ -90,6 +91,10 @@ export default class Site {
       this.icon.pathname = 'favicon.ico'
     }
     this.requestCache = []
+  }
+
+  async checkStatus (): Promise<ESiteStatus> {
+    return ESiteStatus.unknow
   }
 
   get<T = any> (url: string, useCache = true): Promise<AxiosResponse<T>> {

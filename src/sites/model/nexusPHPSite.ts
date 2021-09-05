@@ -1,6 +1,7 @@
 import {
   ETorrentCatagory,
-  ETorrentPromotion
+  ETorrentPromotion,
+  ESiteStatus
 } from './enum'
 import Site, {
   UserInfo,
@@ -18,16 +19,16 @@ export default class NexusPHPSite extends Site {
   protected torrentDetailsPath = '/details.php'
   protected torrentDownloadPath = '/download.php'
 
-  async checkConnection (): Promise<string> {
+  async checkStatus (): Promise<ESiteStatus> {
     try {
       let isLogin = false
       const r = await this.get(this.indexPath, false)
       if (r.request && r.request.responseURL) {
         isLogin = r.request.responseURL.match(/index\.php/)
       }
-      return isLogin ? 'connected_with_login' : 'connected_without_login'
+      return isLogin ? ESiteStatus.login : ESiteStatus.logout
     } catch {
-      return 'no_connection'
+      return ESiteStatus.timeout
     }
   }
 

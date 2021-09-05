@@ -1,3 +1,11 @@
+export enum ESiteStatus {
+  login = 'login',
+  logout = 'logout',
+  timeout = 'timeout',
+  connecting = 'connecting',
+  unknow = 'unknow'
+}
+
 export enum ETorrentCatagory {
   movies = 'movies',
   animation = 'animation',

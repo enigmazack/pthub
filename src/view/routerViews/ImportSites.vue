@@ -1,6 +1,19 @@
 <template>
-  <a-button @click="checkSitesStatus">Test</a-button>
   <a-table :columns="columns" :dataSource="dataSource">
+    <template #title>
+      <a-button
+        @click="checkSitesStatus"
+        :disabled="disabled"
+        type="primary"
+        style="margin-left: 12px"
+      >
+        {{ $t('siteStatus.checkAll') }}
+      </a-button>
+      <a-input-search
+        placeholder="input search text"
+        style="width: 200px"
+      />
+    </template>
     <template #siteTitle>
       {{ $t('tableHead.site') }}
     </template>
@@ -52,10 +65,14 @@ export default defineComponent({
     SiteStatus
   },
   setup () {
+    // use vuex store
+    const store = useStore()
+    // set all sites status init value unknow
     const sitesStatus: Ref<SitesStatus> = ref({})
     for (const siteKey of Object.keys(sites)) {
       sitesStatus.value[siteKey] = ESiteStatus.unknow
     }
+    // table data source is a computed props
     const dataSource = computed(() => {
       const sitesdata: SiteDataProps[] = []
       let key = 1
@@ -74,15 +91,6 @@ export default defineComponent({
       }
       return sitesdata
     })
-    const checkSitesStatus = async () => {
-      Object.keys(sitesStatus.value).forEach(async siteKey => {
-        sitesStatus.value[siteKey] = ESiteStatus.connecting
-        const newStatus = await sites[siteKey].checkStatus()
-        sitesStatus.value[siteKey] = newStatus
-      })
-    }
-    // use vuex store
-    const store = useStore()
     // define column properties
     const columns: ColumnProps[] = [
       {
@@ -107,15 +115,41 @@ export default defineComponent({
         slots: { title: 'statusTitle', customRender: 'status' }
       }
     ]
-    // define the enable switch method
+    const disabled = ref(false)
+    // method to check sites status
+    const checkSitesStatus = () => {
+      disabled.value = true
+      // use forEach all sites status check will run asynchronously
+      let counter = 0
+      Object.keys(sitesStatus.value).forEach(async siteKey => {
+        sitesStatus.value[siteKey] = ESiteStatus.connecting
+        const newStatus = await sites[siteKey].checkStatus()
+        sitesStatus.value[siteKey] = newStatus
+        counter += 1
+        if (counter === Object.keys(sitesStatus.value).length) {
+          disabled.value = false
+        }
+      })
+    }
+    // method to toggle site, it's a dispatch of the store
     const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
 
     return {
       dataSource,
       columns,
       toggleEnabled,
-      checkSitesStatus
+      checkSitesStatus,
+      disabled
     }
   }
 })
 </script>
+
+<style>
+span.ant-input-affix-wrapper {
+  border: none;
+  border-bottom: 1px solid #e9e3e3;
+  float: right;
+  margin: 0px 12px
+}
+</style>

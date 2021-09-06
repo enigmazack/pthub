@@ -14,6 +14,7 @@
     "enable": "启用"
   },
   "siteStatus": {
+    "checkAll": "检查所有站点状态",
     "connecting": "连接中...",
     "login": "已登录",
     "logout": "未登录",

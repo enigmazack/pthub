@@ -1,9 +1,24 @@
 <template>
-  <LoadingOutlined v-if="connecting" :style="{color: 'blue'}" />
-  <CheckCircleOutlined v-else-if="login" :style="{color: 'green'}" />
-  <QuestionCircleOutlined v-else-if="unknow" :style="{color: 'gray'}" />
-  <MinusCircleOutlined v-else-if="logout" :style="{color: 'orange'}" />
-  <CloseCircleOutlined v-else-if="timeout" :style="{color: 'red'}" />
+  <div v-if="connecting">
+    <LoadingOutlined :style="{color: 'blue'}" />
+    {{ $t('siteStatus.connecting') }}
+  </div>
+  <div v-else-if="login">
+    <CheckCircleOutlined :style="{color: 'green'}" />
+    {{ $t('siteStatus.login') }}
+  </div>
+  <div v-else-if="unknow">
+    <QuestionCircleOutlined :style="{color: 'gray'}" />
+    {{ $t('siteStatus.unknow') }}
+  </div>
+  <div v-else-if="logout">
+    <MinusCircleOutlined :style="{color: 'orange'}" />
+    {{ $t('siteStatus.logout') }}
+  </div>
+  <div v-else-if="timeout">
+    <CloseCircleOutlined :style="{color: 'red'}" />
+    {{ $t('siteStatus.timeout') }}
+  </div>
 </template>
 
 <script lang = "ts">

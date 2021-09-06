@@ -51,6 +51,7 @@ export default defineComponent({
       {
         dataIndex: 'siteName',
         key: 'siteName',
+        width: 150,
         slots: { title: 'siteTitle' }
       },
       {
@@ -60,10 +61,12 @@ export default defineComponent({
       },
       {
         key: 'enable',
+        width: 150,
         slots: { title: 'enableTitle', customRender: 'enable' }
       },
       {
         key: 'status',
+        width: 150,
         slots: { title: 'statusTitle', customRender: 'status' }
       }
     ]

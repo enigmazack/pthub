@@ -12,5 +12,12 @@
     "url": "地址",
     "status": "状态",
     "enable": "启用"
+  },
+  "siteStatus": {
+    "connecting": "连接中...",
+    "login": "已登录",
+    "logout": "未登录",
+    "unknow": "未知",
+    "timeout": "连接超时"
   }
 }

@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, ref, Ref } from 'vue'
 import sites, { ESiteStatus } from '@/sites'
 import SiteStatus from '../components/SiteStatus.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
@@ -46,17 +46,41 @@ interface SitesStatus {
   [key: string]: ESiteStatus
 }
 
-const sitesStatus: SitesStatus = {}
-for (const siteKey of Object.keys(sites)) {
-  sitesStatus[siteKey] = ESiteStatus.unknow
-}
-
 export default defineComponent({
   name: 'importSites',
   components: {
     SiteStatus
   },
   setup () {
+    const sitesStatus: Ref<SitesStatus> = ref({})
+    for (const siteKey of Object.keys(sites)) {
+      sitesStatus.value[siteKey] = ESiteStatus.unknow
+    }
+    const dataSource = computed(() => {
+      const sitesdata: SiteDataProps[] = []
+      let key = 1
+      for (const siteKey of Object.keys(sites)) {
+        const siteData: SiteDataProps = {
+          key: key.toString(),
+          siteKey,
+          siteName: sites[siteKey].name,
+          siteUrl: sites[siteKey].url.href,
+          siteIcon: sites[siteKey].icon.href,
+          siteStatus: sitesStatus.value[siteKey],
+          siteEnabled: store.state.siteData.enabled.findIndex(s => s === siteKey) !== -1
+        }
+        key += 1
+        sitesdata.push(siteData)
+      }
+      return sitesdata
+    })
+    const checkSitesStatus = async () => {
+      Object.keys(sitesStatus.value).forEach(async siteKey => {
+        sitesStatus.value[siteKey] = ESiteStatus.connecting
+        const newStatus = await sites[siteKey].checkStatus()
+        sitesStatus.value[siteKey] = newStatus
+      })
+    }
     // use vuex store
     const store = useStore()
     // define column properties
@@ -87,44 +111,10 @@ export default defineComponent({
     const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
 
     return {
-      // TODO: this.$store is not declared properly, so expose store to other parts of the component
-      store,
+      dataSource,
       columns,
-      toggleEnabled
-    }
-  },
-  data () {
-    return {
-      sitesStatus
-    }
-  },
-  computed: {
-    dataSource () {
-      const sitesdata: SiteDataProps[] = []
-      let key = 1
-      for (const siteKey of Object.keys(sites)) {
-        const siteData: SiteDataProps = {
-          key: key.toString(),
-          siteKey,
-          siteName: sites[siteKey].name,
-          siteUrl: sites[siteKey].url.href,
-          siteIcon: sites[siteKey].icon.href,
-          siteStatus: this.sitesStatus[siteKey],
-          siteEnabled: this.store.state.siteData.enabled.findIndex(s => s === siteKey) !== -1
-        }
-        key += 1
-        sitesdata.push(siteData)
-      }
-      return sitesdata
-    }
-  },
-  methods: {
-    checkSitesStatus () {
-      Object.keys(this.sitesStatus).forEach(async siteKey => {
-        this.sitesStatus[siteKey] = ESiteStatus.connecting
-        const newStatus = await sites[siteKey].checkStatus()
-        this.sitesStatus[siteKey] = newStatus
-      })
+      toggleEnabled,
+      checkSitesStatus
     }
   }
 })

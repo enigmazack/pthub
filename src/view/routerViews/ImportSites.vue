@@ -87,6 +87,7 @@ export default defineComponent({
     const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
 
     return {
+      // TODO: this.$store is not declared properly, so expose store to other parts of the component
       store,
       columns,
       toggleEnabled

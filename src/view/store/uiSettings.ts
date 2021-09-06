@@ -1,12 +1,12 @@
 import { Module } from 'vuex'
-import { GlobalData } from './index'
+import { RootState } from './index'
 import { uiSettingsStorage } from '../api/storage'
 
-export interface UISettings {
+export interface UISettingsState {
   siderCollapsed: boolean
 }
 
-const uiSettings: Module<UISettings, GlobalData> = {
+const uiSettings: Module<UISettingsState, RootState> = {
   state: {
     siderCollapsed: false
   },

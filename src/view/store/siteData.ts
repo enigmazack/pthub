@@ -1,12 +1,12 @@
 import { Module } from 'vuex'
-import { GlobalData } from './index'
+import { RootState } from './index'
 import { siteDataStorage } from '../api/storage'
 
-export interface SiteData {
+export interface SiteDataState {
   enabled: string[]
 }
 
-const siteData: Module<SiteData, GlobalData> = {
+const siteData: Module<SiteDataState, RootState> = {
   state: {
     enabled: []
   },

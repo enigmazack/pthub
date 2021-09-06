@@ -15,11 +15,13 @@
     "searchSites": "搜索站点"
   },
   "siteStatus": {
-    "checkAll": "检查所有站点状态",
+    "checkAll": "检测所有站点状态",
     "connecting": "连接中...",
     "login": "已登录",
     "logout": "未登录",
     "unknow": "未知",
-    "timeout": "连接超时"
+    "timeout": "连接超时",
+    "retry": "重试",
+    "check": "检测"
   }
 }

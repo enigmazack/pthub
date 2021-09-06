@@ -2,7 +2,7 @@
   <a-table :columns="columns" :dataSource="dataSource">
     <template #title>
       <a-button
-        @click="checkSitesStatus"
+        @click="checkSitesStatus()"
         :disabled="disabled"
         type="primary"
         style="margin: 0px 12px"
@@ -35,6 +35,12 @@
     </template>
     <template #status="{ record }">
       <SiteStatus :status="record.siteStatus" />
+      <a
+        v-if="showRetry(record.siteStatus)"
+        @click="checkSitesStatus(record.siteKey)"
+      >
+        {{ record.siteStatus !== unknow ? $t('siteStatus.retry') : $t('siteStatus.check') }}
+      </a>
     </template>
   </a-table>
 </template>
@@ -127,16 +133,19 @@ export default defineComponent({
     ]
     const disabled = ref(false)
     // method to check sites status
-    const checkSitesStatus = () => {
+    const checkSitesStatus = (siteKey?: string) => {
       disabled.value = true
       // use forEach all sites status check will run asynchronously
       let counter = 0
-      Object.keys(sitesStatus.value).forEach(async siteKey => {
-        sitesStatus.value[siteKey] = ESiteStatus.connecting
-        const newStatus = await sites[siteKey].checkStatus()
-        sitesStatus.value[siteKey] = newStatus
+      const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sitesStatus.value)
+      sitesList.forEach(async siteKey => {
+        if (sitesStatus.value[siteKey] !== ESiteStatus.login) {
+          sitesStatus.value[siteKey] = ESiteStatus.connecting
+          const newStatus = await sites[siteKey].checkStatus()
+          sitesStatus.value[siteKey] = newStatus
+        }
         counter += 1
-        if (counter === Object.keys(sitesStatus.value).length) {
+        if (counter === sitesList.length) {
           disabled.value = false
         }
       })
@@ -144,13 +153,19 @@ export default defineComponent({
     // method to toggle site, it's a dispatch of the store
     const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
 
+    const showRetry = (siteStatus: ESiteStatus) =>
+      siteStatus !== ESiteStatus.login && siteStatus !== ESiteStatus.connecting
+    const unknow = ref(ESiteStatus.unknow)
+
     return {
       searchText,
       dataSource,
       columns,
       toggleEnabled,
       checkSitesStatus,
-      disabled
+      disabled,
+      showRetry,
+      unknow
     }
   }
 })

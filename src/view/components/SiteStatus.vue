@@ -1,21 +1,21 @@
 <template>
-  <div v-if="connecting">
-    <LoadingOutlined :style="{color: 'blue'}" />
+  <div v-if="connecting" class="site-status">
+    <LoadingOutlined :style="{color: 'blue'}" v-if="connecting"/>
     {{ $t('siteStatus.connecting') }}
   </div>
-  <div v-else-if="login">
+  <div v-else-if="login" class="site-status">
     <CheckCircleOutlined :style="{color: 'green'}" />
     {{ $t('siteStatus.login') }}
   </div>
-  <div v-else-if="unknow">
+  <div v-else-if="unknow" class="site-status">
     <QuestionCircleOutlined :style="{color: 'gray'}" />
     {{ $t('siteStatus.unknow') }}
   </div>
-  <div v-else-if="logout">
+  <div v-else-if="logout" class="site-status">
     <MinusCircleOutlined :style="{color: 'orange'}" />
     {{ $t('siteStatus.logout') }}
   </div>
-  <div v-else-if="timeout">
+  <div v-else-if="timeout" class="site-status">
     <CloseCircleOutlined :style="{color: 'red'}" />
     {{ $t('siteStatus.timeout') }}
   </div>
@@ -60,3 +60,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.site-status {
+  float: left;
+  margin-right: 8px;
+}
+</style>

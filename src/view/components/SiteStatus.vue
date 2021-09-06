@@ -31,7 +31,6 @@ import {
   CloseCircleOutlined
 } from '@ant-design/icons-vue'
 import { ESiteStatus } from '@/sites'
-import { useStore } from '../store'
 
 export default defineComponent({
   name: 'siteStatus',
@@ -43,15 +42,14 @@ export default defineComponent({
     CloseCircleOutlined
   },
   props: {
-    site: { type: String, required: true }
+    status: { type: String, required: true }
   },
   setup (props) {
-    const store = useStore()
-    const connecting = computed(() => store.state.siteStatus[props.site] === ESiteStatus.connecting)
-    const login = computed(() => store.state.siteStatus[props.site] === ESiteStatus.login)
-    const unknow = computed(() => store.state.siteStatus[props.site] === ESiteStatus.unknow)
-    const logout = computed(() => store.state.siteStatus[props.site] === ESiteStatus.logout)
-    const timeout = computed(() => store.state.siteStatus[props.site] === ESiteStatus.timeout)
+    const connecting = computed(() => props.status === ESiteStatus.connecting)
+    const login = computed(() => props.status === ESiteStatus.login)
+    const unknow = computed(() => props.status === ESiteStatus.unknow)
+    const logout = computed(() => props.status === ESiteStatus.logout)
+    const timeout = computed(() => props.status === ESiteStatus.timeout)
     return {
       connecting,
       login,

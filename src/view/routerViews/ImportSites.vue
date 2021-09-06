@@ -1,6 +1,6 @@
 <template>
-  <a-button @click="checkSiteStatus">Test</a-button>
-  <a-table :columns="columns" :data-source="data">
+  <a-button @click="checkSitesStatus">Test</a-button>
+  <a-table :columns="columns" :dataSource="dataSource">
     <template #siteTitle>
       {{ $t('tableHead.site') }}
     </template>
@@ -17,36 +17,49 @@
       <a :href="text" target="_blank">{{ text }}</a>
     </template>
     <template #enable="{ record }">
-      <SiteSwitch :site="record.siteKey" />
+      <a-switch @click="toggleEnabled(record.siteKey)" :checked="record.siteEnabled" />
     </template>
     <template #status="{ record }">
-      <SiteStatus :site="record.siteKey" />
+      <SiteStatus :status="record.siteStatus" />
     </template>
   </a-table>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import sites from '@/sites'
-import SiteSwitch from '../components/SiteSwitch.vue'
+import sites, { ESiteStatus } from '@/sites'
 import SiteStatus from '../components/SiteStatus.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
-import { store } from '../store'
+import { useStore } from '../store'
 
-interface Data {
-  key: string,
+interface SiteDataProps {
+  key: string
+  siteKey: string,
   siteName: string,
   siteUrl: string,
-  siteKey: string
+  siteIcon: string
+  siteStatus: ESiteStatus,
+  siteEnabled: boolean
+}
+
+interface SitesStatus {
+  [key: string]: ESiteStatus
+}
+
+const sitesStatus: SitesStatus = {}
+for (const siteKey of Object.keys(sites)) {
+  sitesStatus[siteKey] = ESiteStatus.unknow
 }
 
 export default defineComponent({
   name: 'importSites',
   components: {
-    SiteSwitch,
     SiteStatus
   },
   setup () {
+    // use vuex store
+    const store = useStore()
+    // define column properties
     const columns: ColumnProps[] = [
       {
         dataIndex: 'siteName',
@@ -70,24 +83,47 @@ export default defineComponent({
         slots: { title: 'statusTitle', customRender: 'status' }
       }
     ]
+    // define the enable switch method
+    const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
 
-    const data: Data[] = []
-    let dataKey = 1
-    for (const siteKey of Object.keys(sites)) {
-      data.push({
-        key: dataKey.toString(),
-        siteName: sites[siteKey].name,
-        siteUrl: sites[siteKey].url.href,
-        siteKey
-      })
-      dataKey += 1
-    }
-
-    const checkSiteStatus = () => store.dispatch('getSiteStatus')
     return {
-      data,
+      store,
       columns,
-      checkSiteStatus
+      toggleEnabled
+    }
+  },
+  data () {
+    return {
+      sitesStatus
+    }
+  },
+  computed: {
+    dataSource () {
+      const sitesdata: SiteDataProps[] = []
+      let key = 1
+      for (const siteKey of Object.keys(sites)) {
+        const siteData: SiteDataProps = {
+          key: key.toString(),
+          siteKey,
+          siteName: sites[siteKey].name,
+          siteUrl: sites[siteKey].url.href,
+          siteIcon: sites[siteKey].icon.href,
+          siteStatus: this.sitesStatus[siteKey],
+          siteEnabled: this.store.state.siteData.enabled.findIndex(s => s === siteKey) !== -1
+        }
+        key += 1
+        sitesdata.push(siteData)
+      }
+      return sitesdata
+    }
+  },
+  methods: {
+    checkSitesStatus () {
+      Object.keys(this.sitesStatus).forEach(async siteKey => {
+        this.sitesStatus[siteKey] = ESiteStatus.connecting
+        const newStatus = await sites[siteKey].checkStatus()
+        this.sitesStatus[siteKey] = newStatus
+      })
     }
   }
 })

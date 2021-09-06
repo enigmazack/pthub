@@ -11,7 +11,8 @@
     "site": "站点",
     "url": "地址",
     "status": "状态",
-    "enable": "启用"
+    "enable": "启用",
+    "searchSites": "搜索站点"
   },
   "siteStatus": {
     "checkAll": "检查所有站点状态",

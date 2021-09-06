@@ -5,12 +5,13 @@
         @click="checkSitesStatus"
         :disabled="disabled"
         type="primary"
-        style="margin-left: 12px"
+        style="margin: 0px 12px"
       >
         {{ $t('siteStatus.checkAll') }}
       </a-button>
       <a-input-search
-        placeholder="input search text"
+        v-model:value="searchText"
+        :placeholder="$t('tableHead.searchSites')"
         style="width: 200px"
       />
     </template>
@@ -44,6 +45,7 @@ import sites, { ESiteStatus } from '@/sites'
 import SiteStatus from '../components/SiteStatus.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { useStore } from '../store'
+import _ from 'lodash'
 
 interface SiteDataProps {
   key: string
@@ -65,6 +67,7 @@ export default defineComponent({
     SiteStatus
   },
   setup () {
+    const searchText = ref('')
     // use vuex store
     const store = useStore()
     // set all sites status init value unknow
@@ -74,7 +77,7 @@ export default defineComponent({
     }
     // table data source is a computed props
     const dataSource = computed(() => {
-      const sitesdata: SiteDataProps[] = []
+      const sitesData: SiteDataProps[] = []
       let key = 1
       for (const siteKey of Object.keys(sites)) {
         const siteData: SiteDataProps = {
@@ -87,9 +90,16 @@ export default defineComponent({
           siteEnabled: store.state.siteData.enabled.findIndex(s => s === siteKey) !== -1
         }
         key += 1
-        sitesdata.push(siteData)
+        sitesData.push(siteData)
       }
-      return sitesdata
+      if (searchText.value === '') {
+        return sitesData
+      }
+      // TODO: maybe we want to do some fuzzy search here
+      return _.filter(sitesData, data =>
+        data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
+        data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
+      )
     })
     // define column properties
     const columns: ColumnProps[] = [
@@ -135,6 +145,7 @@ export default defineComponent({
     const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
 
     return {
+      searchText,
       dataSource,
       columns,
       toggleEnabled,

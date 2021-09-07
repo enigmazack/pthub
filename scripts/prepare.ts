@@ -7,7 +7,7 @@ import { r, port, isDev, log } from './utils'
 /**
  * Stub index.html to use Vite in development
  */
-async function stubIndexHtml () {
+async function stubDevIndexHtml () {
   // stub background for dev
   await fs.ensureDir(r('extension/dist/background'))
   let data: string
@@ -27,12 +27,18 @@ async function stubIndexHtml () {
 }
 
 // stub background for build
-async function stubBackgroundHtml (): Promise<void> {
-  let data = await fs.readFile(r('extension/dist/background/index.html'), 'utf-8')
+async function stubBuildIndexHtml (): Promise<void> {
+  let data: string
+  data = await fs.readFile(r('extension/dist/background/index.html'), 'utf-8')
   data = data
     .replace(/\/assets/g, '../assets')
   await fs.writeFile(r('extension/dist/background/index.html'), data, 'utf-8')
   log('PRE', 'stub background')
+  data = await fs.readFile(r('extension/dist/index.html'), 'utf-8')
+  data = data
+    .replace(/\/assets/g, './assets')
+  await fs.writeFile(r('extension/dist/index.html'), data, 'utf-8')
+  log('PRE', 'stub main')
 }
 
 export async function writeManifest (): Promise<void> {
@@ -43,15 +49,15 @@ export async function writeManifest (): Promise<void> {
 writeManifest()
 
 if (isDev) {
-  stubIndexHtml()
+  stubDevIndexHtml()
   chokidar.watch(r('src/**/*.html'))
     .on('change', () => {
-      stubIndexHtml()
+      stubDevIndexHtml()
     })
   chokidar.watch([r('src/manifest.ts'), r('package.json')])
     .on('change', () => {
       writeManifest()
     })
 } else {
-  stubBackgroundHtml()
+  stubBuildIndexHtml()
 }

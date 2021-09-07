@@ -33,21 +33,11 @@ export async function getManifest (): Promise<Manifest.WebExtensionManifest> {
       'activeTab',
       'http://*/',
       'https://*/'
-    ]
+    ],
     // this is required on dev for Vite script to load
-    // content_security_policy: isDev
-    // ? `script-src 'self' http://localhost:${port} 'unsafe-eval'; object-src 'self'`
-    // : 'script-src \'self\' \'unsafe-eval\''
-  }
-
-  if (isDev) {
-    // for content script, as browsers will cache them for each reload,
-    // we use a background script to always inject the latest version
-    // see src/background/contentScriptHMR.ts
-    manifest.permissions?.push('webNavigation')
-
-    // this is required on dev for Vite script to load
-    manifest.content_security_policy = `script-src 'self' http://localhost:${port} 'unsafe-eval'; object-src 'self'`
+    content_security_policy: isDev
+      ? `script-src 'self' http://localhost:${port} 'unsafe-eval'; object-src 'self'`
+      : 'script-src \'self\' \'unsafe-eval\'; object-src \'self\''
   }
 
   return manifest

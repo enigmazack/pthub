@@ -12,7 +12,7 @@
     <a-col :span="9">
     <div style="margin-top: 12px">
     <a-input-group compact>
-      <a-select v-model:value="value2" size='large'>
+      <a-select v-model:value="value2" size='large' style="width: 100px">
         <a-select-option value="Option1">Option1</a-select-option>
         <a-select-option value="Option2">Option2</a-select-option>
       </a-select>

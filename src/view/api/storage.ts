@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill'
-import { UISettings } from '../store/uiSettings'
-import { SiteData } from '../store/siteData'
+import { UISettingsState } from '../store/uiSettings'
+import { SiteDataState } from '../store/siteData'
 
 class LocalStorage<T> {
   key: string
@@ -28,8 +28,8 @@ class LocalStorage<T> {
   }
 }
 
-const uiSettingsStorage: LocalStorage<UISettings> = new LocalStorage('uiSettings')
-const siteDataStorage: LocalStorage<SiteData> = new LocalStorage('siteData')
+const uiSettingsStorage: LocalStorage<UISettingsState> = new LocalStorage('uiSettings')
+const siteDataStorage: LocalStorage<SiteDataState> = new LocalStorage('siteData')
 
 export {
   uiSettingsStorage,

@@ -8,10 +8,12 @@ if (import.meta.hot) {
   import('/@vite/client')
 }
 
+// click the ext icon and open the main app view
 browser.browserAction.onClicked.addListener(function () {
   browser.tabs.create({ url: browser.runtime.getURL('dist/view/index.html') })
 })
 
+// for dev
 declare global {
   interface Window {
     sites: any

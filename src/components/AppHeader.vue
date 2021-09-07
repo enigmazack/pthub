@@ -34,7 +34,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
-import { useStore } from '../store'
+import { useStore } from '@/store'
 
 export default defineComponent({
   name: 'appHeader',

@@ -1,6 +1,6 @@
 import { Module } from 'vuex'
-import { RootState } from './index'
-import { uiSettingsStorage } from '../api/storage'
+import { RootState } from '.'
+import { uiSettingsStorage } from '@/api/storage'
 
 export interface UISettingsState {
   siderCollapsed: boolean

@@ -1,6 +1,6 @@
 import { Module } from 'vuex'
-import { RootState } from './index'
-import { siteDataStorage } from '../api/storage'
+import { RootState } from '.'
+import { siteDataStorage } from '@/api/storage'
 
 export interface SiteDataState {
   enabled: string[]

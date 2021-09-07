@@ -25,8 +25,8 @@
 </template>
 
 <script lang="ts">
-import { SearchOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue'
 import { defineComponent } from 'vue'
+import { SearchOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue'
 
 export default defineComponent({
   name: 'sider',

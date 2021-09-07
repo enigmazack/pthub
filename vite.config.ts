@@ -20,6 +20,7 @@ export default defineConfig(({ command }) => {
     },
     build: {
       outDir: r('extension/dist'),
+      assetsDir: 'assets',
       emptyOutDir: false,
       sourcemap: isDev ? 'inline' : false,
       // https://developer.chrome.com/docs/webstore/program_policies/#:~:text=Code%20Readability%20Requirements
@@ -29,22 +30,13 @@ export default defineConfig(({ command }) => {
       rollupOptions: {
         input: {
           background: r('src/background/index.html'),
-          view: r('src/view/index.html')
+          main: r('src/index.html')
         }
       }
 
     },
     plugins: [
-      vue(),
-      // rewrite assets to use relative path
-      {
-        name: 'assets-rewrite',
-        enforce: 'post',
-        apply: 'build',
-        transformIndexHtml (html) {
-          return html.replace(/"\/assets\//g, '"../assets/')
-        }
-      }
+      vue()
     ],
     define: {
       __VUE_I18N_FULL_INSTALL__: true,

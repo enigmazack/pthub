@@ -47,11 +47,11 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, Ref } from 'vue'
-import sites, { ESiteStatus } from '@/sites'
-import SiteStatus from '../components/SiteStatus.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
-import { useStore } from '../store'
 import _ from 'lodash'
+import sites, { ESiteStatus } from '@/sites'
+import SiteStatus from '@/components/SiteStatus.vue'
+import { useStore } from '@/store'
 
 interface SiteDataProps {
   key: string

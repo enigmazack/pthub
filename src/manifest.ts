@@ -30,11 +30,10 @@ export async function getManifest (): Promise<Manifest.WebExtensionManifest> {
     permissions: [
       'tabs',
       'storage',
-      'activeTab',
       'http://*/',
       'https://*/'
     ],
-    // this is required on dev for Vite script to load
+    // this is required on dev for Vite script to load, unsafe-eval required by antdv
     content_security_policy: isDev
       ? `script-src 'self' http://localhost:${port} 'unsafe-eval'; object-src 'self'`
       : 'script-src \'self\' \'unsafe-eval\'; object-src \'self\''

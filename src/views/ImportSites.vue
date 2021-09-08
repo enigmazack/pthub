@@ -131,6 +131,7 @@ export default defineComponent({
         slots: { title: 'statusTitle', customRender: 'status' }
       }
     ]
+    // disabled the check all sites button
     const disabled = ref(false)
     // method to check sites status
     const checkSitesStatus = (siteKey?: string) => {
@@ -155,7 +156,7 @@ export default defineComponent({
 
     const showRetry = (siteStatus: ESiteStatus) =>
       siteStatus !== ESiteStatus.login && siteStatus !== ESiteStatus.connecting
-    const unknow = ref(ESiteStatus.unknow)
+    const unknow = ESiteStatus.unknow
 
     return {
       searchText,

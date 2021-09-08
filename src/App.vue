@@ -19,7 +19,7 @@
           marginTop: '64px'
         }"
       >
-        <ImportSites />
+        <router-view></router-view>
       </a-layout-content>
       </a-layout>
     </a-layout>
@@ -28,20 +28,18 @@
 import { computed, defineComponent } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import Sider from './components/Sider.vue'
-import ImportSites from './routerViews/ImportSites.vue'
-import { useStore } from './store'
+import { useStore, EActions } from './store'
 export default defineComponent({
   name: 'app',
   components: {
     AppHeader,
-    Sider,
-    ImportSites
+    Sider
   },
   setup () {
     const store = useStore()
     // get state from extention's local storage
-    store.dispatch('getSiderCollapsed')
-    store.dispatch('getEnabledSite')
+    store.dispatch(EActions.initUiSettings, undefined)
+    store.dispatch(EActions.initSiteData, undefined)
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed

@@ -1,4 +1,4 @@
-import Site from './model/site'
+import Site, { UserInfo } from './model/site'
 import ourbits from './ourbits'
 import springsunday from './springsunday'
 import mteam from './mteam'
@@ -9,7 +9,10 @@ import opencd from './opencd'
 import keepfrds from './keepfrds'
 import { ESiteStatus } from './model/enum'
 
-export { ESiteStatus }
+export {
+  ESiteStatus,
+  UserInfo
+}
 
 interface Sites {
   [key: string]: Site

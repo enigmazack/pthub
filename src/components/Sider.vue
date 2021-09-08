@@ -10,7 +10,7 @@
       <template #icon>
         <AppstoreOutlined />
       </template>
-      {{ $t('menu.sites') }}
+      <router-link to="/userData"> {{ $t('menu.sites') }} </router-link>
     </a-menu-item>
     <a-sub-menu key="sub1">
       <template #icon>
@@ -19,7 +19,9 @@
       <template #title>{{ $t('menu.setting') }}</template>
       <a-menu-item key="3">{{ $t('menu.batchSearchSetting') }}</a-menu-item>
       <a-menu-item key="4">{{ $t('menu.customSearchSetting') }}</a-menu-item>
-      <a-menu-item key="5">{{ $t('menu.addSite') }}</a-menu-item>
+      <a-menu-item key="5">
+        <router-link to="/importSites"> {{ $t('menu.importSites') }} </router-link>
+      </a-menu-item>
     </a-sub-menu>
   </a-menu>
 </template>

@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill'
-import { UISettingsState } from '../store/uiSettings'
-import { SiteDataState } from '../store/siteData'
+import { UISettingsState } from './modules/uiSettings'
+import { SiteDataState } from './modules/siteData'
 
 class LocalStorage<T> {
   key: string

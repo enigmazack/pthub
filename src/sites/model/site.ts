@@ -105,7 +105,8 @@ export default class Site {
       }
     }
     const r = axios.get(url, {
-      baseURL: this.url.href
+      baseURL: this.url.href,
+      timeout: 30000
     })
     this.pushToRequestCache(url, r)
     return r
@@ -114,7 +115,8 @@ export default class Site {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   post<T = any> (url: string, data: any): Promise<AxiosResponse<T>> {
     return axios.post(url, data, {
-      baseURL: this.url.href
+      baseURL: this.url.href,
+      timeout: 30000
     })
   }
 

@@ -28,7 +28,8 @@
 import { computed, defineComponent } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import Sider from './components/Sider.vue'
-import { useStore, EActions } from './store'
+import { useStore } from './store'
+import { EActions } from '@/store/enum'
 export default defineComponent({
   name: 'app',
   components: {

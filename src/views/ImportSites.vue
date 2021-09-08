@@ -52,6 +52,7 @@ import _ from 'lodash'
 import sites, { ESiteStatus } from '@/sites'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { useStore } from '@/store'
+import { EActions } from '@/store/enum'
 
 interface SiteDataProps {
   key: string
@@ -152,7 +153,7 @@ export default defineComponent({
       })
     }
     // method to toggle site, it's a dispatch of the store
-    const toggleEnabled = (siteKey: string) => store.dispatch('toggleEnabledSite', { site: siteKey })
+    const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })
 
     const showRetry = (siteStatus: ESiteStatus) =>
       siteStatus !== ESiteStatus.login && siteStatus !== ESiteStatus.connecting

@@ -2,9 +2,6 @@
 import { createStore } from 'vuex'
 import uiSettings, { UISettingsState, UISettingsStore } from './modules/uiSettings'
 import siteData, { SiteDataState, SiteDataStore } from './modules/siteData'
-import { EGetters, EMutations, EActions } from './enum'
-
-export { EGetters, EMutations, EActions }
 
 export interface RootState {
   uiSettings: UISettingsState

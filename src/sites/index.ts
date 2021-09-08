@@ -1,4 +1,4 @@
-import Site, { UserInfo } from './model/site'
+import Site from './model/site'
 import ourbits from './ourbits'
 import springsunday from './springsunday'
 import mteam from './mteam'
@@ -10,8 +10,7 @@ import keepfrds from './keepfrds'
 import { ESiteStatus } from './model/enum'
 
 export {
-  ESiteStatus,
-  UserInfo
+  ESiteStatus
 }
 
 interface Sites {

@@ -9,16 +9,15 @@ import {
   Store
 } from 'vuex'
 import {
-  RootState,
-  EGetters,
   EMutations,
   EActions
-} from '@/store'
+} from '@/store/enum'
+import { RootState } from '@/store'
 import { siteDataStorage } from '@/store/storage'
-import { UserInfo } from '@/sites'
+import { UserInfo } from '@/sites/model/site'
 import _ from 'lodash'
 
-export interface UserData extends UserInfo {
+export interface UserData extends UserInfo{
   siteKey: string,
   recordDate: number
 }
@@ -36,12 +35,9 @@ const state: SiteDataState = {
 
 // getters
 type Getters = {
-  [EGetters.noGetters] (): void
 }
 
 const getters: GetterTree<SiteDataState, RootState> & Getters = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  [EGetters.noGetters] () {}
 }
 
 // mutations

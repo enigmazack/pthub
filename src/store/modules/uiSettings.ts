@@ -9,11 +9,10 @@ import {
   Store
 } from 'vuex'
 import {
-  RootState,
-  EGetters,
   EMutations,
   EActions
-} from '@/store'
+} from '@/store/enum'
+import { RootState } from '@/store'
 import { uiSettingsStorage } from '@/store/storage'
 
 // state
@@ -27,12 +26,9 @@ const state: UISettingsState = {
 
 // getters
 type Getters = {
-  [EGetters.noGetters] (): void
 }
 
 const getters: GetterTree<UISettingsState, RootState> & Getters = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  [EGetters.noGetters] () {}
 }
 
 // mutations

@@ -1,9 +1,7 @@
 export enum EGetters {
-  noGetters = 'noGetters'
 }
 
 export enum EMutations {
-  noMutations = 'noMutations',
   initUiSettings = 'initUiSettings',
   toggleSiderCollapsed = 'toggleSiderCollapsed',
   initSiteData = 'initSiteData',
@@ -12,7 +10,6 @@ export enum EMutations {
 }
 
 export enum EActions {
-  noActions = 'noActions',
   initUiSettings = 'initUiSettings',
   toggleSiderCollapsed = 'toggleSiderCollapsed',
   initSiteData = 'initSiteData',

@@ -3,7 +3,8 @@ export enum ESiteStatus {
   logout = 'logout',
   timeout = 'timeout',
   connecting = 'connecting',
-  unknow = 'unknow'
+  unknow = 'unknow',
+  getUserDatafailed = 'getUserDatafailed'
 }
 
 export enum ETorrentCatagory {

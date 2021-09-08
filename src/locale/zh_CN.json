@@ -32,6 +32,7 @@
     "unknow": "未知",
     "timeout": "连接超时",
     "retry": "重试",
-    "check": "检测"
+    "check": "检测",
+    "refresh": "刷新"
   }
 }

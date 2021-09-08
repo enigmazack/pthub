@@ -178,7 +178,7 @@ export default class NexusPHPSite extends Site {
       }
     } catch (err) {
       console.log(err)
-      return 'failed'
+      return ESiteStatus.getUserDatafailed
     }
   }
 

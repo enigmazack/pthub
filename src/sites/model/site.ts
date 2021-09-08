@@ -97,6 +97,10 @@ export default class Site {
     return ESiteStatus.unknow
   }
 
+  async getUserInfo (): Promise<UserInfo|string> {
+    return ESiteStatus.getUserDatafailed
+  }
+
   get<T = any> (url: string, useCache = true): Promise<AxiosResponse<T>> {
     if (useCache) {
       const requestCache = this.getFromRequestCache(url)

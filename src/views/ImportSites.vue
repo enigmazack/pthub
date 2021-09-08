@@ -36,7 +36,7 @@
     <template #status="{ record }">
       <SiteStatus :status="record.siteStatus" />
       <a
-        v-if="showRetry(record.siteStatus)"
+        v-if="showRefresh(record.siteStatus)"
         @click="checkSitesStatus(record.siteKey)"
       >
         {{ record.siteStatus !== unknow ? $t('siteStatus.retry') : $t('siteStatus.check') }}
@@ -155,7 +155,7 @@ export default defineComponent({
     // method to toggle site, it's a dispatch of the store
     const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })
 
-    const showRetry = (siteStatus: ESiteStatus) =>
+    const showRefresh = (siteStatus: ESiteStatus) =>
       siteStatus !== ESiteStatus.login && siteStatus !== ESiteStatus.connecting
     const unknow = ESiteStatus.unknow
 
@@ -166,7 +166,7 @@ export default defineComponent({
       toggleEnabled,
       checkSitesStatus,
       disabled,
-      showRetry,
+      showRefresh,
       unknow
     }
   }

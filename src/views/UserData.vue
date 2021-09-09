@@ -137,7 +137,7 @@ export default defineComponent({
       }
     ]
     const dataSource = computed(() => {
-      const enabledSites = store.state.siteData.enabled
+      const enabledSites = store.state.siteData.enabledSites
       const storeData = store.state.siteData.userData
       const userData: userDataProps[] = []
       let counter = 1
@@ -172,7 +172,7 @@ export default defineComponent({
     const refreshUserData = (siteKey?: string) => {
       disabled.value = true
       let counter = 0
-      const sitesList: string[] = siteKey ? [siteKey] : store.state.siteData.enabled
+      const sitesList: string[] = siteKey ? [siteKey] : store.state.siteData.enabledSites
       sitesList.forEach(async sKey => {
         sitesStatus.value[sKey] = ESiteStatus.connecting
         const uData = await sites[sKey].getUserInfo()

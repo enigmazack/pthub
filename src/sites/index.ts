@@ -1,17 +1,15 @@
 import Site from './model/site'
-import ourbits from './ourbits'
-import springsunday from './springsunday'
-import mteam from './mteam'
-import lemonhd from './lemonhd'
-import hdchina from './hdchina'
-import pterclub from './pterclub'
-import opencd from './opencd'
-import keepfrds from './keepfrds'
-import { ESiteStatus } from './model/enum'
+import ourbits from './sites/ourbits'
+import springsunday from './sites/springsunday'
+import mteam from './sites/mteam'
+import lemonhd from './sites/lemonhd'
+import hdchina from './sites/hdchina'
+import pterclub from './sites/pterclub'
+import opencd from './sites/opencd'
+import keepfrds from './sites/keepfrds'
 
-export {
-  ESiteStatus
-}
+export { ESiteStatus } from './enum'
+export type { UserInfo } from './types'
 
 interface Sites {
   [key: string]: Site

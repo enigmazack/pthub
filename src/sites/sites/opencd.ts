@@ -1,4 +1,4 @@
-import NexusPHPSite from './model/nexusPHPSite'
+import NexusPHPSite from '../model/nexusPHPSite'
 
 class OpenCD extends NexusPHPSite {
   protected parseUserName (query: JQuery<Document>): string {

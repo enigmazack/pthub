@@ -1,6 +1,6 @@
-import { ETorrentCatagory, ETorrentPromotion } from './model/enum'
-import NexusPHPSite from './model/nexusPHPSite'
-import { SeedingInfo, TorrentPromotion } from './model/site'
+import NexusPHPSite from '../model/nexusPHPSite'
+import { ETorrentCatagory, ETorrentPromotion } from '../enum'
+import type { SeedingInfo, TorrentPromotion } from '../types'
 
 class LHD extends NexusPHPSite {
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {

@@ -1,4 +1,4 @@
-import NexusPHPSite from './model/nexusPHPSite'
+import NexusPHPSite from '../model/nexusPHPSite'
 
 class PTer extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'

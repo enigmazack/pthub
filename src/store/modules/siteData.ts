@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {
   ActionContext,
   ActionTree,
@@ -14,8 +15,7 @@ import {
 } from '@/store/enum'
 import { RootState } from '@/store'
 import { siteDataStorage } from '@/store/storage'
-import { UserInfo } from '@/sites/model/site'
-import _ from 'lodash'
+import { UserInfo } from '@/sites'
 
 export interface UserData extends UserInfo{
   siteKey: string,
@@ -24,12 +24,12 @@ export interface UserData extends UserInfo{
 
 // state
 export interface SiteDataState {
-  enabled: string[],
+  enabledSites: string[],
   userData: UserData[]
 }
 
 const state: SiteDataState = {
-  enabled: [],
+  enabledSites: [],
   userData: []
 }
 
@@ -49,15 +49,15 @@ type Mutations<S = SiteDataState> = {
 
 const mutations: MutationTree<SiteDataState> & Mutations = {
   [EMutations.initSiteData] (state, data) {
-    state.enabled = data.enabled
+    state.enabledSites = data.enabledSites
     state.userData = data.userData
   },
   [EMutations.toggleEnabledSite] (state, site) {
-    const index = state.enabled.findIndex(s => site === s)
+    const index = state.enabledSites.findIndex(s => site === s)
     if (index !== -1) {
-      state.enabled.splice(index, 1)
+      state.enabledSites.splice(index, 1)
     } else {
-      state.enabled.push(site)
+      state.enabledSites.push(site)
     }
   },
   [EMutations.updateUserData] (state, data) {

@@ -2,73 +2,15 @@
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
 import {
-  ETorrentCatagory,
   ETorrentPromotion,
   ESiteStatus
-} from './enum'
-
-export interface SiteConfig {
-  name: string,
-  url: string,
-  icon?: string
-}
-
-export interface RequestCache {
-  url: string,
-  response: Promise<AxiosResponse<any>>
-  time: number
-}
-
-export interface UserInfo {
-  name: string,
-  id?: string,
-  joinDate?: number,
-  upload?: number,
-  download?: number,
-  ratio?: number,
-  userClass?: string,
-  bonus?: number,
-  seeding?: number,
-  seedingSize?: number,
-  seedingList?: string[]
-}
-
-export interface SeedingInfo {
-  seeding: number,
-  seedingSize: number,
-  seedingList?: string[]
-}
-
-export interface TorrentPromotion {
-  status: ETorrentPromotion,
-  type: 'temporary'|'permanent'
-  expire?: number
-}
-
-export interface TorrentInfo {
-  id: string,
-  downloadUrl: string,
-  detailUrl: string,
-  title: string,
-  releaseDate: number,
-  subTitle?: string,
-  catagory?: ETorrentCatagory,
-  size: number,
-  seeders: number,
-  leechers: number,
-  seeding?: boolean,
-  promotion?: TorrentPromotion,
-}
-
-interface SearchConfigParams {
-  [key: string]: string
-}
-
-export interface SearchConfig {
-  path?: string,
-  params?: SearchConfigParams,
-  maxWanted?: number
-}
+} from '../enum'
+import type {
+  UserInfo,
+  SiteConfig,
+  TorrentPromotion,
+  RequestCache
+} from '../types'
 
 export default class Site {
   name: string

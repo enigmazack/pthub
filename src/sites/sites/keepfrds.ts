@@ -1,4 +1,4 @@
-import NexusPHPSite from './model/nexusPHPSite'
+import NexusPHPSite from '../model/nexusPHPSite'
 
 class FRDS extends NexusPHPSite {
   protected parseBonus (query: JQuery<Document>): number {

@@ -1,15 +1,16 @@
+import Site from './site'
 import {
   ETorrentCatagory,
   ETorrentPromotion,
   ESiteStatus
-} from './enum'
-import Site, {
+} from '../enum'
+import {
   UserInfo,
   SeedingInfo,
   SearchConfig,
   TorrentInfo,
   TorrentPromotion
-} from './site'
+} from '../types'
 
 export default class NexusPHPSite extends Site {
   protected indexPath = '/index.php'

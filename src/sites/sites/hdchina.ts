@@ -1,9 +1,6 @@
-import {
-  ETorrentCatagory,
-  ETorrentPromotion
-} from './model/enum'
-import NexusPHPSite from './model/nexusPHPSite'
-import { TorrentPromotion } from './model/site'
+import NexusPHPSite from '../model/nexusPHPSite'
+import { ETorrentCatagory, ETorrentPromotion } from '../enum'
+import type { TorrentPromotion } from '../types'
 
 interface HDCPromotion {
   // eslint-disable-next-line camelcase

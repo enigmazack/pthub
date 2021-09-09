@@ -1,6 +1,6 @@
-import { ETorrentCatagory } from './model/enum'
-import NexusPHPSite from './model/nexusPHPSite'
-import { SeedingInfo } from './model/site'
+import NexusPHPSite from '../model/nexusPHPSite'
+import { ETorrentCatagory } from '../enum'
+import type { SeedingInfo } from '../types'
 
 class MT extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'

@@ -86,7 +86,7 @@ export default defineComponent({
     const dataSource = computed(() => {
       const sitesData: SiteDataProps[] = []
       let key = 1
-      for (const siteKey of Object.keys(sites)) {
+      for (const siteKey in Object.keys(sites)) {
         const siteData: SiteDataProps = {
           key: key.toString(),
           siteKey,
@@ -94,7 +94,7 @@ export default defineComponent({
           siteUrl: sites[siteKey].url.href,
           siteIcon: sites[siteKey].icon.href,
           siteStatus: sitesStatus.value[siteKey],
-          siteEnabled: store.state.siteData.enabled.findIndex(s => s === siteKey) !== -1
+          siteEnabled: store.state.siteData.enabledSites.findIndex(s => s === siteKey) !== -1
         }
         key += 1
         sitesData.push(siteData)

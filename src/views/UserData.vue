@@ -12,6 +12,33 @@
     <template #joinDateTitle> {{ $t('tableHead.joinDate') }} </template>
     <template #recordDateTitle> {{ $t('tableHead.recordDate') }} </template>
     <template #statusTitle> {{ $t('tableHead.status') }} </template>
+    <template #uploadData="{ record }">
+      {{ filesize(record.uploadData).human() }}
+    </template>
+    <template #downloadData="{ record }">
+      {{ filesize(record.downloadData).human() }}
+    </template>
+    <template #seedingSize="{ record }">
+      {{ filesize(record.seedingSize).human() }}
+    </template>
+    <template #ratio="{ record }">
+      {{ record.ratio.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
+    </template>
+    <template #bonus="{ record }">
+      {{ record.bonus.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
+    </template>
+    <template #joinDate="{ record }">
+      <a-tooltip>
+        <template #title> {{ dayjs(record.joinDate).format() }} </template>
+        {{ dayjs(record.joinDate).fromNow() }}
+      </a-tooltip>
+    </template>
+    <template #recordDate="{ record }">
+      <a-tooltip>
+        <template #title> {{ dayjs(record.recordDate).format() }} </template>
+        {{ dayjs(record.recordDate).fromNow() }}
+      </a-tooltip>
+    </template>
     <template #status="{ record }">
       <SiteStatus :status="record.status" />
       <a @click="refreshUserData(record.siteKey)">
@@ -30,6 +57,10 @@ import sites, { ESiteStatus } from '@/sites'
 import _ from 'lodash'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { EActions } from '@/store/enum'
+import filesize from 'file-size'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 interface userDataProps {
   key: string,
@@ -67,68 +98,58 @@ export default defineComponent({
       {
         dataIndex: 'siteName',
         key: 'siteName',
-        width: 100,
         slots: { title: 'siteNameTitle' }
       },
       {
         dataIndex: 'userName',
         key: 'userName',
-        width: 100,
         slots: { title: 'userNameTitle' }
       },
       {
         dataIndex: 'userClass',
         key: 'userClass',
-        // width: 100,
         slots: { title: 'userClassTitle' }
       },
       {
-        dataIndex: 'uploadData',
         key: 'uploadData',
-        width: 100,
-        slots: { title: 'uploadDataTitle' }
+        align: 'right',
+        slots: { title: 'uploadDataTitle', customRender: 'uploadData' }
       },
       {
-        dataIndex: 'downloadData',
-        key: 'download',
-        width: 100,
-        slots: { title: 'downloadDataTitle' }
+        key: 'downloadData',
+        align: 'right',
+        slots: { title: 'downloadDataTitle', customRender: 'downloadData' }
       },
       {
-        dataIndex: 'ratio',
         key: 'ratio',
-        width: 100,
-        slots: { title: 'ratioTitle' }
+        align: 'right',
+        slots: { title: 'ratioTitle', customRender: 'ratio' }
       },
       {
         dataIndex: 'seedingCounts',
         key: 'seedingCounts',
-        width: 100,
+        align: 'right',
         slots: { title: 'seedingCountsTitle' }
       },
       {
-        dataIndex: 'seedingSize',
         key: 'seedingSize',
-        width: 100,
-        slots: { title: 'seedingSizeTitle' }
+        align: 'right',
+        slots: { title: 'seedingSizeTitle', customRender: 'seedingSize' }
       },
       {
-        dataIndex: 'bonus',
         key: 'bonus',
-        width: 100,
-        slots: { title: 'bonusTitle' }
+        align: 'right',
+        slots: { title: 'bonusTitle', customRender: 'bonus' }
       },
       {
-        dataIndex: 'joinDate',
         key: 'joinDate',
-        width: 100,
-        slots: { title: 'joinDateTitle' }
+        align: 'right',
+        slots: { title: 'joinDateTitle', customRender: 'joinDate' }
       },
       {
-        dataIndex: 'recordDate',
         key: 'recordDate',
-        width: 100,
-        slots: { title: 'recordDateTitle' }
+        align: 'right',
+        slots: { title: 'recordDateTitle', customRender: 'recordDate' }
       },
       {
         key: 'status',
@@ -136,6 +157,7 @@ export default defineComponent({
         slots: { title: 'statusTitle', customRender: 'status' }
       }
     ]
+
     const dataSource = computed(() => {
       const enabledSites = store.state.siteData.enabledSites
       const storeData = store.state.siteData.userData
@@ -195,10 +217,17 @@ export default defineComponent({
         }
       })
     }
+
+    // dayjs setting
+    dayjs.locale('zh-cn')
+    dayjs.extend(relativeTime)
+
     return {
       columns,
       dataSource,
-      refreshUserData
+      refreshUserData,
+      filesize,
+      dayjs
     }
   }
 })

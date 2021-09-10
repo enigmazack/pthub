@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@ant-design/icons-vue': ^6.0.1
+  '@types/file-size': ^1.0.1
   '@types/fs-extra': ^9.0.12
   '@types/jquery': ^3.5.6
   '@types/less': ^3.0.3
@@ -15,8 +16,10 @@ specifiers:
   '@vue/eslint-config-typescript': ^7.0.0
   ant-design-vue: ^2.2.6
   axios: ^0.21.1
+  byte-size: ^8.1.0
   chokidar: ^3.5.2
   cross-env: ^7.0.3
+  dayjs: ^1.10.6
   eslint: ^7.32.0
   eslint-plugin-html: ^6.1.2
   eslint-plugin-import: ^2.24.1
@@ -24,6 +27,7 @@ specifiers:
   eslint-plugin-promise: ^5.1.0
   eslint-plugin-vue: ^7.16.0
   esno: ^0.9.1
+  file-size: ^1.0.0
   fs-extra: ^10.0.0
   jquery: ^3.6.0
   kolorist: ^1.5.0
@@ -47,6 +51,9 @@ dependencies:
   '@ant-design/icons-vue': 6.0.1_vue@3.2.4
   ant-design-vue: 2.2.6_a9a95998e5760bedb49fb6f4c004d86c
   axios: 0.21.1
+  byte-size: 8.1.0
+  dayjs: 1.10.6
+  file-size: 1.0.0
   jquery: 3.6.0
   lodash: 4.17.21
   p-queue: 7.1.0
@@ -57,6 +64,7 @@ dependencies:
   webextension-polyfill: 0.8.0
 
 devDependencies:
+  '@types/file-size': 1.0.1
   '@types/fs-extra': 9.0.12
   '@types/jquery': 3.5.6
   '@types/less': 3.0.3
@@ -289,6 +297,10 @@ packages:
 
   /@types/estree/0.0.48:
     resolution: {integrity: sha512-LfZwXoGUDo0C3me81HXgkBg5CTQYb6xzEl+fNmbO4JdRiSKQ8A0GD1OBBvKAIsbCUgoyAty7m99GqqMQe784ew==}
+    dev: true
+
+  /@types/file-size/1.0.1:
+    resolution: {integrity: sha512-jFSF8iZRWGD6trgBC6IfuTSDsEv8IHN5bW7cTO6FxPiS8FKP3kno68fI9FA7m7vV+XpplgV72wROkzigNmWcsg==}
     dev: true
 
   /@types/fs-extra/9.0.12:
@@ -793,6 +805,11 @@ packages:
       fill-range: 7.0.1
     dev: true
 
+  /byte-size/8.1.0:
+    resolution: {integrity: sha512-FkgMTAg44I0JtEaUAvuZTtU2a2YDmBRbQxdsQNSMtLCjhG0hMcF5b1IMN9UjSCJaU4nvlj/GER7B9sI4nKdCgA==}
+    engines: {node: '>=12.17'}
+    dev: false
+
   /call-bind/1.0.2:
     resolution: {integrity: sha512-7O+FbCihrB5WGbFYesctwmTKae6rOiIzmz1icreWJ+0aA7LJfuqhEso2T9ncpcFtzMQtzXf2QGGueWJGTYsqrA==}
     dependencies:
@@ -937,6 +954,10 @@ packages:
 
   /csstype/2.6.17:
     resolution: {integrity: sha512-u1wmTI1jJGzCJzWndZo8mk4wnPTZd1eOIYTYvuEyOQGfmDl3TrabCCfKnOC86FZwW/9djqTl933UF/cS425i9A==}
+    dev: false
+
+  /dayjs/1.10.6:
+    resolution: {integrity: sha512-AztC/IOW4L1Q41A86phW5Thhcrco3xuAA+YX/BLpLWWjRcTj5TOt/QImBLmCKlrF7u7k47arTnOyL6GnbG8Hvw==}
     dev: false
 
   /debug/2.6.9:
@@ -1467,6 +1488,10 @@ packages:
     dependencies:
       flat-cache: 3.0.4
     dev: true
+
+  /file-size/1.0.0:
+    resolution: {integrity: sha1-MzgmfV0ga79g9N9gwZ1+04E6Rlc=}
+    dev: false
 
   /fill-range/7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}

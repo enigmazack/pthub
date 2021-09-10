@@ -43,8 +43,8 @@ export default defineComponent({
   setup () {
     const store = useStore()
     // get state from extention's local storage
-    store.dispatch(EActions.initUiSettings, undefined)
-    store.dispatch(EActions.initSiteData, undefined)
+    store.dispatch(EActions.initUiSettings)
+    store.dispatch(EActions.initSiteData)
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed

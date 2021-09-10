@@ -87,7 +87,7 @@ export type UISettingsStore<S = UISettingsState> = Omit<Store<S>, 'getters' | 'c
 } & {
   dispatch<K extends keyof Actions>(
     key: K,
-    payload: Parameters<Actions[K]>[1],
+    payload?: Parameters<Actions[K]>[1],
     options?: DispatchOptions
   ): ReturnType<Actions[K]>
 } & {

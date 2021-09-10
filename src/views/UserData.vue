@@ -1,5 +1,20 @@
 <template>
   <a-table :columns="columns" :dataSource="dataSource">
+    <template #title>
+      <a-button
+        @click="refreshUserData()"
+        :disabled="disabled"
+        type="primary"
+        style="margin: 0px 12px"
+      >
+        {{ $t('siteStatus.checkAll') }}
+      </a-button>
+      <a-input-search
+        v-model:value="searchText"
+        :placeholder="$t('tableHead.searchSites')"
+        style="width: 200px"
+      />
+    </template>
     <template #siteNameTitle> {{ $t('tableHead.site') }} </template>
     <template #userNameTitle> {{ $t('tableHead.userName') }} </template>
     <template #userClassTitle> {{ $t('tableHead.userClass') }} </template>
@@ -12,6 +27,14 @@
     <template #joinDateTitle> {{ $t('tableHead.joinDate') }} </template>
     <template #recordDateTitle> {{ $t('tableHead.recordDate') }} </template>
     <template #statusTitle> {{ $t('tableHead.status') }} </template>
+    <template #site="{ record }">
+      <a-avatar
+        size="small"
+        :src="record.siteIcon"
+      />
+      <br />
+      <a :href="record.siteUrl" target="_blank"> {{ record.siteName }} </a>
+    </template>
     <template #uploadData="{ record }">
       {{ filesize(record.uploadData).human() }}
     </template>
@@ -29,14 +52,14 @@
     </template>
     <template #joinDate="{ record }">
       <a-tooltip>
-        <template #title> {{ dayjs(record.joinDate).format() }} </template>
-        {{ dayjs(record.joinDate).fromNow() }}
+        <template #title> {{ $dayjs(record.joinDate).format('YYYY-MM-DD HH:mm:ss') }} </template>
+        {{ $dayjs(record.joinDate).fromNow() }}
       </a-tooltip>
     </template>
     <template #recordDate="{ record }">
       <a-tooltip>
-        <template #title> {{ dayjs(record.recordDate).format() }} </template>
-        {{ dayjs(record.recordDate).fromNow() }}
+        <template #title> {{ $dayjs(record.recordDate).format('YYYY-MM-DD HH:mm:ss') }} </template>
+        {{ $dayjs(record.recordDate).fromNow() }}
       </a-tooltip>
     </template>
     <template #status="{ record }">
@@ -58,14 +81,17 @@ import _ from 'lodash'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { EActions } from '@/store/enum'
 import filesize from 'file-size'
-import dayjs from 'dayjs'
-import 'dayjs/locale/zh-cn'
-import relativeTime from 'dayjs/plugin/relativeTime'
+// import dayjs from 'dayjs'
+// import 'dayjs/locale/zh-cn'
+// import relativeTime from 'dayjs/plugin/relativeTime'
+import PQueue from 'p-queue'
 
 interface userDataProps {
   key: string,
   siteKey: string,
   siteName: string,
+  siteUrl: string,
+  siteIcon: string,
   userName: string,
   userClass: string,
   uploadData: number,
@@ -89,6 +115,7 @@ export default defineComponent({
     SiteStatus
   },
   setup () {
+    const searchText = ref('')
     const store = useStore()
     const sitesStatus: Ref<SitesStatus> = ref({})
     for (const siteKey of Object.keys(sites)) {
@@ -96,9 +123,9 @@ export default defineComponent({
     }
     const columns: ColumnProps[] = [
       {
-        dataIndex: 'siteName',
-        key: 'siteName',
-        slots: { title: 'siteNameTitle' }
+        key: 'site',
+        align: 'center',
+        slots: { title: 'siteNameTitle', customRender: 'site' }
       },
       {
         dataIndex: 'userName',
@@ -171,6 +198,8 @@ export default defineComponent({
             key: counter.toString(),
             siteKey,
             siteName: site.name,
+            siteUrl: site.url.href,
+            siteIcon: site.icon.href,
             userName: uData ? uData.name : '',
             userClass: uData && uData.userClass ? uData.userClass : '',
             uploadData: uData && uData.upload ? uData.upload : NaN,
@@ -187,17 +216,26 @@ export default defineComponent({
           counter += 1
         }
       })
-      return userData
+      if (searchText.value === '') {
+        return userData
+      }
+      return _.filter(userData, data =>
+        data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
+        data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
+      )
     })
 
     const disabled = ref(false)
     const refreshUserData = (siteKey?: string) => {
       disabled.value = true
-      let counter = 0
       const sitesList: string[] = siteKey ? [siteKey] : store.state.siteData.enabledSites
+      const queue = new PQueue({ concurrency: 3 })
+      let counter = 0
       sitesList.forEach(async sKey => {
-        sitesStatus.value[sKey] = ESiteStatus.connecting
-        const uData = await sites[sKey].getUserInfo()
+        const uData = await queue.add(() => {
+          sitesStatus.value[sKey] = ESiteStatus.connecting
+          return sites[sKey].getUserInfo()
+        })
         if (typeof uData === 'string') {
           // TODO: more getUserInfo() retruns of ESiteStatus
           sitesStatus.value[sKey] = ESiteStatus.timeout
@@ -219,16 +257,27 @@ export default defineComponent({
     }
 
     // dayjs setting
-    dayjs.locale('zh-cn')
-    dayjs.extend(relativeTime)
+    // dayjs.locale('zh-cn')
+    // dayjs.extend(relativeTime)
 
     return {
       columns,
       dataSource,
       refreshUserData,
       filesize,
-      dayjs
+      // dayjs,
+      disabled,
+      searchText
     }
   }
 })
 </script>
+
+<style>
+span.ant-input-affix-wrapper {
+  border: none;
+  border-bottom: 1px solid #e9e3e3;
+  float: right;
+  margin: 0px 12px
+}
+</style>

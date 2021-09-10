@@ -6,12 +6,21 @@ import i18n from './i18n'
 import { store } from './store'
 import router from './router'
 import * as sites from './sites'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-createApp(App)
-  .use(Antd)
+const app = createApp(App)
+
+app.use(Antd)
   .use(i18n)
   .use(store)
   .use(router)
-  .mount('#app')
+
+dayjs.locale('zh-cn')
+dayjs.extend(relativeTime)
+app.config.globalProperties.$dayjs = dayjs
+
+app.mount('#app')
 
 window.sites = sites

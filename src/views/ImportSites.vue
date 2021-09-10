@@ -156,32 +156,6 @@ export default defineComponent({
           disabled.value = false
         }
       })
-      /* Array(3).fill(undefined).forEach(async () => {
-        while (sitesList.length > 0) {
-          siteKey = sitesList.pop()
-          if (siteKey && sitesStatus.value[siteKey] !== ESiteStatus.login) {
-            sitesStatus.value[siteKey] = ESiteStatus.connecting
-            const newStatus = await sites[siteKey].checkStatus()
-            sitesStatus.value[siteKey] = newStatus
-          }
-          counter += 1
-          if (counter === sitesList.length) {
-            disabled.value = false
-          }
-        }
-      }) */
-      /* let counter = 0
-      sitesList.forEach(async siteKey => {
-        if (sitesStatus.value[siteKey] !== ESiteStatus.login) {
-          sitesStatus.value[siteKey] = ESiteStatus.connecting
-          const newStatus = await sites[siteKey].checkStatus()
-          sitesStatus.value[siteKey] = newStatus
-        }
-        counter += 1
-        if (counter === sitesList.length) {
-          disabled.value = false
-        }
-      }) */
     }
     // method to toggle site, it's a dispatch of the store
     const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })

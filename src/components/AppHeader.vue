@@ -1,12 +1,12 @@
 <template>
-  <a-row>
+  <a-row type="flex">
     <a-col :span="1">
       <a-button @click="toggleCollapsed" shape='circle' :style="{marginLeft: '10px'}">
         <MenuUnfoldOutlined v-if="collapsed" />
         <MenuFoldOutlined v-else />
       </a-button>
     </a-col>
-    <a-col :span="4" class="app_name">
+    <a-col :span="4" :style="{ fontSize: '24px', color: 'white'}">
       PT hub
     </a-col>
     <a-col :span="9">
@@ -27,25 +27,31 @@
     </a-input-group>
     </div>
     </a-col>
-    <a-col :span="10"></a-col>
+    <a-dropdown :style="{ float: 'right'}">
+      <a-button>
+        <GlobalOutlined />
+      </a-button>
+    </a-dropdown>
   </a-row>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import { MenuUnfoldOutlined, MenuFoldOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import { useStore } from '@/store'
+import { EActions } from '@/store/enum'
 
 export default defineComponent({
   name: 'appHeader',
   components: {
     MenuUnfoldOutlined,
-    MenuFoldOutlined
+    MenuFoldOutlined,
+    GlobalOutlined
   },
   setup () {
     const store = useStore()
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
-    const toggleCollapsed = () => store.dispatch('toggleSiderCollapsed')
+    const toggleCollapsed = () => store.dispatch(EActions.toggleSiderCollapsed)
     return {
       collapsed,
       toggleCollapsed
@@ -65,10 +71,6 @@ export default defineComponent({
 </script>
 
 <style>
-.app_name {
-  font-size: 24px;
-  color: white;
-}
 .search {
   margin-top: 12px;
 }

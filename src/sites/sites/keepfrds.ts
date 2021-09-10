@@ -14,7 +14,8 @@ class FRDS extends NexusPHPSite {
 
 const keepfrds = new FRDS({
   name: 'Keepfrds',
-  url: 'https://pt.keepfrds.com/'
+  url: 'https://pt.keepfrds.com/',
+  icon: '/static/favicon-64x64.png'
 })
 
 export default keepfrds

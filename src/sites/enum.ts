@@ -4,7 +4,9 @@ export enum ESiteStatus {
   timeout = 'timeout',
   connecting = 'connecting',
   unknow = 'unknow',
-  getUserDatafailed = 'getUserDatafailed'
+  error = 'error',
+  getUserDatafailed = 'getUserDatafailed',
+  getUserIdfailed = 'getUserIdfailed'
 }
 
 export enum ETorrentCatagory {

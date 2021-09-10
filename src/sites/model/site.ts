@@ -36,65 +36,31 @@ export default class Site {
   }
 
   async checkStatus (): Promise<ESiteStatus> {
-    return ESiteStatus.unknow
+    return ESiteStatus.error
   }
 
   async getUserInfo (): Promise<UserInfo|string> {
     return ESiteStatus.getUserDatafailed
   }
 
-  get<T = any> (url: string, useCache = true): Promise<AxiosResponse<T>> {
-    if (useCache) {
-      const requestCache = this.getFromRequestCache(url)
-      if (requestCache) {
-        return requestCache.response
-      }
-    }
+  get (url: string): Promise<AxiosResponse<any>> {
     const r = axios.get(url, {
       baseURL: this.url.href,
-      timeout: 30000
+      timeout: 10000
     })
-    this.pushToRequestCache(url, r)
     return r
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  post<T = any> (url: string, data: any): Promise<AxiosResponse<T>> {
+  post (url: string, data: any): Promise<AxiosResponse<any>> {
     return axios.post(url, data, {
       baseURL: this.url.href,
-      timeout: 30000
+      timeout: 10000
     })
   }
 
   protected cleanRequestCache (): void {
     this.requestCache = []
-  }
-
-  private pushToRequestCache (url: string, response: Promise<AxiosResponse<any>>) {
-    const time = Date.now()
-    for (let i = 0; i < this.requestCache.length; i++) {
-      const cache = this.requestCache[i]
-      if (cache.url === url) {
-        this.requestCache.splice(i, 1)
-        break
-      }
-    }
-    const l = this.requestCache.unshift({ url, response, time })
-    // cache only 10 request history
-    if (l > 10) {
-      this.requestCache.pop()
-    }
-  }
-
-  private getFromRequestCache (url: string): RequestCache | null {
-    const now = Date.now()
-    for (let i = 0; i < this.requestCache.length; i++) {
-      const cache = this.requestCache[i]
-      if (cache.url === url && now - cache.time < 10 * 60 * 1000) {
-        return cache
-      }
-    }
-    return null
   }
 
   protected parseHTML (page: string): JQuery<Document> {

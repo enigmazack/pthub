@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import axios from 'axios'
 import browser from 'webextension-polyfill'
 import sites from '@/sites'
 
@@ -16,8 +17,10 @@ browser.browserAction.onClicked.addListener(function () {
 // for dev
 declare global {
   interface Window {
-    sites: any
+    sites: any,
+    axios: any
   }
 }
 
 window.sites = sites
+window.axios = axios

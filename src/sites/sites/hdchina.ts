@@ -20,12 +20,21 @@ interface HDCPromotionData {
 class HDC extends NexusPHPSite {
   protected userTorrentPath = '/ajax_getusertorrentlist.php'
   protected promotionPath = '/ajax_promotion.php'
+  protected csrf = ''
 
-  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
-    // get x-csrf fire from index
+  protected async getCsrf (): Promise<string> {
+    if (this.csrf) {
+      return this.csrf
+    }
     const rIndex = await this.get(this.indexPath)
     const qIndex = this.parseHTML(rIndex.data)
     const csrf = qIndex.find('meta[name="x-csrf"]').attr('content') || ''
+    this.csrf = csrf
+    return csrf
+  }
+
+  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
+    const csrf = await this.getCsrf()
     // hdc use a post request to get seeding torrent info
     const params = new URLSearchParams()
     params.append('userid', id)

@@ -86,7 +86,7 @@ export default defineComponent({
     const dataSource = computed(() => {
       const sitesData: SiteDataProps[] = []
       let key = 1
-      for (const siteKey in Object.keys(sites)) {
+      for (const siteKey of Object.keys(sites)) {
         const siteData: SiteDataProps = {
           key: key.toString(),
           siteKey,

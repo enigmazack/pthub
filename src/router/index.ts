@@ -5,13 +5,19 @@ const routes: Array<RouteRecordRaw> = [
     path: '/importSites',
     name: 'ImportSites',
     // which is lazy-loaded when the route is visited.
-    component: () => import('../views/ImportSites.vue')
+    component: () => import('../views/ImportSites.vue'),
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/userData',
     name: 'UserData',
     // which is lazy-loaded when the route is visited.
-    component: () => import('../views/UserData.vue')
+    component: () => import('../views/UserData.vue'),
+    meta: {
+      keepAlive: true
+    }
   }
 ]
 

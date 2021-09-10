@@ -13,6 +13,7 @@ import {
 } from '../types'
 
 export default class NexusPHPSite extends Site {
+  protected userId = ''
   protected indexPath = '/index.php'
   protected userPath = '/userdetails.php'
   protected userTorrentPath = '/getusertorrentlistajax.php'
@@ -23,23 +24,83 @@ export default class NexusPHPSite extends Site {
   async checkStatus (): Promise<ESiteStatus> {
     try {
       let isLogin = false
-      const r = await this.get(this.indexPath, false)
+      const r = await this.get(this.indexPath)
       if (r.request && r.request.responseURL) {
         isLogin = r.request.responseURL.match(/index\.php/)
       }
       return isLogin ? ESiteStatus.login : ESiteStatus.logout
-    } catch {
-      return ESiteStatus.timeout
+    } catch (error) {
+      if (error.message && error.message.includes('timeout')) {
+        return ESiteStatus.timeout
+      }
+      return ESiteStatus.error
     }
   }
 
-  async getUserId (): Promise<string> {
+  async getUserId (): Promise<string|ESiteStatus> {
+    if (this.userId) {
+      return this.userId
+    }
     try {
       const r = await this.get(this.indexPath)
-      const id = r.data.match(/userdetails\.php\?id=(\d+)/)[1]
+      const idMatch = r.data.match(/userdetails\.php\?id=(\d+)/)
+      const id = idMatch ? idMatch[1] : ''
+      this.userId = id
       return id
-    } catch {
-      return 'unknow'
+    } catch (error) {
+      if (error.message && error.message.includes('timeout')) {
+        return ESiteStatus.timeout
+      }
+      console.log(error)
+      return ''
+    }
+  }
+
+  async getUserInfo (): Promise<UserInfo|ESiteStatus> {
+    const id = await this.getUserId()
+    if (!id) {
+      return ESiteStatus.getUserIdfailed
+    }
+    if (id === ESiteStatus.timeout) {
+      return ESiteStatus.timeout
+    }
+    try {
+      const url = new URL(this.url.href)
+      url.pathname = this.userPath
+      url.searchParams.set('id', id)
+      const r = await this.get(url.pathname + url.search)
+      const query = this.parseHTML(r.data)
+      // user name
+      const name = this.parseUserName(query)
+      // join date
+      const joinDate = this.parseJoinDate(query)
+      // upload download ratio
+      const upload = this.parseUpload(query)
+      const download = this.parseDownload(query)
+      const ratio = upload / download
+      // user class
+      const userClass = this.parseUserClass(query)
+      // bonus
+      const bonus = this.parseBonus(query)
+      // seeding size list
+      const seedingInfo = await this.getSeedingInfo(id)
+      return {
+        name,
+        id,
+        joinDate,
+        upload,
+        download,
+        ratio,
+        bonus,
+        userClass,
+        ...seedingInfo
+      }
+    } catch (error) {
+      if (error.message && error.message.includes('timeout')) {
+        return ESiteStatus.timeout
+      }
+      console.log(error)
+      return ESiteStatus.getUserDatafailed
     }
   }
 
@@ -142,45 +203,6 @@ export default class NexusPHPSite extends Site {
       seedingSize += torrentSizeThis
     }
     return { seeding, seedingSize, seedingList }
-  }
-
-  async getUserInfo (): Promise<UserInfo|string> {
-    try {
-      const id = await this.getUserId()
-      const url = new URL(this.url.href)
-      url.pathname = this.userPath
-      url.searchParams.set('id', id)
-      const r = await this.get(url.pathname + url.search)
-      const query = this.parseHTML(r.data)
-      // user name
-      const name = this.parseUserName(query)
-      // join date
-      const joinDate = this.parseJoinDate(query)
-      // upload download ratio
-      const upload = this.parseUpload(query)
-      const download = this.parseDownload(query)
-      const ratio = upload / download
-      // user class
-      const userClass = this.parseUserClass(query)
-      // bonus
-      const bonus = this.parseBonus(query)
-      // seeding size list
-      const seedingInfo = await this.getSeedingInfo(id)
-      return {
-        name,
-        id,
-        joinDate,
-        upload,
-        download,
-        ratio,
-        bonus,
-        userClass,
-        ...seedingInfo
-      }
-    } catch (err) {
-      console.log(err)
-      return ESiteStatus.getUserDatafailed
-    }
   }
 
   protected parseTorrentCatagoryKey (query: JQuery<HTMLElement>): string|undefined {

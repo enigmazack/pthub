@@ -19,7 +19,11 @@
           marginTop: '64px'
         }"
       >
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
       </a-layout-content>
       </a-layout>
     </a-layout>

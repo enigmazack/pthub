@@ -53,6 +53,7 @@ import sites, { ESiteStatus } from '@/sites'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { useStore } from '@/store'
 import { EActions } from '@/store/enum'
+import PQueue from 'p-queue'
 
 interface SiteDataProps {
   key: string
@@ -136,10 +137,40 @@ export default defineComponent({
     const disabled = ref(false)
     // method to check sites status
     const checkSitesStatus = (siteKey?: string) => {
+      // disable the button when checking
       disabled.value = true
-      // use forEach all sites status check will run asynchronously
-      let counter = 0
       const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sitesStatus.value)
+      // use p-queue to contral concurrency async functions
+      const queue = new PQueue({ concurrency: 3 })
+      let counter = 0
+      sitesList.forEach(async siteKey => {
+        if (sitesStatus.value[siteKey] !== ESiteStatus.login) {
+          const newStatus = await queue.add(() => {
+            sitesStatus.value[siteKey] = ESiteStatus.connecting
+            return sites[siteKey].checkStatus()
+          })
+          sitesStatus.value[siteKey] = newStatus
+        }
+        counter += 1
+        if (counter === sitesList.length) {
+          disabled.value = false
+        }
+      })
+      /* Array(3).fill(undefined).forEach(async () => {
+        while (sitesList.length > 0) {
+          siteKey = sitesList.pop()
+          if (siteKey && sitesStatus.value[siteKey] !== ESiteStatus.login) {
+            sitesStatus.value[siteKey] = ESiteStatus.connecting
+            const newStatus = await sites[siteKey].checkStatus()
+            sitesStatus.value[siteKey] = newStatus
+          }
+          counter += 1
+          if (counter === sitesList.length) {
+            disabled.value = false
+          }
+        }
+      }) */
+      /* let counter = 0
       sitesList.forEach(async siteKey => {
         if (sitesStatus.value[siteKey] !== ESiteStatus.login) {
           sitesStatus.value[siteKey] = ESiteStatus.connecting
@@ -150,7 +181,7 @@ export default defineComponent({
         if (counter === sitesList.length) {
           disabled.value = false
         }
-      })
+      }) */
     }
     // method to toggle site, it's a dispatch of the store
     const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })

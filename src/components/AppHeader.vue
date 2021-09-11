@@ -2,11 +2,11 @@
   <a-row type="flex" justify="space-between">
     <a-col>
       <a-space size="middle">
-        <div :style="{ fontSize: '24px', color: 'white'}">
+        <div class="header-element">
           <MenuUnfoldOutlined v-if="collapsed" @click="toggleCollapsed"/>
           <MenuFoldOutlined v-else @click="toggleCollapsed"/>
         </div>
-        <div :style="{ fontSize: '24px', color: 'white'}">PT hub</div>
+        <div class="header-element">PT hub</div>
       </a-space>
     </a-col>
     <a-col :pull= "2" :span="8">
@@ -26,11 +26,13 @@
       </a-input>
     </a-col>
     <a-col>
-    <a-dropdown>
-      <a-button shape='circle'>
-        <GlobalOutlined />
-      </a-button>
-    </a-dropdown>
+      <a-space size="middle">
+        <div class="header-element">
+          <a-dropdown>
+            <GlobalOutlined/>
+          </a-dropdown>
+        </div>
+      </a-space>
     </a-col>
   </a-row>
 </template>
@@ -73,5 +75,9 @@ export default defineComponent({
 <style>
 span.ant-input-group-wrapper {
   vertical-align: middle
+}
+div.header-element {
+  font-size: 24px;
+  color: white
 }
 </style>

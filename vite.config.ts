@@ -52,7 +52,7 @@ export default defineConfig(({ command }) => {
       preprocessorOptions: {
         less: {
           modifyVars: {
-            aliyunTheme
+            ...aliyunTheme
             // 'layout-header-padding': '0 10px'
           },
           javascriptEnabled: true

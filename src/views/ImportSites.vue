@@ -7,7 +7,7 @@
         type="primary"
         style="margin: 0px 12px"
       >
-        {{ $t('siteStatus.checkAll') }}
+        {{ $t('button.checkAll') }}
       </a-button>
       <a-input-search
         v-model:value="searchText"

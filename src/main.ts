@@ -10,6 +10,12 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
+declare module 'vue' {
+  export interface ComponentCustomProperties {
+    $dayjs: typeof dayjs
+ }
+}
+
 const app = createApp(App)
 
 app.use(Antd)

@@ -24,8 +24,7 @@
     "joinDate": "入站时间",
     "recordDate": "记录时间"
   },
-  "siteStatus": {
-    "checkAll": "检测所有站点状态",
+  "siteStatus": {    
     "connecting": "连接中...",
     "login": "已登录",
     "logout": "未登录",
@@ -34,5 +33,9 @@
     "retry": "重试",
     "check": "检测",
     "refresh": "刷新"
+  },
+  "button": {
+    "checkAll": "检测所有站点状态",
+    "refreshAll": "刷新所有站点数据"
   }
 }

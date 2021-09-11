@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@ant-design/aliyun-theme': ^0.0.4
   '@ant-design/icons-vue': ^6.0.1
   '@types/file-size': ^1.0.1
   '@types/fs-extra': ^9.0.12
@@ -48,6 +49,7 @@ specifiers:
   webextension-polyfill: ^0.8.0
 
 dependencies:
+  '@ant-design/aliyun-theme': 0.0.4
   '@ant-design/icons-vue': 6.0.1_vue@3.2.4
   ant-design-vue: 2.2.6_a9a95998e5760bedb49fb6f4c004d86c
   axios: 0.21.1
@@ -97,6 +99,10 @@ devDependencies:
   vue-tsc: 0.2.3_typescript@4.3.5
 
 packages:
+
+  /@ant-design/aliyun-theme/0.0.4:
+    resolution: {integrity: sha512-3yRoMxXcGoivZPhhR3IS9xPLqRNgKGiHhsiEr16F3AmAGHgWPlBPB5ukyerTXnS3zkbawXW+XposoQ2ORwGuHw==}
+    dev: false
 
   /@ant-design/colors/5.1.1:
     resolution: {integrity: sha512-Txy4KpHrp3q4XZdfgOBqLl+lkQIc3tEvHXOimRN1giX1AEC7mGtyrO9p8iRGJ3FLuVMGa2gNEzQyghVymLttKQ==}

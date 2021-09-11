@@ -1,37 +1,37 @@
 <template>
-  <a-row type="flex">
-    <a-col :span="1">
-      <a-button @click="toggleCollapsed" shape='circle' :style="{marginLeft: '10px'}">
-        <MenuUnfoldOutlined v-if="collapsed" />
-        <MenuFoldOutlined v-else />
-      </a-button>
+  <a-row type="flex" justify="space-between">
+    <a-col>
+      <a-space size="middle">
+        <div :style="{ fontSize: '24px', color: 'white'}">
+          <MenuUnfoldOutlined v-if="collapsed" @click="toggleCollapsed"/>
+          <MenuFoldOutlined v-else @click="toggleCollapsed"/>
+        </div>
+        <div :style="{ fontSize: '24px', color: 'white'}">PT hub</div>
+      </a-space>
     </a-col>
-    <a-col :span="4" :style="{ fontSize: '24px', color: 'white'}">
-      PT hub
-    </a-col>
-    <a-col :span="9">
-    <div style="margin-top: 12px">
-    <a-input-group compact>
-      <a-select v-model:value="value2" size='large' style="width: 100px">
-        <a-select-option value="Option1">Option1</a-select-option>
-        <a-select-option value="Option2">Option2</a-select-option>
-      </a-select>
-      <a-input-search
-        style="width: 80%"
-        size='large'
+    <a-col :pull= "2" :span="8">
+      <a-input
         v-model:value="value"
-        placeholder="input search text"
-        enter-button
-        @search="onSearch"
-      />
-    </a-input-group>
-    </div>
+        placeholder="搜索"
+        size="large"
+      >
+      <template #addonAfter>
+          <a-select style="width: 80px">
+            <a-select-option value=".com">.com</a-select-option>
+            <a-select-option value=".jp">.jp</a-select-option>
+            <a-select-option value=".cn">.cn</a-select-option>
+            <a-select-option value=".org">.org</a-select-option>
+          </a-select>
+        </template>
+      </a-input>
     </a-col>
-    <a-dropdown :style="{ float: 'right'}">
-      <a-button>
+    <a-col>
+    <a-dropdown>
+      <a-button shape='circle'>
         <GlobalOutlined />
       </a-button>
     </a-dropdown>
+    </a-col>
   </a-row>
 </template>
 
@@ -71,7 +71,7 @@ export default defineComponent({
 </script>
 
 <style>
-.search {
-  margin-top: 12px;
+span.ant-input-group-wrapper {
+  vertical-align: middle
 }
 </style>

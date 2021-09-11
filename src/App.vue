@@ -1,6 +1,6 @@
 <template>
   <a-layout>
-    <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
+    <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', padding: '0px 20px' }">
       <AppHeader />
     </a-layout-header>
     <a-layout>

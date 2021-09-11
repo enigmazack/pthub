@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { port, isDev, r } from './scripts/utils'
+import aliyunTheme from '@ant-design/aliyun-theme'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -51,7 +52,8 @@ export default defineConfig(({ command }) => {
       preprocessorOptions: {
         less: {
           modifyVars: {
-            'layout-header-padding': '0 10px'
+            aliyunTheme
+            // 'layout-header-padding': '0 10px'
           },
           javascriptEnabled: true
         }

@@ -37,6 +37,8 @@
   },
   "button": {
     "checkAll": "检测所有站点状态",
-    "refreshAll": "刷新所有站点数据"
+    "refreshAll": "刷新所有站点数据",
+    "refreshUserData": "刷新用户数据",
+    "vistSite": "访问站点"
   }
 }

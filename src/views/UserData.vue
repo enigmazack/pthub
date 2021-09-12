@@ -6,68 +6,61 @@
         :disabled="disabled"
         type="primary"
         style="margin: 0px 12px"
-      >
-        {{ $t('button.refreshAll') }}
-      </a-button>
+      >{{ $t('button.refreshAll') }}</a-button>
       <a-input-search
         v-model:value="searchText"
         :placeholder="$t('tableHead.searchSites')"
         style="width: 200px"
       />
     </template>
-    <template #siteNameTitle> {{ $t('tableHead.site') }} </template>
-    <template #userNameTitle> {{ $t('tableHead.userName') }} </template>
-    <template #userClassTitle> {{ $t('tableHead.userClass') }} </template>
-    <template #uploadDataTitle> {{ $t('tableHead.uploadData') }} </template>
-    <template #downloadDataTitle> {{ $t('tableHead.downloadData') }} </template>
-    <template #ratioTitle> {{ $t('tableHead.ratio') }} </template>
-    <template #seedingCountsTitle> {{ $t('tableHead.seedingCounts') }} </template>
-    <template #seedingSizeTitle> {{ $t('tableHead.seedingSize') }} </template>
-    <template #bonusTitle> {{ $t('tableHead.bonus') }} </template>
-    <template #joinDateTitle> {{ $t('tableHead.joinDate') }} </template>
-    <template #recordDateTitle> {{ $t('tableHead.recordDate') }} </template>
-    <template #statusTitle> {{ $t('tableHead.status') }} </template>
+    <template #siteNameTitle>{{ $t('tableHead.site') }}</template>
+    <template #userNameTitle>{{ $t('tableHead.userName') }}</template>
+    <template #userClassTitle>{{ $t('tableHead.userClass') }}</template>
+    <template #uploadDataTitle>{{ $t('tableHead.uploadData') }}</template>
+    <template #downloadDataTitle>{{ $t('tableHead.downloadData') }}</template>
+    <template #ratioTitle>{{ $t('tableHead.ratio') }}</template>
+    <template #seedingCountsTitle>{{ $t('tableHead.seedingCounts') }}</template>
+    <template #seedingSizeTitle>{{ $t('tableHead.seedingSize') }}</template>
+    <template #bonusTitle>{{ $t('tableHead.bonus') }}</template>
+    <template #joinDateTitle>{{ $t('tableHead.joinDate') }}</template>
+    <template #recordDateTitle>{{ $t('tableHead.recordDate') }}</template>
+    <template #statusTitle>{{ $t('tableHead.status') }}</template>
     <template #site="{ record }">
-      <a-button
-        @click="refreshUserData(record.siteKey)"
-        :disabled="disabled"
-        shape="circle"
-        class="site-button"
-      >
-        <a-avatar
-          size="small"
-          :src="record.siteIcon"
-        />
-      </a-button>
+      <a-tooltip>
+        <template #title>{{ $t('button.refreshUserData') }}</template>
+        <a-button
+          @click="refreshUserData(record.siteKey)"
+          :disabled="disabled"
+          shape="circle"
+          class="site-button"
+        >
+          <a-avatar size="small" :src="record.siteIcon" />
+        </a-button>
+      </a-tooltip>
       <br />
-      <a :href="record.siteUrl" target="_blank" :style="{ fontSize: '12px' }">
-        {{ record.siteName }}
-      </a>
+      <a-tooltip placement="bottom">
+        <template #title>{{ $t('button.vistSite') }}</template>
+        <a :href="record.siteUrl" target="_blank" :style="{ fontSize: '12px' }">{{ record.siteName }}</a>
+      </a-tooltip>
     </template>
-    <template #uploadData="{ record }">
-      {{ filesize(record.uploadData).human() }}
-    </template>
-    <template #downloadData="{ record }">
-      {{ filesize(record.downloadData).human() }}
-    </template>
-    <template #seedingSize="{ record }">
-      {{ filesize(record.seedingSize).human() }}
-    </template>
-    <template #ratio="{ record }">
-      {{ record.ratio.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
-    </template>
-    <template #bonus="{ record }">
-      {{ record.bonus.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
-    </template>
+    <template #uploadData="{ record }">{{ filesize(record.uploadData).human() }}</template>
+    <template #downloadData="{ record }">{{ filesize(record.downloadData).human() }}</template>
+    <template #seedingSize="{ record }">{{ filesize(record.seedingSize).human() }}</template>
+    <template
+      #ratio="{ record }"
+    >{{ record.ratio.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</template>
+    <template
+      #bonus="{ record }"
+    >{{ record.bonus.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</template>
     <template #joinDate="{ record }">
       <a-tooltip>
-        <template #title> {{ $dayjs(record.joinDate).format('YYYY-MM-DD HH:mm:ss') }} </template>
+        <template #title>{{ $dayjs(record.joinDate).format('YYYY-MM-DD HH:mm:ss') }}</template>
         {{ $dayjs(record.joinDate).fromNow() }}
       </a-tooltip>
     </template>
     <template #recordDate="{ record }">
       <a-tooltip>
-        <template #title> {{ $dayjs(record.recordDate).format('YYYY-MM-DD HH:mm:ss') }} </template>
+        <template #title>{{ $dayjs(record.recordDate).format('YYYY-MM-DD HH:mm:ss') }}</template>
         {{ $dayjs(record.recordDate).fromNow() }}
       </a-tooltip>
     </template>
@@ -194,7 +187,7 @@ const columns: ColumnProps[] = [
   },
   {
     key: 'status',
-    width: 150,
+    width: 120,
     slots: { title: 'statusTitle', customRender: 'status' }
   }
 ]
@@ -301,7 +294,7 @@ span.ant-input-affix-wrapper {
   border: none;
   border-bottom: 1px solid #e9e3e3;
   float: right;
-  margin: 0px 12px
+  margin: 0px 12px;
 }
 button.site-button {
   border: 0;

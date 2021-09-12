@@ -37,6 +37,8 @@
   },
   "button": {
     "checkAll": "Check All",
-    "refreshAll": "Refresh All"
+    "refreshAll": "Refresh All",
+    "refreshUserData": "Refresh user data",
+    "vistSite": "Visit site"
   }
 }

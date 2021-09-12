@@ -39,7 +39,7 @@ export default class Site {
     return ESiteStatus.error
   }
 
-  async getUserInfo (): Promise<UserInfo|string> {
+  async getUserInfo (): Promise<UserInfo|ESiteStatus> {
     return ESiteStatus.getUserDatafailed
   }
 

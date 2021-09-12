@@ -5,6 +5,7 @@ export enum ESiteStatus {
   connecting = 'connecting',
   unknow = 'unknow',
   error = 'error',
+  succeed = 'succeed',
   getUserDatafailed = 'getUserDatafailed',
   getUserIdfailed = 'getUserIdfailed'
 }

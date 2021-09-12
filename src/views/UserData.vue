@@ -28,12 +28,21 @@
     <template #recordDateTitle> {{ $t('tableHead.recordDate') }} </template>
     <template #statusTitle> {{ $t('tableHead.status') }} </template>
     <template #site="{ record }">
-      <a-avatar
-        size="small"
-        :src="record.siteIcon"
-      />
+      <a-button
+        @click="refreshUserData(record.siteKey)"
+        :disabled="disabled"
+        shape="circle"
+        class="site-button"
+      >
+        <a-avatar
+          size="small"
+          :src="record.siteIcon"
+        />
+      </a-button>
       <br />
-      <a :href="record.siteUrl" target="_blank"> {{ record.siteName }} </a>
+      <a :href="record.siteUrl" target="_blank" :style="{ fontSize: '12px' }">
+        {{ record.siteName }}
+      </a>
     </template>
     <template #uploadData="{ record }">
       {{ filesize(record.uploadData).human() }}
@@ -64,9 +73,6 @@
     </template>
     <template #status="{ record }">
       <SiteStatus :status="record.status" />
-      <a @click="refreshUserData(record.siteKey)">
-        {{ $t('siteStatus.refresh') }}
-      </a>
     </template>
   </a-table>
 </template>
@@ -81,12 +87,9 @@ import _ from 'lodash'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { EActions } from '@/store/enum'
 import filesize from 'file-size'
-// import dayjs from 'dayjs'
-// import 'dayjs/locale/zh-cn'
-// import relativeTime from 'dayjs/plugin/relativeTime'
 import PQueue from 'p-queue'
 
-interface userDataProps {
+interface UserDataProps {
   key: string,
   siteKey: string,
   siteName: string,
@@ -109,92 +112,116 @@ interface SitesStatus {
   [key: string]: ESiteStatus
 }
 
+const genSorter = (prop: keyof UserDataProps) =>
+  (a: UserDataProps, b: UserDataProps) => {
+    const ap = a[prop]
+    const bp = b[prop]
+    if (typeof ap === 'string' && typeof bp === 'string') {
+      if (ap.toUpperCase() < bp.toUpperCase()) return -1
+      if (a.userName.toUpperCase() > b.userName.toUpperCase()) return 1
+      return 0
+    }
+    if (typeof ap === 'number' && typeof bp === 'number') return ap - bp
+    return 0
+  }
+
+const columns: ColumnProps[] = [
+  {
+    key: 'site',
+    align: 'center',
+    slots: { title: 'siteNameTitle', customRender: 'site' },
+    sorter: genSorter('siteName')
+  },
+  {
+    dataIndex: 'userName',
+    key: 'userName',
+    slots: { title: 'userNameTitle' },
+    sorter: genSorter('userName')
+  },
+  {
+    dataIndex: 'userClass',
+    key: 'userClass',
+    slots: { title: 'userClassTitle' }
+  },
+  {
+    key: 'uploadData',
+    align: 'right',
+    slots: { title: 'uploadDataTitle', customRender: 'uploadData' },
+    sorter: genSorter('uploadData')
+  },
+  {
+    key: 'downloadData',
+    align: 'right',
+    slots: { title: 'downloadDataTitle', customRender: 'downloadData' },
+    sorter: genSorter('downloadData')
+  },
+  {
+    key: 'ratio',
+    align: 'right',
+    slots: { title: 'ratioTitle', customRender: 'ratio' },
+    sorter: genSorter('ratio')
+  },
+  {
+    dataIndex: 'seedingCounts',
+    key: 'seedingCounts',
+    align: 'right',
+    slots: { title: 'seedingCountsTitle' },
+    sorter: genSorter('seedingCounts')
+  },
+  {
+    key: 'seedingSize',
+    align: 'right',
+    slots: { title: 'seedingSizeTitle', customRender: 'seedingSize' },
+    sorter: genSorter('seedingSize')
+  },
+  {
+    key: 'bonus',
+    align: 'right',
+    slots: { title: 'bonusTitle', customRender: 'bonus' },
+    sorter: genSorter('bonus')
+  },
+  {
+    key: 'joinDate',
+    align: 'right',
+    slots: { title: 'joinDateTitle', customRender: 'joinDate' },
+    sorter: genSorter('joinDate')
+  },
+  {
+    key: 'recordDate',
+    align: 'right',
+    slots: { title: 'recordDateTitle', customRender: 'recordDate' },
+    sorter: genSorter('recordDate')
+  },
+  {
+    key: 'status',
+    width: 150,
+    slots: { title: 'statusTitle', customRender: 'status' }
+  }
+]
+
 export default defineComponent({
   name: 'userData',
   components: {
     SiteStatus
   },
   setup () {
-    const searchText = ref('')
     const store = useStore()
     const sitesStatus: Ref<SitesStatus> = ref({})
     for (const siteKey of Object.keys(sites)) {
       sitesStatus.value[siteKey] = ESiteStatus.unknow
     }
-    const columns: ColumnProps[] = [
-      {
-        key: 'site',
-        align: 'center',
-        slots: { title: 'siteNameTitle', customRender: 'site' }
-      },
-      {
-        dataIndex: 'userName',
-        key: 'userName',
-        slots: { title: 'userNameTitle' }
-      },
-      {
-        dataIndex: 'userClass',
-        key: 'userClass',
-        slots: { title: 'userClassTitle' }
-      },
-      {
-        key: 'uploadData',
-        align: 'right',
-        slots: { title: 'uploadDataTitle', customRender: 'uploadData' }
-      },
-      {
-        key: 'downloadData',
-        align: 'right',
-        slots: { title: 'downloadDataTitle', customRender: 'downloadData' }
-      },
-      {
-        key: 'ratio',
-        align: 'right',
-        slots: { title: 'ratioTitle', customRender: 'ratio' }
-      },
-      {
-        dataIndex: 'seedingCounts',
-        key: 'seedingCounts',
-        align: 'right',
-        slots: { title: 'seedingCountsTitle' }
-      },
-      {
-        key: 'seedingSize',
-        align: 'right',
-        slots: { title: 'seedingSizeTitle', customRender: 'seedingSize' }
-      },
-      {
-        key: 'bonus',
-        align: 'right',
-        slots: { title: 'bonusTitle', customRender: 'bonus' }
-      },
-      {
-        key: 'joinDate',
-        align: 'right',
-        slots: { title: 'joinDateTitle', customRender: 'joinDate' }
-      },
-      {
-        key: 'recordDate',
-        align: 'right',
-        slots: { title: 'recordDateTitle', customRender: 'recordDate' }
-      },
-      {
-        key: 'status',
-        width: 150,
-        slots: { title: 'statusTitle', customRender: 'status' }
-      }
-    ]
 
+    const searchText = ref('')
     const dataSource = computed(() => {
       const enabledSites = store.state.siteData.enabledSites
       const storeData = store.state.siteData.userData
-      const userData: userDataProps[] = []
+      const userData: UserDataProps[] = []
       let counter = 1
       enabledSites.forEach(siteKey => {
         if (sites[siteKey]) {
           const uData = _.find(storeData, d => d.siteKey === siteKey)
           const site = sites[siteKey]
-          const data: userDataProps = {
+          const data: UserDataProps = {
             key: counter.toString(),
             siteKey,
             siteName: site.name,
@@ -216,10 +243,11 @@ export default defineComponent({
           counter += 1
         }
       })
+      const sorteduserData = _.sortBy(userData, ['siteName'])
       if (searchText.value === '') {
-        return userData
+        return sorteduserData
       }
-      return _.filter(userData, data =>
+      return _.filter(sorteduserData, data =>
         data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
         data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
       )
@@ -229,7 +257,7 @@ export default defineComponent({
     const refreshUserData = (siteKey?: string) => {
       disabled.value = true
       const sitesList: string[] = siteKey ? [siteKey] : store.state.siteData.enabledSites
-      const queue = new PQueue({ concurrency: 3 })
+      const queue = new PQueue({ concurrency: store.state.uiSettings.concurrencyRequests || 5 })
       let counter = 0
       sitesList.forEach(async sKey => {
         const uData = await queue.add(() => {
@@ -237,8 +265,7 @@ export default defineComponent({
           return sites[sKey].getUserInfo()
         })
         if (typeof uData === 'string') {
-          // TODO: more getUserInfo() retruns of ESiteStatus
-          sitesStatus.value[sKey] = ESiteStatus.timeout
+          sitesStatus.value[sKey] = uData
         } else {
           const recordDate = Date.now()
           const data: UserData = {
@@ -247,7 +274,7 @@ export default defineComponent({
             ...uData
           }
           await store.dispatch(EActions.updateUserData, { data })
-          sitesStatus.value[sKey] = ESiteStatus.login
+          sitesStatus.value[sKey] = ESiteStatus.succeed
         }
         counter += 1
         if (counter === sitesList.length) {
@@ -256,16 +283,11 @@ export default defineComponent({
       })
     }
 
-    // dayjs setting
-    // dayjs.locale('zh-cn')
-    // dayjs.extend(relativeTime)
-
     return {
       columns,
       dataSource,
       refreshUserData,
       filesize,
-      // dayjs,
       disabled,
       searchText
     }
@@ -279,5 +301,12 @@ span.ant-input-affix-wrapper {
   border-bottom: 1px solid #e9e3e3;
   float: right;
   margin: 0px 12px
+}
+button.site-button {
+  border: 0;
+}
+button.site-button:hover {
+  border: 0;
+  background-color: lightgray;
 }
 </style>

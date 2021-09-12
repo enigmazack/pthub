@@ -30,7 +30,7 @@ export default class NexusPHPSite extends Site {
       }
       return isLogin ? ESiteStatus.login : ESiteStatus.logout
     } catch (error) {
-      if (error.message && error.message.includes('timeout')) {
+      if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
       return ESiteStatus.error
@@ -48,7 +48,7 @@ export default class NexusPHPSite extends Site {
       this.userId = id
       return id
     } catch (error) {
-      if (error.message && error.message.includes('timeout')) {
+      if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
       console.log(error)
@@ -96,7 +96,7 @@ export default class NexusPHPSite extends Site {
         ...seedingInfo
       }
     } catch (error) {
-      if (error.message && error.message.includes('timeout')) {
+      if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
       console.log(error)

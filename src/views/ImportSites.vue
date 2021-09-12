@@ -69,6 +69,40 @@ interface SitesStatus {
   [key: string]: ESiteStatus
 }
 
+// define column properties
+const columns: ColumnProps[] = [
+  {
+    dataIndex: 'siteName',
+    key: 'siteName',
+    width: 150,
+    slots: { title: 'siteTitle' }
+  },
+  {
+    dataIndex: 'siteUrl',
+    key: 'siteUrl',
+    slots: { title: 'urlTitle', customRender: 'url' }
+  },
+  {
+    key: 'enable',
+    width: 150,
+    slots: { title: 'enableTitle', customRender: 'enable' },
+    sorter: (a: SiteDataProps, b: SiteDataProps) => {
+      if (a.siteEnabled < b.siteEnabled) {
+        return -1
+      }
+      if (a.siteEnabled > b.siteEnabled) {
+        return 1
+      }
+      return 0
+    }
+  },
+  {
+    key: 'status',
+    width: 150,
+    slots: { title: 'statusTitle', customRender: 'status' }
+  }
+]
+
 export default defineComponent({
   name: 'importSites',
   components: {
@@ -100,39 +134,17 @@ export default defineComponent({
         key += 1
         sitesData.push(siteData)
       }
+      const sortedSitesData = _.sortBy(sitesData, ['siteName'])
       if (searchText.value === '') {
-        return sitesData
+        return sortedSitesData
       }
       // TODO: maybe we want to do some fuzzy search here
-      return _.filter(sitesData, data =>
+      return _.filter(sortedSitesData, data =>
         data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
         data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
       )
     })
-    // define column properties
-    const columns: ColumnProps[] = [
-      {
-        dataIndex: 'siteName',
-        key: 'siteName',
-        width: 150,
-        slots: { title: 'siteTitle' }
-      },
-      {
-        dataIndex: 'siteUrl',
-        key: 'siteUrl',
-        slots: { title: 'urlTitle', customRender: 'url' }
-      },
-      {
-        key: 'enable',
-        width: 150,
-        slots: { title: 'enableTitle', customRender: 'enable' }
-      },
-      {
-        key: 'status',
-        width: 150,
-        slots: { title: 'statusTitle', customRender: 'status' }
-      }
-    ]
+
     // disabled the check all sites button
     const disabled = ref(false)
     // method to check sites status
@@ -141,7 +153,7 @@ export default defineComponent({
       disabled.value = true
       const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sitesStatus.value)
       // use p-queue to contral concurrency async functions
-      const queue = new PQueue({ concurrency: 3 })
+      const queue = new PQueue({ concurrency: store.state.uiSettings.concurrencyRequests || 5 })
       let counter = 0
       sitesList.forEach(async siteKey => {
         if (sitesStatus.value[siteKey] !== ESiteStatus.login) {

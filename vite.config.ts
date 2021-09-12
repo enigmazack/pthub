@@ -52,8 +52,9 @@ export default defineConfig(({ command }) => {
       preprocessorOptions: {
         less: {
           modifyVars: {
-            ...aliyunTheme
-            // 'layout-header-padding': '0 10px'
+            ...aliyunTheme,
+            '@font-size-sm': '14px',
+            '@font-size-base': '14px'
           },
           javascriptEnabled: true
         }

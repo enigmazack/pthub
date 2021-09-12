@@ -17,11 +17,13 @@ import { uiSettingsStorage } from '@/store/storage'
 
 // state
 export interface UISettingsState {
-  siderCollapsed: boolean
+  siderCollapsed: boolean,
+  concurrencyRequests: number
 }
 
 const state: UISettingsState = {
-  siderCollapsed: false
+  siderCollapsed: false,
+  concurrencyRequests: 5
 }
 
 // getters
@@ -33,23 +35,29 @@ const getters: GetterTree<UISettingsState, RootState> & Getters = {
 
 // mutations
 type Mutations<S = UISettingsState> = {
-  [EMutations.initUiSettings] (state: S, payload: S): void
+  [EMutations.initUiSettings] (state: S, payload: S): void,
   [EMutations.toggleSiderCollapsed] (state: S): void,
+  [EMutations.setConcurrencyRequests] (state: S, payload: number): void
 }
 
 const mutations: MutationTree<UISettingsState> & Mutations = {
   [EMutations.initUiSettings] (state, payload) {
     state.siderCollapsed = payload.siderCollapsed
+    state.concurrencyRequests = payload.concurrencyRequests
   },
   [EMutations.toggleSiderCollapsed] (state) {
     state.siderCollapsed = !state.siderCollapsed
+  },
+  [EMutations.setConcurrencyRequests] (state, payload) {
+    state.concurrencyRequests = payload
   }
 }
 
 // actions
 type Actions<S = UISettingsState, R = RootState> = {
-  [EActions.initUiSettings] (context: ActionContext<S, R>): Promise<void>
-  [EActions.toggleSiderCollapsed] (context: ActionContext<S, R>): Promise<void>
+  [EActions.initUiSettings] (context: ActionContext<S, R>): Promise<void>,
+  [EActions.toggleSiderCollapsed] (context: ActionContext<S, R>): Promise<void>,
+  [EActions.setConcurrencyRequests] (context: ActionContext<S, R>): Promise<void>
 }
 
 const actions: ActionTree<UISettingsState, RootState> & Actions = {
@@ -63,6 +71,10 @@ const actions: ActionTree<UISettingsState, RootState> & Actions = {
   },
   async [EActions.toggleSiderCollapsed] ({ commit, state }) {
     commit(EMutations.toggleSiderCollapsed)
+    await uiSettingsStorage.set(state)
+  },
+  async [EActions.setConcurrencyRequests] ({ commit, state }) {
+    commit(EMutations.setConcurrencyRequests)
     await uiSettingsStorage.set(state)
   }
 }

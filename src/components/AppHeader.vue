@@ -28,9 +28,7 @@
     <a-col>
       <a-space size="middle">
         <div class="header-element">
-          <a-dropdown>
-            <GlobalOutlined/>
-          </a-dropdown>
+          <LanguageMenu />
         </div>
       </a-space>
     </a-col>
@@ -39,7 +37,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { MenuUnfoldOutlined, MenuFoldOutlined, GlobalOutlined } from '@ant-design/icons-vue'
+import LanguageMenu from './LanguageMenu.vue'
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
 import { useStore } from '@/store'
 import { EActions } from '@/store/enum'
 
@@ -48,7 +47,7 @@ export default defineComponent({
   components: {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
-    GlobalOutlined
+    LanguageMenu
   },
   setup () {
     const store = useStore()

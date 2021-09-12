@@ -5,14 +5,14 @@ import 'ant-design-vue/dist/antd.less'
 import i18n from './i18n'
 import { store } from './store'
 import router from './router'
-import * as sites from './sites'
+import sites from './sites'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 declare module 'vue' {
   export interface ComponentCustomProperties {
-    $dayjs: typeof dayjs
+    $dayjs: typeof dayjs,
  }
 }
 
@@ -27,6 +27,6 @@ dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 app.config.globalProperties.$dayjs = dayjs
 
-app.mount('#app')
+app.provide('sites', sites)
 
-window.sites = sites
+app.mount('#app')

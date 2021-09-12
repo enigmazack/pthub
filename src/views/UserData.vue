@@ -78,11 +78,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, Ref } from 'vue'
+import { computed, defineComponent, ref, Ref, inject } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { useStore } from '@/store'
 import { UserData } from '@/store/modules/siteData'
-import sites, { ESiteStatus } from '@/sites'
+import { Sites, ESiteStatus } from '@/sites'
 import _ from 'lodash'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { EActions } from '@/store/enum'
@@ -205,10 +205,11 @@ export default defineComponent({
     SiteStatus
   },
   setup () {
+    const sites = inject('sites') as Sites
     const store = useStore()
     const sitesStatus: Ref<SitesStatus> = ref({})
     for (const siteKey of Object.keys(sites)) {
-      sitesStatus.value[siteKey] = ESiteStatus.unknow
+      sitesStatus.value[siteKey] = ESiteStatus.empty
     }
 
     const searchText = ref('')

@@ -11,11 +11,11 @@ import keepfrds from './sites/keepfrds'
 export { ESiteStatus } from './enum'
 export type { UserInfo } from './types'
 
-interface Sites {
+export interface Sites {
   [key: string]: Site
 }
 
-const sites:Sites = {
+const sites: Sites = {
   ourbits,
   springsunday,
   mteam,

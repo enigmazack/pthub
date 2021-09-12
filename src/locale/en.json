@@ -1,6 +1,42 @@
 {
   "menu": {
     "search": "Search",
-    "sites": "Sites"
+    "sites": "Sites",
+    "setting": "Settings",
+    "batchSearchSetting": "Search Settings",
+    "customSearchSetting": "Custom Search",
+    "importSites": "Add Sites"
+  },
+  "tableHead": {
+    "site": "Site",
+    "url": "URL",
+    "status": "Status",
+    "enable": "Enable",
+    "searchSites": "Search Sites",
+    "userName": "Username",
+    "userClass": "User Class",
+    "uploadData": "Upload Data",
+    "downloadData": "Download Data",
+    "ratio": "Ratio",
+    "seedingCounts": "Seeding Counts",
+    "seedingSize": "Seeding Size",
+    "bonus": "Bonus",
+    "joinDate": "Join Date",
+    "recordDate": "Record Date"
+  },
+  "siteStatus": {    
+    "connecting": "Connecting...",
+    "login": "Login",
+    "logout": "Logout",
+    "unknow": "Unknow",
+    "timeout": "Timeout",
+    "retry": "Retry",
+    "check": "Check",
+    "refresh": "Refresh",
+    "getUserDatafailed": "Get user data failed"
+  },
+  "button": {
+    "checkAll": "Check All",
+    "refreshAll": "Refresh All"
   }
 }

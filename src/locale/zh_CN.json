@@ -32,7 +32,8 @@
     "timeout": "连接超时",
     "retry": "重试",
     "check": "检测",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "getUserDatafailed": "获取用户数据失败"
   },
   "button": {
     "checkAll": "检测所有站点状态",

@@ -19,6 +19,10 @@
     <CloseCircleOutlined :style="{color: 'red'}" />
     {{ $t('siteStatus.timeout') }}
   </div>
+  <div v-else-if="getUserDatafailed" class="site-status">
+    <CloseCircleOutlined :style="{color: 'red'}" />
+    {{ $t('siteStatus.getUserDatafailed') }}
+  </div>
 </template>
 
 <script lang = "ts">
@@ -50,12 +54,14 @@ export default defineComponent({
     const unknow = computed(() => props.status === ESiteStatus.unknow)
     const logout = computed(() => props.status === ESiteStatus.logout)
     const timeout = computed(() => props.status === ESiteStatus.timeout)
+    const getUserDatafailed = computed(() => props.status === ESiteStatus.getUserDatafailed)
     return {
       connecting,
       login,
       unknow,
       logout,
-      timeout
+      timeout,
+      getUserDatafailed
     }
   }
 })

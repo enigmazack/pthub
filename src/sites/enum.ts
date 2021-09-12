@@ -1,4 +1,5 @@
 export enum ESiteStatus {
+  empty = 'empty',
   login = 'login',
   logout = 'logout',
   timeout = 'timeout',

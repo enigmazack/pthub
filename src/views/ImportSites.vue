@@ -46,10 +46,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, Ref } from 'vue'
+import { computed, defineComponent, ref, Ref, inject } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import _ from 'lodash'
-import sites, { ESiteStatus } from '@/sites'
+import { Sites, ESiteStatus } from '@/sites'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { useStore } from '@/store'
 import { EActions } from '@/store/enum'
@@ -109,6 +109,7 @@ export default defineComponent({
     SiteStatus
   },
   setup () {
+    const sites = inject('sites') as Sites
     const searchText = ref('')
     // use vuex store
     const store = useStore()

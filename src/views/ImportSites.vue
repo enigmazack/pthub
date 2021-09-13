@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, Ref, inject } from 'vue'
+import { computed, defineComponent, ref, inject, reactive } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import _ from 'lodash'
 import { Sites, ESiteStatus } from '@/sites'
@@ -120,10 +120,11 @@ export default defineComponent({
     // use vuex store
     const store = useStore()
     // set all sites status init value unknow
-    const sitesStatus: Ref<SitesStatus> = ref({})
+    const sStatus: SitesStatus = {}
     for (const siteKey of Object.keys(sites)) {
-      sitesStatus.value[siteKey] = ESiteStatus.unknow
+      sStatus[siteKey] = ESiteStatus.unknow
     }
+    const sitesStatus = reactive(sStatus)
     // table data source is a computed props
     const dataSource = computed(() => {
       const sitesData: SiteDataProps[] = []
@@ -135,7 +136,7 @@ export default defineComponent({
           siteName: sites[siteKey].name,
           siteUrl: sites[siteKey].url.href,
           siteIcon: sites[siteKey].icon.href,
-          siteStatus: sitesStatus.value[siteKey],
+          siteStatus: sitesStatus[siteKey],
           siteEnabled: store.state.siteData.enabledSites.findIndex(s => s === siteKey) !== -1
         }
         key += 1
@@ -158,17 +159,17 @@ export default defineComponent({
     const checkSitesStatus = (siteKey?: string) => {
       // disable the button when checking
       disabled.value = true
-      const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sitesStatus.value)
+      const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sites)
       // use p-queue to contral concurrency async functions
       const queue = new PQueue({ concurrency: store.state.uiSettings.concurrencyRequests || 5 })
       let counter = 0
       sitesList.forEach(async siteKey => {
-        if (sitesStatus.value[siteKey] !== ESiteStatus.login) {
+        if (sitesStatus[siteKey] !== ESiteStatus.login) {
           const newStatus = await queue.add(() => {
-            sitesStatus.value[siteKey] = ESiteStatus.connecting
+            sitesStatus[siteKey] = ESiteStatus.connecting
             return sites[siteKey].checkStatus()
           })
-          sitesStatus.value[siteKey] = newStatus
+          sitesStatus[siteKey] = newStatus
         }
         counter += 1
         if (counter === sitesList.length) {

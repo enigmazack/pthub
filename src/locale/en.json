@@ -2,10 +2,10 @@
   "menu": {
     "search": "Search",
     "sites": "Sites",
-    "setting": "Settings",
-    "batchSearchSetting": "Search Settings",
-    "customSearchSetting": "Custom Search",
-    "importSites": "Add Sites"
+    "settings": "Settings",
+    "searchSolutions": "Search Solution",
+    "siteSettings": "Site Settings",
+    "importSites": "Import Sites"
   },
   "tableHead": {
     "site": "Site",
@@ -40,5 +40,10 @@
     "refreshAll": "Refresh All",
     "refreshUserData": "Refresh user data",
     "vistSite": "Visit site"
+  },
+  "settings": {
+    "globalSettings": "Global Settings",
+    "concurrencyRequests": "Concurrency Requests",
+    "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围"
   }
 }

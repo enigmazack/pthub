@@ -2,9 +2,9 @@
   "menu": {
     "search": "搜索",
     "sites": "站点",
-    "setting": "设置",
-    "batchSearchSetting": "搜索方案",
-    "customSearchSetting": "自定义搜索",
+    "settings": "设置",
+    "searchSolutions": "搜索方案",
+    "siteSettings": "站点设置",
     "importSites": "添加站点"
   },
   "tableHead": {
@@ -40,5 +40,10 @@
     "refreshAll": "刷新所有站点数据",
     "refreshUserData": "刷新用户数据",
     "vistSite": "访问站点"
+  },
+  "settings": {
+    "globalSettings": "全局设置",
+    "concurrencyRequests": "同时运行访问数量",
+    "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围"
   }
 }

@@ -17,20 +17,28 @@ import { RootState } from '@/store'
 import { siteDataStorage } from '@/store/storage'
 import { UserInfo } from '@/sites'
 
-export interface UserData extends UserInfo{
+export interface UserData extends UserInfo {
   siteKey: string,
   recordDate: number
+}
+
+export interface SearchConfig {
+  siteKey: string,
+  name: string,
+  pattern: string
 }
 
 // state
 export interface SiteDataState {
   enabledSites: string[],
-  userData: UserData[]
+  userData: UserData[],
+  searchConfigs: SearchConfig[]
 }
 
 const state: SiteDataState = {
   enabledSites: [],
-  userData: []
+  userData: [],
+  searchConfigs: []
 }
 
 // getters
@@ -43,14 +51,16 @@ const getters: GetterTree<SiteDataState, RootState> & Getters = {
 // mutations
 type Mutations<S = SiteDataState> = {
   [EMutations.initSiteData] (state: S, payload: S): void,
-  [EMutations.toggleEnabledSite] (state: S, payload: string): void
-  [EMutations.updateUserData] (state: S, payload: UserData): void
+  [EMutations.toggleEnabledSite] (state: S, payload: string): void,
+  [EMutations.updateUserData] (state: S, payload: UserData): void,
+  [EMutations.updateSearchConfigs] (state: S, payload: SearchConfig): void
 }
 
 const mutations: MutationTree<SiteDataState> & Mutations = {
   [EMutations.initSiteData] (state, data) {
-    state.enabledSites = data.enabledSites
-    state.userData = data.userData
+    state.enabledSites = data.enabledSites || []
+    state.userData = data.userData || []
+    state.searchConfigs = data.searchConfigs || []
   },
   [EMutations.toggleEnabledSite] (state, site) {
     const index = state.enabledSites.findIndex(s => site === s)
@@ -69,14 +79,24 @@ const mutations: MutationTree<SiteDataState> & Mutations = {
       // update data
       state.userData[index] = data
     }
+  },
+  [EMutations.updateSearchConfigs] (state, searchConfig) {
+    const index = _.findIndex(state.searchConfigs, obj =>
+      obj.siteKey === searchConfig.siteKey && obj.name === searchConfig.name)
+    if (index === -1) {
+      state.searchConfigs.push(searchConfig)
+    } else {
+      state.searchConfigs[index] = searchConfig
+    }
   }
 }
 
 // actions
 type Actions<S = SiteDataState, R = RootState> = {
-  [EActions.initSiteData] (context: ActionContext<S, R>): Promise<void>
-  [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>
-  [EActions.updateUserData] (context: ActionContext<S, R>, payload: {data: UserData}): Promise<void>
+  [EActions.initSiteData] (context: ActionContext<S, R>): Promise<void>,
+  [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>,
+  [EActions.updateUserData] (context: ActionContext<S, R>, payload: {data: UserData}): Promise<void>,
+  [EActions.updateSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>,
 }
 
 const actions: ActionTree<SiteDataState, RootState> & Actions = {
@@ -97,6 +117,10 @@ const actions: ActionTree<SiteDataState, RootState> & Actions = {
   },
   async [EActions.updateUserData] ({ commit, state }, { data }) {
     commit(EMutations.updateUserData, data)
+    await siteDataStorage.set(state)
+  },
+  async [EActions.updateSearchConfigs] ({ commit, state }, { searchConfig }) {
+    commit(EMutations.updateSearchConfigs, searchConfig)
     await siteDataStorage.set(state)
   }
 }

@@ -11,9 +11,10 @@
     </a-col>
     <a-col :pull= "2" :span="8">
       <a-input
-        v-model:value="value"
+        v-model:value="searchKey"
         placeholder="搜索"
         size="large"
+        @pressEnter="toSearch"
       >
       <template #addonAfter>
           <a-select style="width: 80px">
@@ -41,6 +42,7 @@ import LanguageMenu from './LanguageMenu.vue'
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
 import { useStore } from '@/store'
 import { EActions } from '@/store/enum'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'appHeader',
@@ -51,22 +53,20 @@ export default defineComponent({
   },
   setup () {
     const store = useStore()
+    const router = useRouter()
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     const toggleCollapsed = () => store.dispatch(EActions.toggleSiderCollapsed)
+
+    const searchKey = ref('')
+    const toSearch = () => {
+      router.push('/search')
+    }
     return {
       collapsed,
-      toggleCollapsed
+      toggleCollapsed,
+      searchKey,
+      toSearch
     }
-  },
-  data () {
-    return {
-      value: ref(''),
-      value2: ref('')
-    }
-  },
-  methods: {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onSearch: () => {}
   }
 })
 </script>

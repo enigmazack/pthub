@@ -8,7 +8,8 @@ export enum EMutations {
   setLocale = 'setLocale',
   initSiteData = 'initSiteData',
   toggleEnabledSite = 'toggleEnabledSite',
-  updateUserData = 'updateUserData'
+  updateUserData = 'updateUserData',
+  updateSearchConfigs = 'updateSearchConfigs'
 }
 
 export enum EActions {
@@ -18,5 +19,6 @@ export enum EActions {
   setLocale = 'setLocale',
   initSiteData = 'initSiteData',
   toggleEnabledSite = 'toggleEnabledSite',
-  updateUserData = 'updateUserData'
+  updateUserData = 'updateUserData',
+  updateSearchConfigs = 'updateSearchConfigs'
 }

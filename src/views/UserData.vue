@@ -10,7 +10,13 @@
       <a-input-search
         v-model:value="searchText"
         :placeholder="$t('tableHead.searchSites')"
-        style="width: 200px"
+        :style="{
+          width: '200px',
+          border: 'none',
+          borderBottom: '1px solid #e9e3e3',
+          float: 'right',
+          margin: '0px 12px'
+        }"
       />
     </template>
     <template #siteNameTitle>{{ $t('tableHead.site') }}</template>
@@ -290,12 +296,6 @@ export default defineComponent({
 </script>
 
 <style>
-span.ant-input-affix-wrapper {
-  border: none;
-  border-bottom: 1px solid #e9e3e3;
-  float: right;
-  margin: 0px 12px;
-}
 button.site-button {
   border: 0;
 }

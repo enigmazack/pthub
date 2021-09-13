@@ -13,7 +13,7 @@
           </div>
           <div class="preview">
             <router-view v-slot="{ Component }">
-              <keep-alive>
+              <keep-alive include="ImportSites,UserData,Search">
                 <component :is="Component" />
               </keep-alive>
             </router-view>

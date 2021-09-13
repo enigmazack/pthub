@@ -1,27 +1,29 @@
 <template>
   <a-menu mode="inline" :style="{ height: '100%', borderRight: 0 }">
-    <a-menu-item key="1">
+    <a-menu-item key="Search">
       <template #icon>
         <SearchOutlined />
       </template>
-      {{ $t('menu.search') }}
+      <router-link to="/search">{{ $t('menu.search') }}</router-link>
     </a-menu-item>
-    <a-menu-item key="2">
+    <a-menu-item key="UserData">
       <template #icon>
         <AppstoreOutlined />
       </template>
-      <router-link to="/userData"> {{ $t('menu.sites') }} </router-link>
+      <router-link to="/userData">{{ $t('menu.sites') }}</router-link>
     </a-menu-item>
-    <a-sub-menu key="sub1">
+    <a-sub-menu key="Settings">
       <template #icon>
         <SettingOutlined />
       </template>
-      <template #title>{{ $t('menu.setting') }}</template>
-      <a-menu-item key="3">{{ $t('menu.batchSearchSetting') }}</a-menu-item>
-      <a-menu-item key="4">{{ $t('menu.customSearchSetting') }}</a-menu-item>
-      <a-menu-item key="5">
-        <router-link to="/importSites"> {{ $t('menu.importSites') }} </router-link>
+      <template #title>{{ $t('menu.settings') }}</template>
+      <a-menu-item key="ImportSites">
+        <router-link to="/importSites">{{ $t('menu.importSites') }}</router-link>
       </a-menu-item>
+      <a-menu-item key="SiteSettings">
+        <router-link to="/siteSettings">{{ $t('menu.siteSettings') }}</router-link>
+      </a-menu-item>
+      <a-menu-item key="SearchSolutions">{{ $t('menu.searchSolutions') }}</a-menu-item>
     </a-sub-menu>
   </a-menu>
 </template>

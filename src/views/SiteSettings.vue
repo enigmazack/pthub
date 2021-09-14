@@ -41,38 +41,14 @@
       :key="siteKey"
       :header="sites[siteKey].name"
     >
-      <div v-for="config in getSearchConfig(siteKey)" :key="config.siteKey">
-        <a-form layout="inline" :model="config">
-          <a-form-item label="Config Name">
-            <a-input v-model:value="config.name" />
-          </a-form-item>
-          <a-form-item label="Config Pattern">
-            <a-input v-model:value="config.pattern" />
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary">Submit</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
-      <div>
-        <a-form layout="inline" :model="newSearchConfigs[siteKey]">
-          <a-form-item label="Config Name">
-            <a-input v-model:value="newSearchConfigs[siteKey].name" />
-          </a-form-item>
-          <a-form-item label="Config Pattern">
-            <a-input v-model:value="newSearchConfigs[siteKey].pattern"/>
-          </a-form-item>
-          <a-form-item>
-            <a-button @click="addSearchConfig(newSearchConfigs[siteKey].siteKey)">Submit</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
+      <SiteSearchConfig :site="siteKey" />
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, inject, watch, reactive, toRaw } from 'vue'
+import SiteSearchConfig from '@/components/SiteSearchConfig.vue'
 import { Sites } from '@/sites'
 import { useStore } from '@/store'
 import _ from 'lodash'
@@ -85,6 +61,9 @@ interface NewSearchConfigs {
 
 export default defineComponent({
   name: 'siteSettings',
+  components: {
+    SiteSearchConfig
+  },
   setup () {
     const store = useStore()
     const sites = inject('sites') as Sites

@@ -57,13 +57,13 @@
       <div>
         <a-form layout="inline" :model="newSearchConfigs[siteKey]">
           <a-form-item label="Config Name">
-            <a-input v-model:value="newSearchConfigs[siteKey].value.name" />
+            <a-input v-model:value="newSearchConfigs[siteKey].name" />
           </a-form-item>
           <a-form-item label="Config Pattern">
-            <a-input />
+            <a-input v-model:value="newSearchConfigs[siteKey].pattern"/>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary">Submit</a-button>
+            <a-button @click="addSearchConfig(newSearchConfigs[siteKey].siteKey)">Submit</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject, watch, Ref } from 'vue'
+import { defineComponent, ref, inject, watch, reactive, toRaw } from 'vue'
 import { Sites } from '@/sites'
 import { useStore } from '@/store'
 import _ from 'lodash'
@@ -80,7 +80,7 @@ import { EActions } from '@/store/enum'
 import { SearchConfig } from '@/store/modules/siteData'
 
 interface NewSearchConfigs {
-  [key: string]: Ref<SearchConfig>
+  [key: string]: SearchConfig
 }
 
 export default defineComponent({
@@ -119,10 +119,17 @@ export default defineComponent({
       return _.filter(searchConfigs.value, config => config.siteKey === siteKey)
     }
 
-    const newSearchConfigs: NewSearchConfigs = {}
+    const nSearchConfigs: NewSearchConfigs = {}
     enabledSites.forEach(siteKey => {
-      newSearchConfigs[siteKey] = ref({ siteKey, name: '', pattern: '' })
+      nSearchConfigs[siteKey] = { siteKey, name: '', pattern: '' }
     })
+    const newSearchConfigs = reactive(nSearchConfigs)
+
+    const addSearchConfig = (siteKey: string) => {
+      const searchConfig: SearchConfig = toRaw(newSearchConfigs[siteKey])
+      newSearchConfigs[siteKey] = { siteKey, name: '', pattern: '' }
+      store.dispatch(EActions.updateSearchConfigs, { searchConfig })
+    }
 
     return {
       activeKey,
@@ -131,7 +138,8 @@ export default defineComponent({
       enabledSites,
       concurrencyRequests,
       getSearchConfig,
-      newSearchConfigs
+      newSearchConfigs,
+      addSearchConfig
     }
   }
 })

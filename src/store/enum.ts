@@ -9,7 +9,8 @@ export enum EMutations {
   initSiteData = 'initSiteData',
   toggleEnabledSite = 'toggleEnabledSite',
   updateUserData = 'updateUserData',
-  updateSearchConfigs = 'updateSearchConfigs'
+  updateSearchConfigs = 'updateSearchConfigs',
+  deleteSearchConfigs = 'deleteSearchConfigs'
 }
 
 export enum EActions {
@@ -20,5 +21,6 @@ export enum EActions {
   initSiteData = 'initSiteData',
   toggleEnabledSite = 'toggleEnabledSite',
   updateUserData = 'updateUserData',
-  updateSearchConfigs = 'updateSearchConfigs'
+  updateSearchConfigs = 'updateSearchConfigs',
+  deleteSearchConfigs = 'deleteSearchConfigs'
 }

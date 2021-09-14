@@ -5,6 +5,7 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from '@/store'
+import { EActions } from '@/store/enum'
 
 export default defineComponent({
   name: 'siteSwitch',
@@ -13,8 +14,8 @@ export default defineComponent({
   },
   setup (props) {
     const store = useStore()
-    const checked = computed(() => store.state.siteData.enabled.findIndex(s => s === props.site) !== -1)
-    const toggleEnabled = () => store.dispatch('toggleEnabledSite', { site: props.site })
+    const checked = computed(() => store.state.siteData.enabledSites.findIndex(s => s === props.site) !== -1)
+    const toggleEnabled = () => store.dispatch(EActions.toggleEnabledSite, { site: props.site })
     return {
       checked,
       toggleEnabled

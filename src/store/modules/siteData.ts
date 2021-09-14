@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {
   ActionContext,
   ActionTree,
@@ -53,7 +52,8 @@ type Mutations<S = SiteDataState> = {
   [EMutations.initSiteData] (state: S, payload: S): void,
   [EMutations.toggleEnabledSite] (state: S, payload: string): void,
   [EMutations.updateUserData] (state: S, payload: UserData): void,
-  [EMutations.updateSearchConfigs] (state: S, payload: SearchConfig): void
+  [EMutations.updateSearchConfigs] (state: S, payload: SearchConfig): void,
+  [EMutations.deleteSearchConfigs] (state: S, payload: SearchConfig): void
 }
 
 const mutations: MutationTree<SiteDataState> & Mutations = {
@@ -71,7 +71,7 @@ const mutations: MutationTree<SiteDataState> & Mutations = {
     }
   },
   [EMutations.updateUserData] (state, data) {
-    const index = _.findIndex(state.userData, obj => obj.siteKey === data.siteKey)
+    const index = state.userData.findIndex(uData => uData.siteKey === data.siteKey)
     if (index === -1) {
       // insert data if the site key is new
       state.userData.push(data)
@@ -81,12 +81,19 @@ const mutations: MutationTree<SiteDataState> & Mutations = {
     }
   },
   [EMutations.updateSearchConfigs] (state, searchConfig) {
-    const index = _.findIndex(state.searchConfigs, obj =>
-      obj.siteKey === searchConfig.siteKey && obj.name === searchConfig.name)
+    const index = state.searchConfigs.findIndex(config =>
+      config.siteKey === searchConfig.siteKey && config.name === searchConfig.name)
     if (index === -1) {
       state.searchConfigs.push(searchConfig)
     } else {
       state.searchConfigs[index] = searchConfig
+    }
+  },
+  [EMutations.deleteSearchConfigs] (state, searchConfig) {
+    const index = state.searchConfigs.findIndex(config =>
+      config.siteKey === searchConfig.siteKey && config.name === searchConfig.name)
+    if (index !== -1) {
+      state.searchConfigs.splice(index, 1)
     }
   }
 }
@@ -97,6 +104,7 @@ type Actions<S = SiteDataState, R = RootState> = {
   [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>,
   [EActions.updateUserData] (context: ActionContext<S, R>, payload: {data: UserData}): Promise<void>,
   [EActions.updateSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>,
+  [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>
 }
 
 const actions: ActionTree<SiteDataState, RootState> & Actions = {
@@ -121,6 +129,10 @@ const actions: ActionTree<SiteDataState, RootState> & Actions = {
   },
   async [EActions.updateSearchConfigs] ({ commit, state }, { searchConfig }) {
     commit(EMutations.updateSearchConfigs, searchConfig)
+    await siteDataStorage.set(state)
+  },
+  async [EActions.deleteSearchConfigs] ({ commit, state }, { searchConfig }) {
+    commit(EMutations.deleteSearchConfigs, searchConfig)
     await siteDataStorage.set(state)
   }
 }

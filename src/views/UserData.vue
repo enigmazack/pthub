@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, Ref, inject } from 'vue'
+import { computed, defineComponent, ref, inject, reactive } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { useStore } from '@/store'
 import { UserData } from '@/store/modules/siteData'
@@ -206,10 +206,12 @@ export default defineComponent({
   setup () {
     const sites = inject('sites') as Sites
     const store = useStore()
-    const sitesStatus: Ref<SitesStatus> = ref({})
+
+    const sStatus: SitesStatus = {}
     for (const siteKey of Object.keys(sites)) {
-      sitesStatus.value[siteKey] = ESiteStatus.empty
+      sStatus[siteKey] = ESiteStatus.empty
     }
+    const sitesStatus = reactive(sStatus)
 
     const searchText = ref('')
     const dataSource = computed(() => {
@@ -237,7 +239,7 @@ export default defineComponent({
             bonus: uData && uData.bonus ? uData.bonus : NaN,
             joinDate: uData && uData.joinDate ? uData.joinDate : NaN,
             recordDate: uData ? uData.recordDate : NaN,
-            status: sitesStatus.value[siteKey]
+            status: sitesStatus[siteKey]
           }
           userData.push(data)
           counter += 1
@@ -261,11 +263,11 @@ export default defineComponent({
       let counter = 0
       sitesList.forEach(async sKey => {
         const uData = await queue.add(() => {
-          sitesStatus.value[sKey] = ESiteStatus.connecting
+          sitesStatus[sKey] = ESiteStatus.connecting
           return sites[sKey].getUserInfo()
         })
         if (typeof uData === 'string') {
-          sitesStatus.value[sKey] = uData
+          sitesStatus[sKey] = uData
         } else {
           const recordDate = Date.now()
           const data: UserData = {
@@ -274,7 +276,7 @@ export default defineComponent({
             ...uData
           }
           await store.dispatch(EActions.updateUserData, { data })
-          sitesStatus.value[sKey] = ESiteStatus.succeed
+          sitesStatus[sKey] = ESiteStatus.succeed
         }
         counter += 1
         if (counter === sitesList.length) {

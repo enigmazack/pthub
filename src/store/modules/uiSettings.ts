@@ -18,13 +18,11 @@ import { uiSettingsStorage } from '@/store/storage'
 // state
 export interface UISettingsState {
   siderCollapsed: boolean,
-  concurrencyRequests: number,
   locale: string
 }
 
 const state: UISettingsState = {
   siderCollapsed: false,
-  concurrencyRequests: 5,
   locale: 'zh_CN'
 }
 
@@ -39,21 +37,16 @@ const getters: GetterTree<UISettingsState, RootState> & Getters = {
 type Mutations<S = UISettingsState> = {
   [EMutations.initUiSettings] (state: S, payload: S): void,
   [EMutations.toggleSiderCollapsed] (state: S): void,
-  [EMutations.setConcurrencyRequests] (state: S, payload: number): void,
   [EMutations.setLocale] (state: S, payload: string): void
 }
 
 const mutations: MutationTree<UISettingsState> & Mutations = {
   [EMutations.initUiSettings] (state, payload) {
     state.siderCollapsed = payload.siderCollapsed
-    state.concurrencyRequests = payload.concurrencyRequests || state.concurrencyRequests
-    state.locale = payload.locale || state.locale
+    state.locale = payload.locale || 'zh_CN'
   },
   [EMutations.toggleSiderCollapsed] (state) {
     state.siderCollapsed = !state.siderCollapsed
-  },
-  [EMutations.setConcurrencyRequests] (state, payload) {
-    state.concurrencyRequests = payload
   },
   [EMutations.setLocale] (state, payload): void {
     state.locale = payload
@@ -64,7 +57,6 @@ const mutations: MutationTree<UISettingsState> & Mutations = {
 type Actions<S = UISettingsState, R = RootState> = {
   [EActions.initUiSettings] (context: ActionContext<S, R>): Promise<void>,
   [EActions.toggleSiderCollapsed] (context: ActionContext<S, R>): Promise<void>,
-  [EActions.setConcurrencyRequests] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
   [EActions.setLocale] (context: ActionContext<S, R>, payload: {locale: string}): Promise<void>
 }
 
@@ -79,10 +71,6 @@ const actions: ActionTree<UISettingsState, RootState> & Actions = {
   },
   async [EActions.toggleSiderCollapsed] ({ commit, state }) {
     commit(EMutations.toggleSiderCollapsed)
-    await uiSettingsStorage.set(state)
-  },
-  async [EActions.setConcurrencyRequests] ({ commit, state }, { number }) {
-    commit(EMutations.setConcurrencyRequests, number)
     await uiSettingsStorage.set(state)
   },
   async [EActions.setLocale] ({ commit, state }, { locale }) {

@@ -57,8 +57,7 @@ import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import _ from 'lodash'
 import { Sites, ESiteStatus } from '@/sites'
 import SiteStatus from '@/components/SiteStatus.vue'
-import { useStore } from '@/store'
-import { EActions } from '@/store/enum'
+import { useStore, EActions } from '@/store'
 import PQueue from 'p-queue'
 
 interface SiteDataProps {
@@ -137,7 +136,7 @@ export default defineComponent({
           siteUrl: sites[siteKey].url.href,
           siteIcon: sites[siteKey].icon.href,
           siteStatus: sitesStatus[siteKey],
-          siteEnabled: store.state.siteData.enabledSites.findIndex(s => s === siteKey) !== -1
+          siteEnabled: store.state.siteSettings.enabledSites.findIndex(s => s === siteKey) !== -1
         }
         key += 1
         sitesData.push(siteData)
@@ -161,7 +160,7 @@ export default defineComponent({
       disabled.value = true
       const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sites)
       // use p-queue to contral concurrency async functions
-      const queue = new PQueue({ concurrency: store.state.uiSettings.concurrencyRequests || 5 })
+      const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
       let counter = 0
       sitesList.forEach(async siteKey => {
         if (sitesStatus[siteKey] !== ESiteStatus.login) {

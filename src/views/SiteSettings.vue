@@ -62,9 +62,8 @@
 import { defineComponent, ref, inject, watch, computed } from 'vue'
 import SiteSearchConfig from '@/components/SiteSearchConfig.vue'
 import { Sites } from '@/sites'
-import { useStore } from '@/store'
+import { useStore, EActions } from '@/store'
 import _ from 'lodash'
-import { EActions } from '@/store/enum'
 
 export default defineComponent({
   name: 'siteSettings',
@@ -74,7 +73,7 @@ export default defineComponent({
   setup () {
     const store = useStore()
     const sites = inject('sites') as Sites
-    const enabledSites = computed(() => _.sortBy(store.state.siteData.enabledSites))
+    const enabledSites = computed(() => _.sortBy(store.state.siteSettings.enabledSites))
     const showSites = ref(enabledSites.value)
 
     const searchText = ref('')
@@ -99,7 +98,7 @@ export default defineComponent({
       }
     )
 
-    const concurrencyRequests = ref(store.state.uiSettings.concurrencyRequests)
+    const concurrencyRequests = ref(store.state.siteSettings.concurrencyRequests)
     watch(
       () => concurrencyRequests.value,
       (newNumber) => {

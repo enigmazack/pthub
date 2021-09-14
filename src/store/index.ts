@@ -1,23 +1,29 @@
 // import { InjectionKey } from 'vue'
 import { createStore } from 'vuex'
 import uiSettings, { UISettingsState, UISettingsStore } from './modules/uiSettings'
-import siteData, { SiteDataState, SiteDataStore } from './modules/siteData'
+import userData, { UserDataState, UserDataStore } from './modules/userData'
+import siteSettings, { SiteSettingsState, SiteSettingsStore } from './modules/siteSettings'
+
+export { EActions, EMutations } from './enum'
 
 export interface RootState {
   uiSettings: UISettingsState
-  siteData: SiteDataState
+  userData: UserDataState
+  siteSettings: SiteSettingsState
 }
 
 // eslint-disable-next-line symbol-description
 // export const key: InjectionKey<Store<RootState>> = Symbol()
 
 export type Store = UISettingsStore<Pick<RootState, 'uiSettings'>> &
-  SiteDataStore<Pick<RootState, 'siteData'>>
+  UserDataStore<Pick<RootState, 'userData'>> &
+  SiteSettingsStore<Pick<RootState, 'siteSettings'>>
 
 export const store = createStore<RootState>({
   modules: {
     uiSettings,
-    siteData
+    userData,
+    siteSettings
   }
 })
 

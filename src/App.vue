@@ -33,8 +33,7 @@
 import { computed, defineComponent } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import Sider from './components/Sider.vue'
-import { useStore } from './store'
-import { EActions } from '@/store/enum'
+import { useStore, EActions } from './store'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import enUS from 'ant-design-vue/es/locale/en_US'
 export default defineComponent({
@@ -57,7 +56,8 @@ export default defineComponent({
     })
     // get state from extention's local storage
     store.dispatch(EActions.initUiSettings)
-    store.dispatch(EActions.initSiteData)
+    store.dispatch(EActions.initSiteSettings)
+    store.dispatch(EActions.initUserData)
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed,

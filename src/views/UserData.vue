@@ -79,12 +79,11 @@
 <script lang="ts">
 import { computed, defineComponent, ref, inject, reactive } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
-import { useStore } from '@/store'
-import { UserData } from '@/store/modules/siteData'
+import { useStore, EActions } from '@/store'
+import { UserData } from '@/store/modules/userData'
 import { Sites, ESiteStatus } from '@/sites'
 import _ from 'lodash'
 import SiteStatus from '@/components/SiteStatus.vue'
-import { EActions } from '@/store/enum'
 import filesize from 'file-size'
 import PQueue from 'p-queue'
 
@@ -215,8 +214,8 @@ export default defineComponent({
 
     const searchText = ref('')
     const dataSource = computed(() => {
-      const enabledSites = store.state.siteData.enabledSites
-      const storeData = store.state.siteData.userData
+      const enabledSites = store.state.siteSettings.enabledSites
+      const storeData = store.state.userData.userData
       const userData: UserDataProps[] = []
       let counter = 1
       enabledSites.forEach(siteKey => {
@@ -258,8 +257,8 @@ export default defineComponent({
     const disabled = ref(false)
     const refreshUserData = (siteKey?: string) => {
       disabled.value = true
-      const sitesList: string[] = siteKey ? [siteKey] : store.state.siteData.enabledSites
-      const queue = new PQueue({ concurrency: store.state.uiSettings.concurrencyRequests || 5 })
+      const sitesList: string[] = siteKey ? [siteKey] : store.state.siteSettings.enabledSites
+      const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
       let counter = 0
       sitesList.forEach(async sKey => {
         const uData = await queue.add(() => {

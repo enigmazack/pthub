@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import { defineComponent, UnwrapRef, reactive, computed } from 'vue'
-import { SearchConfig } from '@/store/modules/siteData'
+import { SearchConfig } from '@/store/modules/siteSettings'
 import { useStore } from '@/store'
 import _ from 'lodash'
 import { EActions, EMutations } from '@/store/enum'
@@ -88,7 +88,7 @@ export default defineComponent({
     ]
 
     const dataSource = computed(() => {
-      const sConfigs = store.state.siteData.searchConfigs.filter(config =>
+      const sConfigs = store.state.siteSettings.searchConfigs.filter(config =>
         config.siteKey === props.site)
       const searchConfig: SearchConfigWithKey[] = []
       let key = 1

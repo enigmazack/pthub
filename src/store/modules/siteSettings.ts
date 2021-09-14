@@ -13,13 +13,7 @@ import {
   EActions
 } from '@/store/enum'
 import { RootState } from '@/store'
-import { siteDataStorage } from '@/store/storage'
-import { UserInfo } from '@/sites'
-
-export interface UserData extends UserInfo {
-  siteKey: string,
-  recordDate: number
-}
+import { siteSettingsStorage } from '@/store/storage'
 
 export interface SearchConfig {
   siteKey: string,
@@ -28,15 +22,15 @@ export interface SearchConfig {
 }
 
 // state
-export interface SiteDataState {
+export interface SiteSettingsState {
+  concurrencyRequests: number,
   enabledSites: string[],
-  userData: UserData[],
   searchConfigs: SearchConfig[]
 }
 
-const state: SiteDataState = {
+const state: SiteSettingsState = {
+  concurrencyRequests: 5,
   enabledSites: [],
-  userData: [],
   searchConfigs: []
 }
 
@@ -44,23 +38,23 @@ const state: SiteDataState = {
 type Getters = {
 }
 
-const getters: GetterTree<SiteDataState, RootState> & Getters = {
+const getters: GetterTree<SiteSettingsState, RootState> & Getters = {
 }
 
 // mutations
-type Mutations<S = SiteDataState> = {
-  [EMutations.initSiteData] (state: S, payload: S): void,
+type Mutations<S = SiteSettingsState> = {
+  [EMutations.initSiteSettings] (state: S, payload: S): void,
   [EMutations.toggleEnabledSite] (state: S, payload: string): void,
-  [EMutations.updateUserData] (state: S, payload: UserData): void,
   [EMutations.updateSearchConfigs] (state: S, payload: SearchConfig): void,
-  [EMutations.deleteSearchConfigs] (state: S, payload: SearchConfig): void
+  [EMutations.deleteSearchConfigs] (state: S, payload: SearchConfig): void,
+  [EMutations.setConcurrencyRequests] (state: S, payload: number): void,
 }
 
-const mutations: MutationTree<SiteDataState> & Mutations = {
-  [EMutations.initSiteData] (state, data) {
+const mutations: MutationTree<SiteSettingsState> & Mutations = {
+  [EMutations.initSiteSettings] (state, data) {
     state.enabledSites = data.enabledSites || []
-    state.userData = data.userData || []
     state.searchConfigs = data.searchConfigs || []
+    state.concurrencyRequests = data.concurrencyRequests || 5
   },
   [EMutations.toggleEnabledSite] (state, site) {
     const index = state.enabledSites.findIndex(s => site === s)
@@ -68,16 +62,6 @@ const mutations: MutationTree<SiteDataState> & Mutations = {
       state.enabledSites.splice(index, 1)
     } else {
       state.enabledSites.push(site)
-    }
-  },
-  [EMutations.updateUserData] (state, data) {
-    const index = state.userData.findIndex(uData => uData.siteKey === data.siteKey)
-    if (index === -1) {
-      // insert data if the site key is new
-      state.userData.push(data)
-    } else {
-      // update data
-      state.userData[index] = data
     }
   },
   [EMutations.updateSearchConfigs] (state, searchConfig) {
@@ -95,60 +79,63 @@ const mutations: MutationTree<SiteDataState> & Mutations = {
     if (index !== -1) {
       state.searchConfigs.splice(index, 1)
     }
+  },
+  [EMutations.setConcurrencyRequests] (state, payload) {
+    state.concurrencyRequests = payload
   }
 }
 
 // actions
-type Actions<S = SiteDataState, R = RootState> = {
-  [EActions.initSiteData] (context: ActionContext<S, R>): Promise<void>,
+type Actions<S = SiteSettingsState, R = RootState> = {
+  [EActions.initSiteSettings] (context: ActionContext<S, R>): Promise<void>,
   [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>,
-  [EActions.updateUserData] (context: ActionContext<S, R>, payload: {data: UserData}): Promise<void>,
   [EActions.updateSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>,
-  [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>
+  [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>,
+  [EActions.setConcurrencyRequests] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
 }
 
-const actions: ActionTree<SiteDataState, RootState> & Actions = {
+const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async [EActions.initSiteData] ({ commit, state }) {
+  async [EActions.initSiteSettings] ({ commit, state }) {
     // load data from the local storage when extension start
-    const data = await siteDataStorage.get()
+    const data = await siteSettingsStorage.get()
     if (data !== undefined) {
-      commit(EMutations.initSiteData, data)
+      commit(EMutations.initSiteSettings, data)
     } else {
       // for new installed extension, init the storage with empty data
-      await siteDataStorage.set(state)
+      await siteSettingsStorage.set(state)
     }
   },
   async [EActions.toggleEnabledSite] ({ commit, state }, { site }) {
     commit(EMutations.toggleEnabledSite, site)
-    await siteDataStorage.set(state)
-  },
-  async [EActions.updateUserData] ({ commit, state }, { data }) {
-    commit(EMutations.updateUserData, data)
-    await siteDataStorage.set(state)
+    await siteSettingsStorage.set(state)
   },
   async [EActions.updateSearchConfigs] ({ commit, state }, { searchConfig }) {
     commit(EMutations.updateSearchConfigs, searchConfig)
-    await siteDataStorage.set(state)
+    await siteSettingsStorage.set(state)
   },
   async [EActions.deleteSearchConfigs] ({ commit, state }, { searchConfig }) {
     commit(EMutations.deleteSearchConfigs, searchConfig)
-    await siteDataStorage.set(state)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.setConcurrencyRequests] ({ commit, state }, { number }) {
+    commit(EMutations.setConcurrencyRequests, number)
+    await siteSettingsStorage.set(state)
   }
 }
 
 // modules
-const siteData: Module<SiteDataState, RootState> = {
+const siteSettings: Module<SiteSettingsState, RootState> = {
   state,
   getters,
   mutations,
   actions
 }
 
-export default siteData
+export default siteSettings
 
 // store type
-export type SiteDataStore<S = SiteDataState> = Omit<Store<S>, 'getters' | 'commit' | 'dispatch'> & {
+export type SiteSettingsStore<S = SiteSettingsState> = Omit<Store<S>, 'getters' | 'commit' | 'dispatch'> & {
   commit<K extends keyof Mutations, P extends Parameters<Mutations[K]>[1]>(
     key: K,
     payload: P,

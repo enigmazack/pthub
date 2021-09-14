@@ -8,6 +8,7 @@
     "importSites": "Import Sites"
   },
   "tableHead": {
+    "name": "Name",
     "site": "Site",
     "url": "URL",
     "status": "Status",
@@ -22,7 +23,9 @@
     "seedingSize": "Seeding Size",
     "bonus": "Bonus",
     "joinDate": "Join Date",
-    "recordDate": "Record Date"
+    "recordDate": "Record Date",
+    "searchPattern": "Search URL Pattern",
+    "operation": "Operation"
   },
   "siteStatus": {    
     "connecting": "Connecting...",
@@ -39,7 +42,12 @@
     "checkAll": "Check All",
     "refreshAll": "Refresh All",
     "refreshUserData": "Refresh user data",
-    "vistSite": "Visit site"
+    "vistSite": "Visit site",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "sureToDelete": "Sure to delete?"
   },
   "settings": {
     "globalSettings": "Global Settings",

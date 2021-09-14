@@ -22,42 +22,49 @@
     }"
   >
     <a-collapse-panel key="global" :header="$t('settings.globalSettings')">
-      <div>
-        <a-tooltip>
-          <template #title>{{ $t('settings.concurrencyRequestsTip') }}</template>
-          {{ $t('settings.concurrencyRequests') + ':' }}
-        </a-tooltip>
-        <a-input-number
-          id="concurrencyRequests"
-          v-model:value="concurrencyRequests"
-          :min="1"
-          :max="10"
-          size="small"
-        />
-      </div>
+      <a-space direction="vertical">
+        <div>
+          <a-tooltip>
+            <template #title>{{ $t('settings.concurrencyRequestsTip') }}</template>
+            {{ $t('settings.concurrencyRequests') + ':' }}
+          </a-tooltip>
+          <a-input-number
+            id="concurrencyRequests"
+            v-model:value="concurrencyRequests"
+            :min="1"
+            :max="10"
+            size="small"
+          />
+        </div>
+        <div>
+          <a-tooltip>
+            <template #title>{{ $t('settings.expectTorrentsTip') }}</template>
+            {{ $t('settings.expectTorrents') + ':' }}
+          </a-tooltip>
+          <a-input-number
+            id="expectTorrents"
+            v-model:value="expectTorrents"
+            :min="25"
+            :max="200"
+            :step="25"
+            size="small"
+          />
+        </div>
+      </a-space>
     </a-collapse-panel>
-    <a-collapse-panel
-      v-for="siteKey in enabledSites"
-      :key="siteKey"
-      :header="sites[siteKey].name"
-    >
+    <a-collapse-panel v-for="siteKey in showSites" :key="siteKey" :header="sites[siteKey].name">
       <SiteSearchConfig :site="siteKey" />
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject, watch, reactive, toRaw } from 'vue'
+import { defineComponent, ref, inject, watch, computed } from 'vue'
 import SiteSearchConfig from '@/components/SiteSearchConfig.vue'
 import { Sites } from '@/sites'
 import { useStore } from '@/store'
 import _ from 'lodash'
 import { EActions } from '@/store/enum'
-import { SearchConfig } from '@/store/modules/siteData'
-
-interface NewSearchConfigs {
-  [key: string]: SearchConfig
-}
 
 export default defineComponent({
   name: 'siteSettings',
@@ -67,7 +74,8 @@ export default defineComponent({
   setup () {
     const store = useStore()
     const sites = inject('sites') as Sites
-    const enabledSites = _.sortBy(store.state.siteData.enabledSites)
+    const enabledSites = computed(() => _.sortBy(store.state.siteData.enabledSites))
+    const showSites = ref(enabledSites.value)
 
     const searchText = ref('')
     const activeKey = ref(['global'])
@@ -75,12 +83,18 @@ export default defineComponent({
       () => searchText.value,
       (newText) => {
         if (newText !== '') {
-          const activeList = _.filter(enabledSites, siteKey =>
+          const activeList = enabledSites.value.filter(siteKey =>
             siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
             sites[siteKey].name.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1)
-          activeKey.value = ['global'].concat(activeList)
+          if (activeList.length === 1) {
+            activeKey.value = ['global'].concat(activeList)
+          } else {
+            activeKey.value = ['global']
+          }
+          showSites.value = activeList
         } else {
           activeKey.value = ['global']
+          showSites.value = enabledSites.value
         }
       }
     )
@@ -93,32 +107,15 @@ export default defineComponent({
       }
     )
 
-    const getSearchConfig = (siteKey: string) => {
-      const searchConfigs = ref(store.state.siteData.searchConfigs)
-      return _.filter(searchConfigs.value, config => config.siteKey === siteKey)
-    }
-
-    const nSearchConfigs: NewSearchConfigs = {}
-    enabledSites.forEach(siteKey => {
-      nSearchConfigs[siteKey] = { siteKey, name: '', pattern: '' }
-    })
-    const newSearchConfigs = reactive(nSearchConfigs)
-
-    const addSearchConfig = (siteKey: string) => {
-      const searchConfig: SearchConfig = toRaw(newSearchConfigs[siteKey])
-      newSearchConfigs[siteKey] = { siteKey, name: '', pattern: '' }
-      store.dispatch(EActions.updateSearchConfigs, { searchConfig })
-    }
+    const expectTorrents = ref(0)
 
     return {
       activeKey,
       searchText,
       sites,
-      enabledSites,
+      showSites,
       concurrencyRequests,
-      getSearchConfig,
-      newSearchConfigs,
-      addSearchConfig
+      expectTorrents
     }
   }
 })

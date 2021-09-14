@@ -43,6 +43,7 @@
     "refreshAll": "刷新所有站点数据",
     "refreshUserData": "刷新用户数据",
     "vistSite": "访问站点",
+    "add": "添加",
     "save": "保存",
     "cancel": "取消",
     "edit": "编辑",
@@ -52,6 +53,9 @@
   "settings": {
     "globalSettings": "全局设置",
     "concurrencyRequests": "同时运行访问数量",
-    "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围"
+    "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围",
+    "searchConfig": "搜索配置",
+    "expectTorrents": "期望种子数量",
+    "expectTorrentsTip": "每次搜索期望返回的种子数量，当网站每页种子数量有限时尝试翻页"
   }
 }

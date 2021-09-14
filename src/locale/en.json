@@ -43,6 +43,7 @@
     "refreshAll": "Refresh All",
     "refreshUserData": "Refresh user data",
     "vistSite": "Visit site",
+    "add": "Add",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
@@ -52,6 +53,9 @@
   "settings": {
     "globalSettings": "Global Settings",
     "concurrencyRequests": "Concurrency Requests",
-    "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围"
+    "concurrencyRequestsTip": "Limit the concurrency async requests.",
+    "searchConfig": "Search Config",
+    "expectTorrents": "Expected Torrents Counts",
+    "expectTorrentsTip": "Searching will try reading torrents data from the next page, when total amount is not sufficient."
   }
 }

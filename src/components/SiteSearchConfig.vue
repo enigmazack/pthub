@@ -1,5 +1,8 @@
 <template>
   <a-table :data-source="dataSource" :columns="columns" :pagination="false">
+    <template #title>
+      {{ $t('settings.searchConfig') }}
+    </template>
     <template #nameTitle>{{ $t('tableHead.name') }}</template>
     <template #patternTitle>{{ $t('tableHead.searchPattern') }}</template>
     <template #operationTitle>{{ $t('tableHead.operation') }}</template>
@@ -11,9 +14,7 @@
           style="margin: -5px 0"
           @pressEnter="save(record.key)"
         />
-        <template v-else>
-          {{ text }}
-        </template>
+        <template v-else>{{ text }}</template>
       </div>
     </template>
     <template #pattern="{ text, record }">
@@ -44,7 +45,11 @@
       </div>
     </template>
   </a-table>
-  <a-button class="editable-add-btn" @click="handleAdd" style="margin-top: 8px">Add</a-button>
+  <a-button
+    class="editable-add-btn"
+    @click="handleAdd"
+    style="margin-top: 8px"
+  >{{ $t('button.add') }}</a-button>
 </template>
 
 <script lang="ts">

@@ -4,9 +4,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { useStore } from '@/store'
-import { EActions } from '@/store/enum'
-
+import { useStore, EActions } from '@/store'
 export default defineComponent({
   name: 'siteSwitch',
   props: {

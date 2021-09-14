@@ -16,8 +16,7 @@ import { GlobalOutlined } from '@ant-design/icons-vue'
 import { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
 import { useI18n } from 'vue-i18n'
 import dayjs from 'dayjs'
-import { useStore } from '@/store'
-import { EActions } from '@/store/enum'
+import { useStore, EActions } from '@/store'
 
 export default defineComponent({
   name: 'languageMenu',

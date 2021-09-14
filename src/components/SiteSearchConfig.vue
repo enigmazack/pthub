@@ -55,9 +55,8 @@
 <script lang="ts">
 import { defineComponent, UnwrapRef, reactive, computed } from 'vue'
 import { SearchConfig } from '@/store/modules/siteSettings'
-import { useStore } from '@/store'
+import { useStore, EActions, EMutations } from '@/store'
 import _ from 'lodash'
-import { EActions, EMutations } from '@/store/enum'
 
 interface SearchConfigWithKey extends SearchConfig {
   key: string

@@ -40,8 +40,7 @@
 import { computed, defineComponent, ref } from 'vue'
 import LanguageMenu from './LanguageMenu.vue'
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
-import { useStore } from '@/store'
-import { EActions } from '@/store/enum'
+import { useStore, EActions } from '@/store'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({

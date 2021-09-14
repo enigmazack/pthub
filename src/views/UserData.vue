@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, inject, reactive } from 'vue'
+import { computed, defineComponent, ref, inject, reactive, UnwrapRef } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { useStore, EActions } from '@/store'
 import { UserData } from '@/store/modules/userData'
@@ -106,10 +106,7 @@ interface UserDataProps {
   status: ESiteStatus
 }
 
-interface SitesStatus {
-  [key: string]: ESiteStatus
-}
-
+// quick gen sort compare function
 const genSorter = (prop: keyof UserDataProps) =>
   (a: UserDataProps, b: UserDataProps) => {
     const ap = a[prop]
@@ -206,11 +203,10 @@ export default defineComponent({
     const sites = inject('sites') as Sites
     const store = useStore()
 
-    const sStatus: SitesStatus = {}
+    const sitesStatus: UnwrapRef<Record<string, ESiteStatus>> = reactive({})
     for (const siteKey of Object.keys(sites)) {
-      sStatus[siteKey] = ESiteStatus.empty
+      sitesStatus[siteKey] = ESiteStatus.empty
     }
-    const sitesStatus = reactive(sStatus)
 
     const searchText = ref('')
     const dataSource = computed(() => {
@@ -248,7 +244,7 @@ export default defineComponent({
       if (searchText.value === '') {
         return sorteduserData
       }
-      return _.filter(sorteduserData, data =>
+      return sorteduserData.filter(data =>
         data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
         data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
       )

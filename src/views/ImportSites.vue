@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, inject, reactive } from 'vue'
+import { computed, defineComponent, ref, inject, reactive, UnwrapRef } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import _ from 'lodash'
 import { Sites, ESiteStatus } from '@/sites'
@@ -68,10 +68,6 @@ interface SiteDataProps {
   siteIcon: string
   siteStatus: ESiteStatus,
   siteEnabled: boolean
-}
-
-interface SitesStatus {
-  [key: string]: ESiteStatus
 }
 
 // define column properties
@@ -119,11 +115,10 @@ export default defineComponent({
     // use vuex store
     const store = useStore()
     // set all sites status init value unknow
-    const sStatus: SitesStatus = {}
+    const sitesStatus: UnwrapRef<Record<string, ESiteStatus>> = reactive({})
     for (const siteKey of Object.keys(sites)) {
-      sStatus[siteKey] = ESiteStatus.unknow
+      sitesStatus[siteKey] = ESiteStatus.unknow
     }
-    const sitesStatus = reactive(sStatus)
     // table data source is a computed props
     const dataSource = computed(() => {
       const sitesData: SiteDataProps[] = []
@@ -146,7 +141,7 @@ export default defineComponent({
         return sortedSitesData
       }
       // TODO: maybe we want to do some fuzzy search here
-      return _.filter(sortedSitesData, data =>
+      return sortedSitesData.filter(data =>
         data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
         data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
       )

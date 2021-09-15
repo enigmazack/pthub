@@ -56,7 +56,6 @@
 import { defineComponent, UnwrapRef, reactive, computed } from 'vue'
 import { SearchConfig } from '@/store/modules/siteSettings'
 import { useStore, EActions, EMutations } from '@/store'
-import _ from 'lodash'
 
 export default defineComponent({
   name: 'siteSearchConfig',
@@ -89,18 +88,23 @@ export default defineComponent({
     const editableData: UnwrapRef<Record<string, SearchConfig>> = reactive({})
 
     const edit = (key: string) => {
-      editableData[key] = _.cloneDeep(dataSource.value.filter(config => key === config.key)[0])
+      const dataOfKey = dataSource.value.filter(config => key === config.key)[0]
+      editableData[key] = {
+        siteKey: dataOfKey.siteKey,
+        name: dataOfKey.name,
+        pattern: dataOfKey.pattern
+      }
     }
     const save = (key: string) => {
       // if name conflict with others, add _ after the name
-      const dateOfOthers = dataSource.value.filter(config => config.key !== key)
+      /* const dateOfOthers = dataSource.value.filter(config => config.key !== key)
       while (true) {
         if (dateOfOthers.every(config => config.name !== editableData[key].name)) {
           break
         } else {
           editableData[key].name += '_'
         }
-      }
+      } */
       store.dispatch(EActions.updateSearchConfigs, {
         searchConfigWithKey: {
           key, ...editableData[key]
@@ -121,9 +125,9 @@ export default defineComponent({
     }
     const handleAdd = () => {
       const emptyConfig = { key: '', siteKey: props.site, name: '', pattern: '' }
+      // commit will assign a uuid to the emptyConfig.key
       store.commit(EMutations.addSearchConfigs, emptyConfig)
-      editableData[emptyConfig.key] = _.cloneDeep(emptyConfig)
-      console.log(emptyConfig.key)
+      editableData[emptyConfig.key] = { siteKey: props.site, name: '', pattern: '' }
     }
 
     const displaySearchPattern = (text: string) => {

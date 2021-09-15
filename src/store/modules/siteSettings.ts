@@ -31,15 +31,16 @@ export interface SiteSettingsState {
   concurrencyRequests: number,
   expectTorrents: number,
   enabledSites: string[],
-  searchConfigs: SearchConfigWithKey[]
+  searchConfigs: SearchConfigWithKey[],
+  selectedConfig: string,
 }
 
 const state: SiteSettingsState = {
   concurrencyRequests: 5,
   expectTorrents: 50,
   enabledSites: [],
-  searchConfigs: []
-
+  searchConfigs: [],
+  selectedConfig: 'default'
 }
 
 // getters
@@ -58,6 +59,7 @@ type Mutations<S = SiteSettingsState> = {
   [EMutations.updateSearchConfigs] (state: S, payload: SearchConfigWithKey): void,
   [EMutations.deleteSearchConfigs] (state: S, payload: string): void,
   [EMutations.addSearchConfigs] (state: S, payload: SearchConfigWithKey): void,
+  [EMutations.setSelectedConfig] (state: S, payload: string): void,
 }
 
 const mutations: MutationTree<SiteSettingsState> & Mutations = {
@@ -66,6 +68,7 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
     state.searchConfigs = data.searchConfigs || []
     state.concurrencyRequests = data.concurrencyRequests || 5
     state.expectTorrents = data.expectTorrents || 50
+    state.selectedConfig = data.selectedConfig || 'default'
   },
   [EMutations.toggleEnabledSite] (state, site) {
     const index = state.enabledSites.findIndex(s => site === s)
@@ -96,6 +99,9 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
   [EMutations.addSearchConfigs] (state, searchConfigWithKey) {
     searchConfigWithKey.key = uuidv4()
     state.searchConfigs.push(searchConfigWithKey)
+  },
+  [EMutations.setSelectedConfig] (state, configName) {
+    state.selectedConfig = configName
   }
 }
 
@@ -107,7 +113,8 @@ type Actions<S = SiteSettingsState, R = RootState> = {
   [EActions.setExpectTorrents] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
   [EActions.updateSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfigWithKey: SearchConfigWithKey}): Promise<void>,
   [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {key: string}): Promise<void>,
-  [EActions.addSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfigWithKey: SearchConfigWithKey}): Promise<void>
+  [EActions.addSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfigWithKey: SearchConfigWithKey}): Promise<void>,
+  [EActions.setSelectedConfig] (context: ActionContext<S, R>, payload: {configName: string}): Promise<void>
 }
 
 const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
@@ -144,6 +151,10 @@ const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
   },
   async [EActions.addSearchConfigs] ({ commit, state }, { searchConfigWithKey }) {
     commit(EMutations.addSearchConfigs, searchConfigWithKey)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.setSelectedConfig] ({ commit, state }, { configName }) {
+    commit(EActions.setSelectedConfig, configName)
     await siteSettingsStorage.set(state)
   }
 }

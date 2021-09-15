@@ -13,7 +13,8 @@ export enum EMutations {
   updateUserData = 'updateUserData',
   updateSearchConfigs = 'updateSearchConfigs',
   deleteSearchConfigs = 'deleteSearchConfigs',
-  addSearchConfigs = 'addSearchConfigs'
+  addSearchConfigs = 'addSearchConfigs',
+  setSelectedConfig = 'setSelectedConfig'
 }
 
 export enum EActions {
@@ -28,5 +29,6 @@ export enum EActions {
   updateUserData = 'updateUserData',
   updateSearchConfigs = 'updateSearchConfigs',
   deleteSearchConfigs = 'deleteSearchConfigs',
-  addSearchConfigs = 'addSearchConfigs'
+  addSearchConfigs = 'addSearchConfigs',
+  setSelectedConfig = 'setSelectedConfig'
 }

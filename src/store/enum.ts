@@ -7,11 +7,13 @@ export enum EMutations {
   initUserData = 'initUserData',
   toggleSiderCollapsed = 'toggleSiderCollapsed',
   setConcurrencyRequests = 'setConcurrencyRequests',
+  setExpectTorrents = 'setExpectTorrents',
   setLocale = 'setLocale',
   toggleEnabledSite = 'toggleEnabledSite',
   updateUserData = 'updateUserData',
   updateSearchConfigs = 'updateSearchConfigs',
-  deleteSearchConfigs = 'deleteSearchConfigs'
+  deleteSearchConfigs = 'deleteSearchConfigs',
+  addSearchConfigs = 'addSearchConfigs'
 }
 
 export enum EActions {
@@ -20,9 +22,11 @@ export enum EActions {
   initUserData = 'initUserData',
   toggleSiderCollapsed = 'toggleSiderCollapsed',
   setConcurrencyRequests = 'setConcurrencyRequests',
+  setExpectTorrents = 'setExpectTorrents',
   setLocale = 'setLocale',
   toggleEnabledSite = 'toggleEnabledSite',
   updateUserData = 'updateUserData',
   updateSearchConfigs = 'updateSearchConfigs',
-  deleteSearchConfigs = 'deleteSearchConfigs'
+  deleteSearchConfigs = 'deleteSearchConfigs',
+  addSearchConfigs = 'addSearchConfigs'
 }

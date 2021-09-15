@@ -22,7 +22,7 @@
     }"
   >
     <a-collapse-panel key="global" :header="$t('settings.globalSettings')">
-      <a-space direction="vertical">
+      <a-space direction="horizontal" :size="100">
         <div>
           <a-tooltip>
             <template #title>{{ $t('settings.concurrencyRequestsTip') }}</template>
@@ -106,7 +106,13 @@ export default defineComponent({
       }
     )
 
-    const expectTorrents = ref(0)
+    const expectTorrents = ref(store.state.siteSettings.expectTorrents)
+    watch(
+      () => expectTorrents.value,
+      (newNumber) => {
+        store.dispatch(EActions.setExpectTorrents, { number: newNumber })
+      }
+    )
 
     return {
       activeKey,

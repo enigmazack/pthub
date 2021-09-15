@@ -58,10 +58,6 @@ import { SearchConfig } from '@/store/modules/siteSettings'
 import { useStore, EActions, EMutations } from '@/store'
 import _ from 'lodash'
 
-interface SearchConfigWithKey extends SearchConfig {
-  key: string
-}
-
 export default defineComponent({
   name: 'siteSearchConfig',
   props: {
@@ -86,41 +82,18 @@ export default defineComponent({
       }
     ]
 
-    const dataSource = computed(() => {
-      const sConfigs = store.state.siteSettings.searchConfigs.filter(config =>
-        config.siteKey === props.site)
-      const searchConfig: SearchConfigWithKey[] = []
-      let key = 1
-      sConfigs.forEach(config => {
-        searchConfig.push({
-          key: key.toString(),
-          ...config
-        })
-        key += 1
-      })
-      return searchConfig
-    })
+    const dataSource = computed(() => store.state.siteSettings.searchConfigs.filter(config =>
+      config.siteKey === props.site)
+    )
 
     const editableData: UnwrapRef<Record<string, SearchConfig>> = reactive({})
-
-    const removeKey = (dataWithKey: SearchConfigWithKey): SearchConfig => {
-      const { siteKey, name, pattern } = dataWithKey
-      return { siteKey, name, pattern }
-    }
 
     const edit = (key: string) => {
       editableData[key] = _.cloneDeep(dataSource.value.filter(config => key === config.key)[0])
     }
     const save = (key: string) => {
-      const dataOfKey = dataSource.value.filter(config => key === config.key)[0]
-      const searchConfig = removeKey(dataOfKey)
-      // if name changed, remove the old config first
-      if (editableData[key].name !== searchConfig.name) {
-        store.commit(EMutations.deleteSearchConfigs, searchConfig)
-      }
       // if name conflict with others, add _ after the name
-      // store dispatch EActions.updateSearchConfigs will cover config with the same name
-      const dateOfOthers = dataSource.value.filter(config => key !== config.key)
+      const dateOfOthers = dataSource.value.filter(config => config.key !== key)
       while (true) {
         if (dateOfOthers.every(config => config.name !== editableData[key].name)) {
           break
@@ -128,32 +101,29 @@ export default defineComponent({
           editableData[key].name += '_'
         }
       }
-      store.dispatch(EActions.updateSearchConfigs, { searchConfig: editableData[key] })
+      store.dispatch(EActions.updateSearchConfigs, {
+        searchConfigWithKey: {
+          key, ...editableData[key]
+        }
+      })
       delete editableData[key]
     }
     const cancel = (key: string) => {
       delete editableData[key]
       // when cancel a new added config, delete it in the data source
-      const index = dataSource.value.findIndex(config => key === config.key)
-      if (index !== -1) {
-        const searchConfig = dataSource.value[index]
-        if (searchConfig.name === '' && searchConfig.pattern === '') {
-          store.commit(EMutations.deleteSearchConfigs, searchConfig)
-        }
+      const searchConfig = dataSource.value.filter(config => config.key === key)[0]
+      if (searchConfig.name === '' && searchConfig.pattern === '') {
+        store.commit(EMutations.deleteSearchConfigs, key)
       }
     }
     const handleDelete = (key: string) => {
-      const dataOfKey = dataSource.value.filter(config => key === config.key)[0]
-      const searchConfig = removeKey(dataOfKey)
-      store.dispatch(EActions.deleteSearchConfigs, { searchConfig })
+      store.dispatch(EActions.deleteSearchConfigs, { key })
     }
     const handleAdd = () => {
-      const currentKeys = dataSource.value.map(config => parseInt(config.key))
-      const maxKey = _.max(currentKeys)
-      const key = maxKey ? maxKey + 1 : 0
-      const emptyConfig = { key: key.toString(), siteKey: props.site, name: '', pattern: '' }
-      store.commit(EMutations.updateSearchConfigs, emptyConfig)
+      const emptyConfig = { key: '', siteKey: props.site, name: '', pattern: '' }
+      store.commit(EMutations.addSearchConfigs, emptyConfig)
       editableData[emptyConfig.key] = _.cloneDeep(emptyConfig)
+      console.log(emptyConfig.key)
     }
 
     const displaySearchPattern = (text: string) => {

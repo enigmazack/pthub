@@ -14,6 +14,7 @@ import {
 } from '@/store/enum'
 import { RootState } from '@/store'
 import { siteSettingsStorage } from '@/store/storage'
+import { v4 as uuidv4 } from 'uuid'
 
 export interface SearchConfig {
   siteKey: string,
@@ -21,17 +22,24 @@ export interface SearchConfig {
   pattern: string
 }
 
+export interface SearchConfigWithKey extends SearchConfig {
+  key: string
+}
+
 // state
 export interface SiteSettingsState {
   concurrencyRequests: number,
+  expectTorrents: number,
   enabledSites: string[],
-  searchConfigs: SearchConfig[]
+  searchConfigs: SearchConfigWithKey[]
 }
 
 const state: SiteSettingsState = {
   concurrencyRequests: 5,
+  expectTorrents: 50,
   enabledSites: [],
   searchConfigs: []
+
 }
 
 // getters
@@ -45,9 +53,11 @@ const getters: GetterTree<SiteSettingsState, RootState> & Getters = {
 type Mutations<S = SiteSettingsState> = {
   [EMutations.initSiteSettings] (state: S, payload: S): void,
   [EMutations.toggleEnabledSite] (state: S, payload: string): void,
-  [EMutations.updateSearchConfigs] (state: S, payload: SearchConfig): void,
-  [EMutations.deleteSearchConfigs] (state: S, payload: SearchConfig): void,
   [EMutations.setConcurrencyRequests] (state: S, payload: number): void,
+  [EMutations.setExpectTorrents] (state: S, payload: number): void,
+  [EMutations.updateSearchConfigs] (state: S, payload: SearchConfigWithKey): void,
+  [EMutations.deleteSearchConfigs] (state: S, payload: string): void,
+  [EMutations.addSearchConfigs] (state: S, payload: SearchConfigWithKey): void,
 }
 
 const mutations: MutationTree<SiteSettingsState> & Mutations = {
@@ -55,6 +65,7 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
     state.enabledSites = data.enabledSites || []
     state.searchConfigs = data.searchConfigs || []
     state.concurrencyRequests = data.concurrencyRequests || 5
+    state.expectTorrents = data.expectTorrents || 50
   },
   [EMutations.toggleEnabledSite] (state, site) {
     const index = state.enabledSites.findIndex(s => site === s)
@@ -64,24 +75,27 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
       state.enabledSites.push(site)
     }
   },
-  [EMutations.updateSearchConfigs] (state, searchConfig) {
-    const index = state.searchConfigs.findIndex(config =>
-      config.siteKey === searchConfig.siteKey && config.name === searchConfig.name)
-    if (index === -1) {
-      state.searchConfigs.push(searchConfig)
-    } else {
-      state.searchConfigs[index] = searchConfig
+  [EMutations.setConcurrencyRequests] (state, number) {
+    state.concurrencyRequests = number
+  },
+  [EMutations.setExpectTorrents] (state, number) {
+    state.expectTorrents = number
+  },
+  [EMutations.updateSearchConfigs] (state, searchConfigWithKey) {
+    const index = state.searchConfigs.findIndex(config => config.key === searchConfigWithKey.key)
+    if (index !== -1) {
+      Object.assign(state.searchConfigs[index], searchConfigWithKey)
     }
   },
-  [EMutations.deleteSearchConfigs] (state, searchConfig) {
-    const index = state.searchConfigs.findIndex(config =>
-      config.siteKey === searchConfig.siteKey && config.name === searchConfig.name)
+  [EMutations.deleteSearchConfigs] (state, key) {
+    const index = state.searchConfigs.findIndex(config => config.key === key)
     if (index !== -1) {
       state.searchConfigs.splice(index, 1)
     }
   },
-  [EMutations.setConcurrencyRequests] (state, payload) {
-    state.concurrencyRequests = payload
+  [EMutations.addSearchConfigs] (state, searchConfigWithKey) {
+    searchConfigWithKey.key = uuidv4()
+    state.searchConfigs.push(searchConfigWithKey)
   }
 }
 
@@ -89,9 +103,11 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
 type Actions<S = SiteSettingsState, R = RootState> = {
   [EActions.initSiteSettings] (context: ActionContext<S, R>): Promise<void>,
   [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>,
-  [EActions.updateSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>,
-  [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfig: SearchConfig}): Promise<void>,
   [EActions.setConcurrencyRequests] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
+  [EActions.setExpectTorrents] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
+  [EActions.updateSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfigWithKey: SearchConfigWithKey}): Promise<void>,
+  [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {key: string}): Promise<void>,
+  [EActions.addSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfigWithKey: SearchConfigWithKey}): Promise<void>
 }
 
 const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
@@ -110,16 +126,24 @@ const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
     commit(EMutations.toggleEnabledSite, site)
     await siteSettingsStorage.set(state)
   },
-  async [EActions.updateSearchConfigs] ({ commit, state }, { searchConfig }) {
-    commit(EMutations.updateSearchConfigs, searchConfig)
-    await siteSettingsStorage.set(state)
-  },
-  async [EActions.deleteSearchConfigs] ({ commit, state }, { searchConfig }) {
-    commit(EMutations.deleteSearchConfigs, searchConfig)
-    await siteSettingsStorage.set(state)
-  },
   async [EActions.setConcurrencyRequests] ({ commit, state }, { number }) {
     commit(EMutations.setConcurrencyRequests, number)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.setExpectTorrents] ({ commit, state }, { number }) {
+    commit(EMutations.setExpectTorrents, number)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.updateSearchConfigs] ({ commit, state }, { searchConfigWithKey }) {
+    commit(EMutations.updateSearchConfigs, searchConfigWithKey)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.deleteSearchConfigs] ({ commit, state }, { key }) {
+    commit(EMutations.deleteSearchConfigs, key)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.addSearchConfigs] ({ commit, state }, { searchConfigWithKey }) {
+    commit(EMutations.addSearchConfigs, searchConfigWithKey)
     await siteSettingsStorage.set(state)
   }
 }

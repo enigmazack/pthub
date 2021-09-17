@@ -37,7 +37,7 @@
     "retry": "Retry",
     "check": "Check",
     "refresh": "Refresh",
-    "getUserDatafailed": "Get user data failed"
+    "getUserDataFailed": "Get user data failed"
   },
   "button": {
     "checkAll": "Check All",

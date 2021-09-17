@@ -10,12 +10,17 @@
       </a-space>
     </a-col>
     <a-col :pull="2" :span="8">
-      <a-input v-model:value="searchKey" placeholder="搜索" size="large" @pressEnter="toSearch">
+      <a-input
+        v-model:value="search"
+        :placeholder="$t('menu.search')"
+        size="large"
+        @pressEnter="toSearch"
+      >
         <template #addonAfter>
           <a-select
             style="width: 100px"
-            :value="value"
-            :options="options"
+            :value="selectedConfig"
+            :options="configOptions"
             @change="handleChange"
           />
         </template>
@@ -36,7 +41,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LanguageMenu from './LanguageMenu.vue'
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
-import { useStore, EActions } from '@/store'
+import { useStore, EActions, EMutations } from '@/store'
 import { useRouter } from 'vue-router'
 import _ from 'lodash'
 
@@ -54,23 +59,25 @@ export default defineComponent({
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     const toggleCollapsed = () => store.dispatch(EActions.toggleSiderCollapsed)
 
-    const searchKey = ref('')
+    const search = ref('')
     const toSearch = () => {
-      router.push('/search')
+      store.commit(EMutations.setSearchText, search.value)
+      store.commit(EMutations.setRunSearch, true)
+      router.push({ path: '/torrents' })
     }
 
     const defaultString = t('default')
-    const value = computed(() => store.state.siteSettings.selectedConfig)
-    const options = computed(() => {
-      const op = [{ value: 'default', label: defaultString }]
+    const selectedConfig = computed(() => store.state.siteSettings.selectedConfig)
+    const configOptions = computed(() => {
+      const options = [{ value: 'default', label: defaultString }]
       const configNames = store.state.siteSettings.searchConfigs.map(sConfig => sConfig.name)
       _.uniq(configNames).forEach(name => {
-        op.push({
+        options.push({
           value: name,
           label: name
         })
       })
-      return op
+      return options
     })
 
     const handleChange = (value: string) => {
@@ -80,10 +87,10 @@ export default defineComponent({
     return {
       collapsed,
       toggleCollapsed,
-      searchKey,
+      search,
       toSearch,
-      value,
-      options,
+      selectedConfig,
+      configOptions,
       handleChange
     }
   }

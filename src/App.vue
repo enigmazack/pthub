@@ -18,7 +18,7 @@
             <div class="preview-header"></div>
             <div class="preview">
               <router-view v-slot="{ Component }">
-                <keep-alive include="ImportSites,UserData,Search">
+                <keep-alive include="importSites,userData,torrents">
                   <component :is="Component" />
                 </keep-alive>
               </router-view>

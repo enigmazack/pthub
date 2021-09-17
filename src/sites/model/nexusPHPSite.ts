@@ -7,7 +7,6 @@ import {
 import {
   UserInfo,
   SeedingInfo,
-  SearchConfig,
   TorrentInfo,
   TorrentPromotion
 } from '../types'
@@ -59,7 +58,7 @@ export default class NexusPHPSite extends Site {
   async getUserInfo (): Promise<UserInfo|ESiteStatus> {
     const id = await this.getUserId()
     if (!id) {
-      return ESiteStatus.getUserIdfailed
+      return ESiteStatus.getUserIdFailed
     }
     if (id === ESiteStatus.timeout) {
       return ESiteStatus.timeout
@@ -100,7 +99,7 @@ export default class NexusPHPSite extends Site {
         return ESiteStatus.timeout
       }
       console.log(error)
-      return ESiteStatus.getUserDatafailed
+      return ESiteStatus.getUserDataFailed
     }
   }
 
@@ -360,27 +359,34 @@ export default class NexusPHPSite extends Site {
     return torrents
   }
 
-  async search (keywords: string, config: SearchConfig): Promise<TorrentInfo[]> {
-    const url = new URL(this.url.href)
-    url.pathname = config.path ? config.path : this.torrentPath
-    if (config.params) {
-      for (const [key, value] of Object.entries(config.params)) {
-        url.searchParams.set(key, value)
+  async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {
+    try {
+      const url = new URL(this.url.href)
+      if (pattern) {
+        const [pathname, search] = pattern.split('?')
+        url.pathname = pathname
+        url.search = search.replace('{}', keywords.replace('.', ' '))
+      } else {
+        url.pathname = this.torrentPath
+        url.searchParams.set('search', keywords.replace('.', ' '))
       }
-    }
-    url.searchParams.set('search', keywords)
-    const query = await this.getTorrentPageQuery(url.pathname + url.search)
-    const maxPage = this.parseTorrentMaxPage(query)
-    const maxWanted = config.maxWanted || 100
-    let currentPage = 0
-    let torrents = this.parseTorrentPage(query)
-    while (currentPage < maxPage && torrents.length < maxWanted) {
-      currentPage += 1
-      url.searchParams.set('page', currentPage.toString())
       const query = await this.getTorrentPageQuery(url.pathname + url.search)
-      const moreTorrents = this.parseTorrentPage(query)
-      torrents = torrents.concat(moreTorrents)
+      const maxPage = this.parseTorrentMaxPage(query)
+      let currentPage = 0
+      let torrents = this.parseTorrentPage(query)
+      while (currentPage < maxPage && torrents.length < expectTorrents) {
+        currentPage += 1
+        url.searchParams.set('page', currentPage.toString())
+        const query = await this.getTorrentPageQuery(url.pathname + url.search)
+        const moreTorrents = this.parseTorrentPage(query)
+        torrents = torrents.concat(moreTorrents)
+      }
+      return torrents
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('timeout')) {
+        return ESiteStatus.timeout
+      }
+      return ESiteStatus.searchFailed
     }
-    return torrents
   }
 }

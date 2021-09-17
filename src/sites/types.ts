@@ -61,9 +61,3 @@ export interface TorrentInfo {
 export interface SearchConfigParams {
   [key: string]: string
 }
-
-export interface SearchConfig {
-  path?: string,
-  params?: SearchConfigParams,
-  maxWanted?: number
-}

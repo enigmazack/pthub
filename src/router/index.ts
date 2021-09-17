@@ -14,9 +14,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/UserData.vue')
   },
   {
-    path: '/search',
-    name: 'Search',
-    component: () => import('../views/Search.vue')
+    path: '/torrents',
+    name: 'Torrents',
+    component: () => import('../views/Torrents.vue')
   },
   {
     path: '/siteSettings',

@@ -9,7 +9,7 @@ import opencd from './sites/opencd'
 import keepfrds from './sites/keepfrds'
 
 export { ESiteStatus } from './enum'
-export type { UserInfo } from './types'
+export type { UserInfo, TorrentInfo } from './types'
 
 export interface Sites {
   [key: string]: Site

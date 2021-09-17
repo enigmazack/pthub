@@ -66,15 +66,18 @@ export default defineComponent({
     const store = useStore()
     const columns = [
       {
+        key: 'name',
         dataIndex: 'name',
         width: '12%',
         slots: { title: 'nameTitle', customRender: 'name' }
       },
       {
+        key: 'pattern',
         dataIndex: 'pattern',
         slots: { title: 'patternTitle', customRender: 'pattern' }
       },
       {
+        key: 'operation',
         dataIndex: 'operation',
         width: '12%',
         slots: { title: 'operationTitle', customRender: 'operation' }

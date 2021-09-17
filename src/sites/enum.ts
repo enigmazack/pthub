@@ -7,8 +7,9 @@ export enum ESiteStatus {
   unknow = 'unknow',
   error = 'error',
   succeed = 'succeed',
-  getUserDatafailed = 'getUserDatafailed',
-  getUserIdfailed = 'getUserIdfailed'
+  getUserDataFailed = 'getUserDataFailed',
+  getUserIdFailed = 'getUserIdFailed',
+  searchFailed = 'searchFailed'
 }
 
 export enum ETorrentCatagory {

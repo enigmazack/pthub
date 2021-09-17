@@ -9,7 +9,8 @@ import type {
   UserInfo,
   SiteConfig,
   TorrentPromotion,
-  RequestCache
+  RequestCache,
+  TorrentInfo
 } from '../types'
 
 export default class Site {
@@ -40,7 +41,12 @@ export default class Site {
   }
 
   async getUserInfo (): Promise<UserInfo|ESiteStatus> {
-    return ESiteStatus.getUserDatafailed
+    return ESiteStatus.getUserDataFailed
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {
+    return ESiteStatus.searchFailed
   }
 
   get (url: string): Promise<AxiosResponse<any>> {

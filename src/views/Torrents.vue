@@ -22,8 +22,8 @@
       <a-tag
         v-for="(status, siteKey) in succeedSites"
         :key="siteKey"
-        :color="isDisplaySite(siteKey)?'green':'gray'"
-        @click="toggleDisplaySite(siteKey)"
+        :color="isFilterSite(siteKey)?'darkgreen':'green'"
+        @click="toggleFilterSite(siteKey)"
       >
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
@@ -190,41 +190,9 @@ export default defineComponent({
     const sites = inject('sites') as Sites
     const store = useStore()
 
+    // read settings and params from store
     const searchText = computed(() => store.state.params.searchText)
     const expectTorrents = computed(() => store.state.siteSettings.expectTorrents)
-
-    const filterText = ref('')
-
-    const torrentList = ref<TorrentProps[]>([])
-    /* const dataSource = computed(() => {
-      return _.uniqWith(torrentList.value, (t1:TorrentProps, t2:TorrentProps) =>
-        t1.siteKey === t2.siteKey && t1.id === t2.id)
-    }) */
-    const dataSource = computed(() => {
-      // clone the full list
-      let displayList = _.cloneDeep(torrentList.value)
-      // filter duplicate items
-      displayList = _.uniqWith(displayList, (t1: TorrentProps, t2: TorrentProps) =>
-        t1.siteKey === t2.siteKey && t1.id === t2.id)
-      // filter by site
-      displayList = displayList.filter(torrent =>
-        displaySites.some(siteKey => siteKey === torrent.siteKey))
-      // filter by title and sub title
-      if (filterText.value) {
-        const filterWrods = filterText.value.toLowerCase().split(' ')
-        displayList = displayList.filter(torrent => filterWrods.some(word => {
-          if (torrent.title.toLowerCase().indexOf(word) !== -1) {
-            return true
-          }
-          if (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1) {
-            return true
-          }
-          return false
-        }))
-      }
-      return displayList
-    })
-
     const enabledSites = computed(() => store.state.siteSettings.enabledSites)
     const selectedConfig = computed(() => store.state.siteSettings.selectedConfig)
     const configList = computed<SearchConfigProps[]>(() => {
@@ -239,26 +207,44 @@ export default defineComponent({
       }
     })
     const activeSites = computed(() => _.uniq(configList.value.map(config => config.siteKey)))
-    const displaySites = reactive(activeSites.value)
-
-    const isDisplaySite = (siteKey: string) => displaySites.findIndex(s => s === siteKey) !== -1
-    const toggleDisplaySite = (siteKey: string) => {
-      const index = displaySites.findIndex(s => s === siteKey)
-      if (index !== -1) {
-        displaySites.splice(index, 1)
-      } else {
-        displaySites.push(siteKey)
-      }
+    const filterSite = ref('all')
+    const isFilterSite = (siteKey: string) => siteKey === filterSite.value
+    const toggleFilterSite = (siteKey: string) => {
+      filterSite.value = filterSite.value === siteKey ? 'all' : siteKey
     }
+    const filterText = ref('')
+    let tList = reactive<TorrentProps[]>([])
+
+    const dataSource = computed(
+      () => _.uniqWith(
+        tList,
+        (t1: TorrentProps, t2: TorrentProps) => t1.siteKey === t2.siteKey && t1.id === t2.id
+      ).filter(
+        torrent => filterSite.value === 'all' || torrent.siteKey === filterSite.value
+      ).filter(
+        torrent => !filterText.value || filterText.value.toLowerCase().split(' ').some(word =>
+          torrent.title.toLowerCase().indexOf(word) !== -1 ||
+          (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1)
+        )
+      )
+    )
 
     const searchStatus: UnwrapRef<Record<string, SearchStatusProps>> = reactive({})
-
-    const waitingSites = computed(() => _.pickBy(searchStatus, v => v.status === ESiteStatus.unknow))
-    const searchingSites = computed(() => _.pickBy(searchStatus, v => v.status === ESiteStatus.connecting))
-    const failedSites = computed(() => _.pickBy(searchStatus, v => v.status === ESiteStatus.searchFailed ||
-      v.status === ESiteStatus.timeout))
+    const waitingSites = computed<Record<string, SearchStatusProps>>(() =>
+      _.pickBy(searchStatus, v => v.status === ESiteStatus.unknow)
+    )
+    const searchingSites = computed<Record<string, SearchStatusProps>>(() =>
+      _.pickBy(searchStatus, v => v.status === ESiteStatus.connecting)
+    )
+    const failedSites = computed<Record<string, SearchStatusProps>>(() =>
+      _.pickBy(
+        searchStatus,
+        v => v.status === ESiteStatus.searchFailed || v.status === ESiteStatus.timeout
+      )
+    )
     const succeedSites = computed<Record<string, SearchStatusProps>>(() =>
-      _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed))
+      _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed)
+    )
 
     const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
     const search = (siteKey?: string) => {
@@ -284,7 +270,7 @@ export default defineComponent({
             const ts: TorrentProps[] = torrents.map(t => Object({ key: uuidv4(), siteKey: sKey, ...t }))
             torrentCounts += ts.length
             searchCounts += 1
-            ts.forEach(t => torrentList.value.push(t))
+            ts.forEach(t => tList.push(t))
           } else {
             searchStatus[sKey].status = torrents
           }
@@ -294,7 +280,6 @@ export default defineComponent({
           }
         })
       })
-      return torrentList
     }
 
     onMounted(() => {
@@ -306,7 +291,7 @@ export default defineComponent({
       () => store.state.params.runSearch,
       (newRun) => {
         if (newRun) {
-          torrentList.value = []
+          tList = reactive<TorrentProps[]>([])
           search()
           store.commit(EMutations.setRunSearch, false)
         }
@@ -323,8 +308,8 @@ export default defineComponent({
       failedSites,
       succeedSites,
       sites,
-      toggleDisplaySite,
-      isDisplaySite
+      isFilterSite,
+      toggleFilterSite
     }
   }
 })

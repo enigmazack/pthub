@@ -1,4 +1,5 @@
 import NexusPHPSite from '../model/nexusPHPSite'
+import { ETorrentCatagory } from '../enum'
 
 class PTer extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
@@ -34,6 +35,25 @@ class PTer extends NexusPHPSite {
     const rSeeding = await this.get(url.pathname + url.search)
     const query = this.parseHTML(rSeeding.data)
     return query
+  }
+
+  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+    const map = new Map()
+    map.set('401', ETorrentCatagory.movies)
+    map.set('404', ETorrentCatagory.tv)
+    map.set('403', ETorrentCatagory.animation)
+    map.set('405', ETorrentCatagory.tvShow)
+    map.set('413', ETorrentCatagory.mv)
+    map.set('418', ETorrentCatagory.tvShow)
+    map.set('407', ETorrentCatagory.sports)
+    map.set('408', ETorrentCatagory.ebook)
+    map.set('409', ETorrentCatagory.games)
+    map.set('410', ETorrentCatagory.application)
+    map.set('411', ETorrentCatagory.learning)
+    map.set('412', ETorrentCatagory.other)
+    const cKey = this.parseTorrentCatagoryKey(query)
+    const catagory = cKey ? map.get(cKey) : undefined
+    return catagory || ETorrentCatagory.other
   }
 }
 

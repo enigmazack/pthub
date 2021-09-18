@@ -54,6 +54,7 @@ export interface TorrentInfo {
   size: number,
   seeders: number,
   leechers: number,
+  snatched: number,
   seeding?: boolean,
   promotion?: TorrentPromotion,
 }

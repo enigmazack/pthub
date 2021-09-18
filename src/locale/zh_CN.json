@@ -26,7 +26,14 @@
     "joinDate": "入站时间",
     "recordDate": "记录时间",
     "searchPattern": "搜索路径样式",
-    "operation": "操作"
+    "operation": "操作",
+    "title": "标题",
+    "size": "体积",
+    "seeders": "做种",
+    "leechers": "下载",
+    "snatched": "完成",
+    "releaseDate": "发布日期",
+    "catagoryTitle": "分类"
   },
   "siteStatus": {    
     "connecting": "连接中...",
@@ -58,5 +65,24 @@
     "searchConfig": "搜索配置",
     "expectTorrents": "期望种子数量",
     "expectTorrentsTip": "每次搜索期望返回的种子数量，当网站每页种子数量有限时尝试翻页"
+  },
+  "catagory": {
+    "movies": "电影",
+    "animation": "动漫",
+    "documentary": "纪录片",
+    "tv": "电视",
+    "tvEpisode": "电视(单集)",
+    "tvSeason": "电视(整季)",
+    "tvShow": "综艺",
+    "music": "音乐",
+    "mv": "MV",
+    "ebook": "书籍",
+    "learning": "学习",
+    "sports": "体育",
+    "opera": "歌剧",
+    "audio": "录音",
+    "application": "软件",
+    "games": "游戏",
+    "other": "其他"
   }
 }

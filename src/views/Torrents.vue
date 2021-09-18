@@ -1,17 +1,44 @@
 <template>
-  <a-table :columns="columns" :dataSource="dataSource" :pagination="{pageSize: 100}">
-    <template #siteTitle></template>
+  <a-table :columns="columns" :dataSource="dataSource" :pagination="{ pageSize: 100 }">
+    <template #siteTitle>{{ $t('tableHead.site') }}</template>
+    <template #titleTitle>{{ $t('tableHead.title') }}</template>
+    <template #sizeTitle>{{ $t('tableHead.size') }}</template>
+    <template #catagoryTitle>{{ $t('tableHead.catagoryTitle') }}</template>
+    <template #seedersTitle>{{ $t('tableHead.seeders') }}</template>
+    <template #snatchedTitle>{{ $t('tableHead.snatched') }}</template>
+    <template #leechersTitle>{{ $t('tableHead.leechers') }}</template>
+    <template #releaseDateTitle>{{ $t('tableHead.releaseDate') }}</template>
+    <template #operationTitle>{{ $t('tableHead.operation') }}</template>
+
+    <template #site="{ record }">
+      <SiteIcon :siteKey="record.siteKey" />
+    </template>
+    <template #size="{ record }">{{ filesize(record.size).human() }}</template>
+    <template #torrentTitle="{ record }">
+    <a :href="record.detailUrl" target="_blank" :title="record.title">
+      {{ record.title }}
+    </a>
+    </template>
+    <template #catagory="{ record }">{{$t('catagory.'+record.catagory)}}</template>
+    <template #releaseDate="{ record }">
+      <a-tooltip>
+        <template #title>{{ $dayjs(record.releaseDate).format('YYYY-MM-DD HH:mm:ss') }}</template>
+        {{ $dayjs(record.releaseDate).fromNow() }}
+      </a-tooltip>
+    </template>
   </a-table>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, inject, ref, watch } from 'vue'
+import SiteIcon from '@/components/SIteIcon.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { EMutations, useStore } from '@/store'
 import { Sites, TorrentInfo } from '@/sites'
 import PQueue from 'p-queue'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import filesize from 'file-size'
 
 interface TorrentProps extends TorrentInfo {
   key: string,
@@ -23,42 +50,82 @@ interface SearchConfigProps {
   pattern?: string
 }
 
+export function genSorter <T = SearchConfigProps> (prop: keyof T) {
+  return (a: T, b: T):number => {
+    const ap = a[prop]
+    const bp = b[prop]
+    if (typeof ap === 'string' && typeof bp === 'string') {
+      if (ap.toUpperCase() < bp.toUpperCase()) return -1
+      if (ap.toUpperCase() > bp.toUpperCase()) return 1
+      return 0
+    }
+    if (typeof ap === 'number' && typeof bp === 'number') return ap - bp
+    return 0
+  }
+}
+
 const columns: ColumnProps[] = [
   {
     key: 'site',
-    dataIndex: 'siteKey'
+    align: 'center',
+    slots: { title: 'siteTitle', customRender: 'site' }
   },
   {
-    key: 'title',
-    dataIndex: 'title'
+    key: 'torrentTitle',
+    ellipsis: true,
+    width: '50%',
+    slots: { title: 'titleTitle', customRender: 'torrentTitle' }
   },
   {
     key: 'catagory',
-    dataIndex: 'catagory'
+    dataIndex: 'catagory',
+    align: 'right',
+    slots: { title: 'catagoryTitle', customRender: 'catagory' }
   },
   {
     key: 'size',
-    dataIndex: 'size'
+    align: 'right',
+    slots: { title: 'sizeTitle', customRender: 'size' },
+    sorter: genSorter('size')
   },
   {
     key: 'seeders',
-    dataIndex: 'seeders'
+    dataIndex: 'seeders',
+    align: 'right',
+    slots: { title: 'seedersTitle' },
+    sorter: genSorter('seeders')
   },
   {
     key: 'leechers',
-    dataIndex: 'leechers'
+    dataIndex: 'leechers',
+    align: 'right',
+    slots: { title: 'leechersTitle' },
+    sorter: genSorter('leechers')
+  },
+  {
+    key: 'snatched',
+    dataIndex: 'snatched',
+    align: 'right',
+    slots: { title: 'snatchedTitle' },
+    sorter: genSorter('snatched')
   },
   {
     key: 'releaseDate',
-    dataIndex: 'releaseDate'
+    align: 'right',
+    slots: { title: 'releaseDateTitle', customRender: 'releaseDate' },
+    sorter: genSorter('releaseDate')
   },
   {
-    key: 'operation'
+    key: 'operation',
+    slots: { title: 'operationTitle' }
   }
 ]
 
 export default defineComponent({
   name: 'torrents',
+  components: {
+    SiteIcon
+  },
   setup () {
     const sites = inject('sites') as Sites
     const store = useStore()
@@ -106,6 +173,9 @@ export default defineComponent({
       return torrentList
     }
 
+    search()
+    store.commit(EMutations.setRunSearch, false)
+
     watch(
       () => store.state.params.runSearch,
       (newRun) => {
@@ -119,8 +189,12 @@ export default defineComponent({
 
     return {
       columns,
-      dataSource
+      dataSource,
+      filesize
     }
   }
 })
 </script>
+
+<style scoped>
+</style>

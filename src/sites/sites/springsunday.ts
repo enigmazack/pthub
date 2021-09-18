@@ -1,6 +1,15 @@
 import NexusPHPSite from '../model/nexusPHPSite'
+import { ETorrentCatagory } from '../enum'
 
 class SSD extends NexusPHPSite {
+  protected tableIndex = {
+    releaseDate: 4,
+    size: 5,
+    seeders: 6,
+    leechers: 7,
+    snatched: 8
+  }
+
   protected parseBonus (query: JQuery<Document>): number {
     let bonusString = this.someSelector(query, [
       'td.rowhead:contains("积分")',
@@ -11,6 +20,22 @@ class SSD extends NexusPHPSite {
     bonusString = bonusMatch ? bonusMatch[2] : ''
     const bonus = parseFloat(bonusString)
     return bonus
+  }
+
+  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+    const map = new Map()
+    map.set('501', ETorrentCatagory.movies)
+    map.set('502', ETorrentCatagory.tv)
+    map.set('503', ETorrentCatagory.documentary)
+    map.set('504', ETorrentCatagory.animation)
+    map.set('505', ETorrentCatagory.tvShow)
+    map.set('506', ETorrentCatagory.sports)
+    map.set('507', ETorrentCatagory.mv)
+    map.set('508', ETorrentCatagory.music)
+    map.set('509', ETorrentCatagory.other)
+    const cKey = this.parseTorrentCatagoryKey(query)
+    const catagory = cKey ? map.get(cKey) : undefined
+    return catagory || ETorrentCatagory.other
   }
 }
 

@@ -3,6 +3,14 @@ import { ETorrentCatagory, ETorrentPromotion } from '../enum'
 import type { SeedingInfo, TorrentPromotion } from '../types'
 
 class LHD extends NexusPHPSite {
+  protected tableIndex = {
+    releaseDate: 4,
+    size: 5,
+    seeders: 6,
+    leechers: 7,
+    snatched: 8
+  }
+
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
     const url = new URL(this.url.href)
     url.pathname = this.userPath
@@ -37,27 +45,58 @@ class LHD extends NexusPHPSite {
   }
 
   protected parseTorrentReleaseDate (query: JQuery<HTMLElement>): number {
-    const dateString = query.find('> td').eq(4).find('span').attr('title')
+    const columns = query.find('> td')
+    let index = this.tableIndex.releaseDate
+    if (columns.length === 12) {
+      index += 1
+    }
+    const dateString = columns.eq(index).find('span').attr('title')
     const releaseDate = dateString ? Date.parse(dateString) : 0
     return releaseDate
   }
 
   protected parseTorrentSize (query: JQuery<HTMLElement>): number {
-    const sizeString = query.find('> td').eq(5).text()
+    const columns = query.find('> td')
+    let index = this.tableIndex.size
+    if (columns.length === 12) {
+      index += 1
+    }
+    const sizeString = columns.eq(index).text()
     const size = sizeString ? this.parseSize(sizeString) : 0
     return size
   }
 
   protected parseTorrentSeeders (query: JQuery<HTMLElement>): number {
-    const seedersString = query.find('> td').eq(6).text()
-    const seeders = seedersString ? parseInt(seedersString) : -1
+    const columns = query.find('> td')
+    let index = this.tableIndex.seeders
+    if (columns.length === 12) {
+      index += 1
+    }
+    const seedersString = columns.eq(index).text()
+    const seeders = seedersString ? parseInt(seedersString) : NaN
     return seeders
   }
 
   protected parseTorrentLeechers (query: JQuery<HTMLElement>): number {
-    const leechersString = query.find('> td').eq(7).text()
-    const leechers = leechersString ? parseInt(leechersString) : -1
+    const columns = query.find('> td')
+    let index = this.tableIndex.leechers
+    if (columns.length === 12) {
+      index += 1
+    }
+    const leechersString = columns.eq(index).text()
+    const leechers = leechersString ? parseInt(leechersString) : NaN
     return leechers
+  }
+
+  protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
+    const columns = query.find('> td')
+    let index = this.tableIndex.snatched
+    if (columns.length === 12) {
+      index += 1
+    }
+    const snatchedString = columns.eq(index).text()
+    const snatched = snatchedString ? parseInt(snatchedString) : NaN
+    return snatched
   }
 
   protected parseTorrentDetailsUrl (query: JQuery<HTMLElement>): string {

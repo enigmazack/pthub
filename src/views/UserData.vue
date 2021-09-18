@@ -113,7 +113,7 @@ const genSorter = (prop: keyof UserDataProps) =>
     const bp = b[prop]
     if (typeof ap === 'string' && typeof bp === 'string') {
       if (ap.toUpperCase() < bp.toUpperCase()) return -1
-      if (a.userName.toUpperCase() > b.userName.toUpperCase()) return 1
+      if (ap.toUpperCase() > bp.toUpperCase()) return 1
       return 0
     }
     if (typeof ap === 'number' && typeof bp === 'number') return ap - bp

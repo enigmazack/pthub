@@ -19,6 +19,13 @@ export default class NexusPHPSite extends Site {
   protected torrentPath = '/torrents.php'
   protected torrentDetailsPath = '/details.php'
   protected torrentDownloadPath = '/download.php'
+  protected tableIndex = {
+    releaseDate: 3,
+    size: 4,
+    seeders: 5,
+    leechers: 6,
+    snatched: 7
+  }
 
   async checkStatus (): Promise<ESiteStatus> {
     try {
@@ -212,8 +219,8 @@ export default class NexusPHPSite extends Site {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory|undefined {
-    return undefined
+  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+    return ETorrentCatagory.undefined
   }
 
   protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {
@@ -261,26 +268,32 @@ export default class NexusPHPSite extends Site {
   }
 
   protected parseTorrentReleaseDate (query: JQuery<HTMLElement>): number {
-    const dateString = query.find('> td').eq(3).find('span').attr('title')
+    const dateString = query.find('> td').eq(this.tableIndex.releaseDate).find('span').attr('title')
     const releaseDate = dateString ? Date.parse(dateString) : 0
     return releaseDate
   }
 
   protected parseTorrentSize (query: JQuery<HTMLElement>): number {
-    const sizeString = query.find('> td').eq(4).text()
+    const sizeString = query.find('> td').eq(this.tableIndex.size).text()
     const size = sizeString ? this.parseSize(sizeString) : 0
     return size
   }
 
   protected parseTorrentSeeders (query: JQuery<HTMLElement>): number {
-    const seedersString = query.find('> td').eq(5).text()
-    const seeders = seedersString ? parseInt(seedersString) : -1
+    const seedersString = query.find('> td').eq(this.tableIndex.seeders).text()
+    const seeders = seedersString ? parseInt(seedersString) : NaN
     return seeders
   }
 
   protected parseTorrentLeechers (query: JQuery<HTMLElement>): number {
-    const leechersString = query.find('> td').eq(6).text()
-    const leechers = leechersString ? parseInt(leechersString) : -1
+    const leechersString = query.find('> td').eq(this.tableIndex.leechers).text()
+    const leechers = leechersString ? parseInt(leechersString) : NaN
+    return leechers
+  }
+
+  protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
+    const leechersString = query.find('> td').eq(this.tableIndex.snatched).text()
+    const leechers = leechersString ? parseInt(leechersString) : NaN
     return leechers
   }
 
@@ -338,6 +351,7 @@ export default class NexusPHPSite extends Site {
       const size = this.parseTorrentSize(row)
       const seeders = this.parseTorrentSeeders(row)
       const leechers = this.parseTorrentLeechers(row)
+      const snatched = this.parseTorrentSnatched(row)
       const seeding = this.parseTorrentSeeding(row)
       const promotion = this.parseTorrentPromotion(row)
       const data = {
@@ -349,6 +363,7 @@ export default class NexusPHPSite extends Site {
         size,
         seeders,
         leechers,
+        snatched,
         releaseDate,
         catagory,
         seeding,

@@ -26,7 +26,14 @@
     "joinDate": "Join Date",
     "recordDate": "Record Date",
     "searchPattern": "Search URL Pattern",
-    "operation": "Operation"
+    "operation": "Operation",
+    "title": "Title",
+    "size": "Size",
+    "seeders": "Seeders",
+    "leechers": "Leechers",
+    "snatched": "snatched",
+    "releaseDate": "Release Date",
+    "catagoryTitle": "Catagory"
   },
   "siteStatus": {    
     "connecting": "Connecting...",
@@ -58,5 +65,24 @@
     "searchConfig": "Search Config",
     "expectTorrents": "Expected Torrents Counts",
     "expectTorrentsTip": "Searching will try reading torrents data from the next page, when total amount is not sufficient."
+  },
+  "catagory": {
+    "movies": "Movies",
+    "animation": "Animation",
+    "documentary": "Documentary",
+    "tv": "TV",
+    "tvEpisode": "TV(Episode)",
+    "tvSeason": "TV(Season)",
+    "tvShow": "Show",
+    "music": "Musci",
+    "mv": "MV",
+    "ebook": "E-Book",
+    "learning": "Learning",
+    "sports": "Sports",
+    "opera": "Opera",
+    "audio": "Audio",
+    "application": "App",
+    "games": "Games",
+    "other": "Other"
   }
 }

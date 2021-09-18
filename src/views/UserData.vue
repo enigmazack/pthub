@@ -1,36 +1,41 @@
 <template>
   <a-table :columns="columns" :dataSource="dataSource">
     <template #title>
-      <a-button
-        @click="refreshUserData()"
-        :disabled="disabled"
-        type="primary"
-        style="margin: 0px 12px"
-      >{{ $t('button.refreshAll') }}</a-button>
-      <a-input-search
-        v-model:value="searchText"
-        :placeholder="$t('tableHead.searchSites')"
-        :style="{
-          width: '200px',
-          border: 'none',
-          borderBottom: '1px solid #e9e3e3',
-          float: 'right',
-          margin: '0px 12px'
-        }"
-      />
+      <a-row type="flex" justify="space-between" align="middle">
+        <a-col>
+          <a-button
+            @click="refreshUserData()"
+            :disabled="disabled"
+            type="primary"
+            style="margin: 0px 12px"
+          >{{ $t('button.refreshAll') }}</a-button>
+        </a-col>
+        <a-col>
+          <a-input-search
+            v-model:value="searchText"
+            :placeholder="$t('placeholder.searchSites')"
+            :style="{
+              width: '200px',
+              border: 'none',
+              borderBottom: '1px solid #e9e3e3',
+              margin: '0px 12px'
+            }"
+          />
+        </a-col>
+      </a-row>
     </template>
-    <template #siteNameTitle>{{ $t('tableHead.site') }}</template>
-    <template #userNameTitle>{{ $t('tableHead.userName') }}</template>
-    <template #userClassTitle>{{ $t('tableHead.userClass') }}</template>
-    <template #uploadDataTitle>{{ $t('tableHead.uploadData') }}</template>
-    <template #downloadDataTitle>{{ $t('tableHead.downloadData') }}</template>
-    <template #ratioTitle>{{ $t('tableHead.ratio') }}</template>
-    <template #seedingCountsTitle>{{ $t('tableHead.seedingCounts') }}</template>
-    <template #seedingSizeTitle>{{ $t('tableHead.seedingSize') }}</template>
-    <template #bonusTitle>{{ $t('tableHead.bonus') }}</template>
-    <template #joinDateTitle>{{ $t('tableHead.joinDate') }}</template>
-    <template #recordDateTitle>{{ $t('tableHead.recordDate') }}</template>
-    <template #statusTitle>{{ $t('tableHead.status') }}</template>
+    <template #siteNameTitle>{{ $t('tableTitle.site') }}</template>
+    <template #userNameTitle>{{ $t('tableTitle.userName') }}</template>
+    <template #userClassTitle>{{ $t('tableTitle.userClass') }}</template>
+    <template #uploadDataTitle>{{ $t('tableTitle.uploadData') }}</template>
+    <template #downloadDataTitle>{{ $t('tableTitle.downloadData') }}</template>
+    <template #ratioTitle>{{ $t('tableTitle.ratio') }}</template>
+    <template #seedingCountsTitle>{{ $t('tableTitle.seedingCounts') }}</template>
+    <template #seedingSizeTitle>{{ $t('tableTitle.seedingSize') }}</template>
+    <template #bonusTitle>{{ $t('tableTitle.bonus') }}</template>
+    <template #joinDateTitle>{{ $t('tableTitle.joinDate') }}</template>
+    <template #recordDateTitle>{{ $t('tableTitle.recordDate') }}</template>
+    <template #statusTitle>{{ $t('tableTitle.status') }}</template>
     <template #site="{ record }">
       <a-tooltip>
         <template #title>{{ $t('button.refreshUserData') }}</template>
@@ -46,7 +51,11 @@
       <br />
       <a-tooltip placement="bottom">
         <template #title>{{ $t('button.vistSite') }}</template>
-        <a :href="record.siteUrl" target="_blank" :style="{ fontSize: '12px' }">{{ record.siteName }}</a>
+        <a
+          :href="record.siteUrl"
+          target="_blank"
+          :style="{ fontSize: '12px' }"
+        >{{ record.siteName }}</a>
       </a-tooltip>
     </template>
     <template #uploadData="{ record }">{{ filesize(record.uploadData).human() }}</template>

@@ -11,7 +11,7 @@
       </a-button>
       <a-input-search
         v-model:value="searchText"
-        :placeholder="$t('tableHead.searchSites')"
+        :placeholder="$t('placeholder.searchSites')"
         :style="{
           width: '200px',
           border: 'none',
@@ -22,16 +22,16 @@
       />
     </template>
     <template #siteTitle>
-      {{ $t('tableHead.site') }}
+      {{ $t('tableTitle.site') }}
     </template>
     <template #urlTitle>
-      {{ $t('tableHead.url') }}
+      {{ $t('tableTitle.url') }}
     </template>
     <template #enableTitle>
-      {{ $t('tableHead.enable') }}
+      {{ $t('tableTitle.enable') }}
     </template>
     <template #statusTitle>
-      {{ $t('tableHead.status') }}
+      {{ $t('tableTitle.status') }}
     </template>
     <template #url="{ text }">
       <a :href="text" target="_blank">{{ text }}</a>

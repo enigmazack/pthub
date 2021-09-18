@@ -5,7 +5,7 @@
   }">
     <a-input-search
       v-model:value="searchText"
-      :placeholder="$t('tableHead.searchSites')"
+      :placeholder="$t('placeholder.searchSites')"
       :style="{
         width: '200px',
         border: 'none',

@@ -8,13 +8,17 @@
     "siteSettings": "Site Settings",
     "importSites": "Import Sites"
   },
-  "tableHead": {
+  "placeholder": {
+    "filterTorrents": "Filter Torrents",
+    "searchSites": "Search Sites",
+    "search": "Search"
+  },
+  "tableTitle": {
     "name": "Name",
     "site": "Site",
     "url": "URL",
     "status": "Status",
     "enable": "Enable",
-    "searchSites": "Search Sites",
     "userName": "Username",
     "userClass": "User Class",
     "uploadData": "Upload Data",
@@ -33,7 +37,7 @@
     "leechers": "Leechers",
     "snatched": "snatched",
     "releaseDate": "Release Date",
-    "catagoryTitle": "Catagory"
+    "catagory": "Catagory"
   },
   "siteStatus": {    
     "connecting": "Connecting...",

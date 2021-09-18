@@ -3,9 +3,9 @@
     <template #title>
       {{ $t('settings.searchConfig') }}
     </template>
-    <template #nameTitle>{{ $t('tableHead.name') }}</template>
-    <template #patternTitle>{{ $t('tableHead.searchPattern') }}</template>
-    <template #operationTitle>{{ $t('tableHead.operation') }}</template>
+    <template #nameTitle>{{ $t('tableTitle.name') }}</template>
+    <template #patternTitle>{{ $t('tableTitle.searchPattern') }}</template>
+    <template #operationTitle>{{ $t('tableTitle.operation') }}</template>
     <template #name="{ text, record }">
       <div>
         <a-input

@@ -12,7 +12,7 @@
     <a-col :pull="2" :span="8">
       <a-input
         v-model:value="search"
-        :placeholder="$t('menu.search')"
+        :placeholder="$t('placeholder.search')"
         size="large"
         @pressEnter="toSearch"
       >

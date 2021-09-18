@@ -8,13 +8,17 @@
     "siteSettings": "站点设置",
     "importSites": "添加站点"
   },
-  "tableHead": {
+  "placeholder": {
+    "filterTorrents": "过滤种子",
+    "searchSites": "搜索站点",
+    "search": "搜索"
+  },
+  "tableTitle": {
     "name": "名称",
     "site": "站点",
     "url": "地址",
     "status": "状态",
     "enable": "启用",
-    "searchSites": "搜索站点",
     "userName": "用户名",
     "userClass": "用户等级",
     "uploadData": "上传量",
@@ -33,7 +37,7 @@
     "leechers": "下载",
     "snatched": "完成",
     "releaseDate": "发布日期",
-    "catagoryTitle": "分类"
+    "catagory": "分类"
   },
   "siteStatus": {    
     "connecting": "连接中...",

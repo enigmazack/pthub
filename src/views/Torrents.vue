@@ -1,25 +1,80 @@
 <template>
+  <div class="search-page-head">
+    <a-space>
+      <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray">
+        <div :style="{ display: 'flex', alignItems: 'center' }">
+          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          {{ sites[siteKey].name }}
+        </div>
+      </a-tag>
+      <a-tag v-for="(status, siteKey) in searchingSites" :key="siteKey" color="blue">
+        <div :style="{ display: 'flex', alignItems: 'center' }">
+          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          {{ sites[siteKey].name }}
+        </div>
+      </a-tag>
+      <a-tag v-for="(status, siteKey) in failedSites" :key="siteKey" color="red">
+        <div :style="{ display: 'flex', alignItems: 'center' }">
+          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          {{ sites[siteKey].name }}
+        </div>
+      </a-tag>
+      <a-tag
+        v-for="(status, siteKey) in succeedSites"
+        :key="siteKey"
+        :color="isDisplaySite(siteKey)?'green':'gray'"
+        @click="toggleDisplaySite(siteKey)"
+      >
+        <div :style="{ display: 'flex', alignItems: 'center' }">
+          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          {{ sites[siteKey].name }}
+        </div>
+      </a-tag>
+    </a-space>
+  </div>
   <a-table :columns="columns" :dataSource="dataSource" :pagination="{ pageSize: 100 }">
-    <template #siteTitle>{{ $t('tableHead.site') }}</template>
-    <template #titleTitle>{{ $t('tableHead.title') }}</template>
-    <template #sizeTitle>{{ $t('tableHead.size') }}</template>
-    <template #catagoryTitle>{{ $t('tableHead.catagoryTitle') }}</template>
-    <template #seedersTitle>{{ $t('tableHead.seeders') }}</template>
-    <template #snatchedTitle>{{ $t('tableHead.snatched') }}</template>
-    <template #leechersTitle>{{ $t('tableHead.leechers') }}</template>
-    <template #releaseDateTitle>{{ $t('tableHead.releaseDate') }}</template>
-    <template #operationTitle>{{ $t('tableHead.operation') }}</template>
+    <template #title>
+      <a-row type="flex" justify="space-between" align="middle">
+        <a-col></a-col>
+        <a-col>
+          <a-input-search
+            v-model:value="filterText"
+            :placeholder="$t('placeholder.filterTorrents')"
+            :style="{
+              width: '200px',
+              border: 'none',
+              borderBottom: '1px solid #e9e3e3',
+              margin: '0px 12px'
+            }"
+          />
+        </a-col>
+      </a-row>
+    </template>
+    <template #siteTitle>{{ $t('tableTitle.site') }}</template>
+    <template #titleTitle>{{ $t('tableTitle.title') }}</template>
+    <template #sizeTitle>{{ $t('tableTitle.size') }}</template>
+    <template #catagoryTitle>{{ $t('tableTitle.catagory') }}</template>
+    <template #seedersTitle>{{ $t('tableTitle.seeders') }}</template>
+    <template #snatchedTitle>{{ $t('tableTitle.snatched') }}</template>
+    <template #leechersTitle>{{ $t('tableTitle.leechers') }}</template>
+    <template #releaseDateTitle>{{ $t('tableTitle.releaseDate') }}</template>
+    <template #operationTitle>{{ $t('tableTitle.operation') }}</template>
 
     <template #site="{ record }">
       <SiteIcon :siteKey="record.siteKey" />
     </template>
     <template #size="{ record }">{{ filesize(record.size).human() }}</template>
     <template #torrentTitle="{ record }">
-    <a :href="record.detailUrl" target="_blank" :title="record.title">
-      {{ record.title }}
-    </a>
+      <a
+        :href="record.detailUrl"
+        target="_blank"
+        :title="record.title"
+        class="torrent-title"
+      >{{ record.title }}</a>
+      <br />
+      {{ record.subTitle || '' }}
     </template>
-    <template #catagory="{ record }">{{$t('catagory.'+record.catagory)}}</template>
+    <template #catagory="{ record }">{{ $t('catagory.' + record.catagory) }}</template>
     <template #releaseDate="{ record }">
       <a-tooltip>
         <template #title>{{ $dayjs(record.releaseDate).format('YYYY-MM-DD HH:mm:ss') }}</template>
@@ -30,11 +85,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, ref, watch } from 'vue'
+import { computed, defineComponent, inject, onMounted, reactive, ref, UnwrapRef, watch } from 'vue'
 import SiteIcon from '@/components/SIteIcon.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { EMutations, useStore } from '@/store'
-import { Sites, TorrentInfo } from '@/sites'
+import { ESiteStatus, Sites, TorrentInfo } from '@/sites'
 import PQueue from 'p-queue'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
@@ -50,8 +105,13 @@ interface SearchConfigProps {
   pattern?: string
 }
 
-export function genSorter <T = SearchConfigProps> (prop: keyof T) {
-  return (a: T, b: T):number => {
+interface SearchStatusProps {
+  status: ESiteStatus,
+  torrentCounts: number
+}
+
+export function genSorter<T = SearchConfigProps> (prop: keyof T) {
+  return (a: T, b: T): number => {
     const ap = a[prop]
     const bp = b[prop]
     if (typeof ap === 'string' && typeof bp === 'string') {
@@ -133,12 +193,37 @@ export default defineComponent({
     const searchText = computed(() => store.state.params.searchText)
     const expectTorrents = computed(() => store.state.siteSettings.expectTorrents)
 
+    const filterText = ref('')
+
     const torrentList = ref<TorrentProps[]>([])
     /* const dataSource = computed(() => {
       return _.uniqWith(torrentList.value, (t1:TorrentProps, t2:TorrentProps) =>
         t1.siteKey === t2.siteKey && t1.id === t2.id)
     }) */
-    const dataSource = computed(() => torrentList.value)
+    const dataSource = computed(() => {
+      // clone the full list
+      let displayList = _.cloneDeep(torrentList.value)
+      // filter duplicate items
+      displayList = _.uniqWith(displayList, (t1: TorrentProps, t2: TorrentProps) =>
+        t1.siteKey === t2.siteKey && t1.id === t2.id)
+      // filter by site
+      displayList = displayList.filter(torrent =>
+        displaySites.some(siteKey => siteKey === torrent.siteKey))
+      // filter by title and sub title
+      if (filterText.value) {
+        const filterWrods = filterText.value.toLowerCase().split(' ')
+        displayList = displayList.filter(torrent => filterWrods.some(word => {
+          if (torrent.title.toLowerCase().indexOf(word) !== -1) {
+            return true
+          }
+          if (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1) {
+            return true
+          }
+          return false
+        }))
+      }
+      return displayList
+    })
 
     const enabledSites = computed(() => store.state.siteSettings.enabledSites)
     const selectedConfig = computed(() => store.state.siteSettings.selectedConfig)
@@ -154,27 +239,68 @@ export default defineComponent({
       }
     })
     const activeSites = computed(() => _.uniq(configList.value.map(config => config.siteKey)))
+    const displaySites = reactive(activeSites.value)
+
+    const isDisplaySite = (siteKey: string) => displaySites.findIndex(s => s === siteKey) !== -1
+    const toggleDisplaySite = (siteKey: string) => {
+      const index = displaySites.findIndex(s => s === siteKey)
+      if (index !== -1) {
+        displaySites.splice(index, 1)
+      } else {
+        displaySites.push(siteKey)
+      }
+    }
+
+    const searchStatus: UnwrapRef<Record<string, SearchStatusProps>> = reactive({})
+
+    const waitingSites = computed(() => _.pickBy(searchStatus, v => v.status === ESiteStatus.unknow))
+    const searchingSites = computed(() => _.pickBy(searchStatus, v => v.status === ESiteStatus.connecting))
+    const failedSites = computed(() => _.pickBy(searchStatus, v => v.status === ESiteStatus.searchFailed ||
+      v.status === ESiteStatus.timeout))
+    const succeedSites = computed<Record<string, SearchStatusProps>>(() =>
+      _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed))
 
     const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
     const search = (siteKey?: string) => {
       const siteList = siteKey ? [siteKey] : activeSites.value
+      if (!siteKey) {
+        activeSites.value.forEach(siteKey => {
+          searchStatus[siteKey] = { status: ESiteStatus.unknow, torrentCounts: NaN }
+        })
+      }
       siteList.forEach(sKey => {
+        searchStatus[sKey].status = ESiteStatus.unknow
+        let torrentCounts = 0
+        let searchCounts = 0
         const cList = configList.value.filter(config => config.siteKey === sKey)
         cList.forEach(async config => {
           const torrents = await queue.add(() => {
+            if (searchStatus[sKey].status === ESiteStatus.unknow) {
+              searchStatus[sKey].status = ESiteStatus.connecting
+            }
             return sites[sKey].search(searchText.value, expectTorrents.value, config.pattern)
           })
           if (typeof torrents !== 'string') {
             const ts: TorrentProps[] = torrents.map(t => Object({ key: uuidv4(), siteKey: sKey, ...t }))
+            torrentCounts += ts.length
+            searchCounts += 1
             ts.forEach(t => torrentList.value.push(t))
+          } else {
+            searchStatus[sKey].status = torrents
+          }
+          if (searchCounts === cList.length) {
+            searchStatus[sKey].status = ESiteStatus.succeed
+            searchStatus[sKey].torrentCounts = torrentCounts
           }
         })
       })
       return torrentList
     }
 
-    search()
-    store.commit(EMutations.setRunSearch, false)
+    onMounted(() => {
+      search()
+      store.commit(EMutations.setRunSearch, false)
+    })
 
     watch(
       () => store.state.params.runSearch,
@@ -190,11 +316,30 @@ export default defineComponent({
     return {
       columns,
       dataSource,
-      filesize
+      filesize,
+      filterText,
+      waitingSites,
+      searchingSites,
+      failedSites,
+      succeedSites,
+      sites,
+      toggleDisplaySite,
+      isDisplaySite
     }
   }
 })
 </script>
 
 <style scoped>
+.torrent-title {
+  font-weight: bold;
+}
+.site-icon-tag {
+  height: 16px;
+  width: 16px;
+  margin-right: 8px;
+}
+.search-page-head {
+  margin-bottom: 16px;
+}
 </style>

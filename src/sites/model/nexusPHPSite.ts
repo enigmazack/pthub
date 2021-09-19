@@ -14,7 +14,9 @@ import {
 export default class NexusPHPSite extends Site {
   protected userId = ''
   protected indexPath = '/index.php'
+  protected indexPathRegex = /index\.php/
   protected userPath = '/userdetails.php'
+  protected userPathRegex = /userdetails\.php\?id=(\d+)/
   protected userTorrentPath = '/getusertorrentlistajax.php'
   protected torrentPath = '/torrents.php'
   protected torrentDetailsPath = '/details.php'
@@ -32,7 +34,7 @@ export default class NexusPHPSite extends Site {
       let isLogin = false
       const r = await this.get(this.indexPath)
       if (r.request && r.request.responseURL) {
-        isLogin = r.request.responseURL.match(/index\.php/)
+        isLogin = r.request.responseURL.match(this.indexPathRegex)
       }
       return isLogin ? ESiteStatus.login : ESiteStatus.logout
     } catch (error) {
@@ -49,7 +51,7 @@ export default class NexusPHPSite extends Site {
     }
     try {
       const r = await this.get(this.indexPath)
-      const idMatch = r.data.match(/userdetails\.php\?id=(\d+)/)
+      const idMatch = r.data.match(this.userPathRegex)
       const id = idMatch ? idMatch[1] : ''
       this.userId = id
       return id
@@ -223,7 +225,7 @@ export default class NexusPHPSite extends Site {
     return ETorrentCatagory.undefined
   }
 
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
     const seedingString = query.find('td.peer-active').text()
     const seeding = seedingString ? seedingString.trim() === '100%' : false
     return seeding
@@ -246,7 +248,7 @@ export default class NexusPHPSite extends Site {
       'img.pro_30pctdown'
     ]).attr('class')
     const status = map.get(promotionString)
-    const promotion = status ? this.genTorrentPromotion(status) : undefined
+    const promotion = status ? { status, isTemporary: false } : undefined
     return promotion
   }
 

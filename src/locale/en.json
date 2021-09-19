@@ -87,6 +87,10 @@
     "audio": "Audio",
     "application": "App",
     "games": "Games",
-    "other": "Other"
+    "other": "Other",
+    "undefined": "Undefined"
+  },
+  "icon": {
+    "download": "Download"
   }
 }

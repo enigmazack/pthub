@@ -72,6 +72,9 @@
         class="torrent-title"
       >{{ record.title }}</a>
       <br />
+      <a-tag v-if="record.promotion" color="green">
+        {{ record.promotion.isTemporary ? '~' + record.promotion.status : record.promotion.status }}
+      </a-tag>
       {{ record.subTitle || '' }}
     </template>
     <template #catagory="{ record }">{{ $t('catagory.' + record.catagory) }}</template>
@@ -81,11 +84,22 @@
         {{ $dayjs(record.releaseDate).fromNow() }}
       </a-tooltip>
     </template>
+    <template #operation="{ record }">
+      <a-space>
+        <a-tooltip>
+          <template #title>{{ $t('icon.download') }}</template>
+          <a :href="record.downloadUrl">
+            <DownloadOutlined />
+          </a>
+        </a-tooltip>
+      </a-space>
+    </template>
   </a-table>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, UnwrapRef, watch } from 'vue'
+import { DownloadOutlined } from '@ant-design/icons-vue'
 import SiteIcon from '@/components/SIteIcon.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { EMutations, useStore } from '@/store'
@@ -177,14 +191,15 @@ const columns: ColumnProps[] = [
   },
   {
     key: 'operation',
-    slots: { title: 'operationTitle' }
+    slots: { title: 'operationTitle', customRender: 'operation' }
   }
 ]
 
 export default defineComponent({
   name: 'torrents',
   components: {
-    SiteIcon
+    SiteIcon,
+    DownloadOutlined
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -216,16 +231,19 @@ export default defineComponent({
     let tList = reactive<TorrentProps[]>([])
 
     const dataSource = computed(
-      () => _.uniqWith(
-        tList,
-        (t1: TorrentProps, t2: TorrentProps) => t1.siteKey === t2.siteKey && t1.id === t2.id
-      ).filter(
-        torrent => filterSite.value === 'all' || torrent.siteKey === filterSite.value
-      ).filter(
-        torrent => !filterText.value || filterText.value.toLowerCase().split(' ').some(word =>
-          torrent.title.toLowerCase().indexOf(word) !== -1 ||
+      () => _.sortBy(
+        _.uniqWith(
+          tList,
+          (t1: TorrentProps, t2: TorrentProps) => t1.siteKey === t2.siteKey && t1.id === t2.id
+        ).filter(
+          torrent => filterSite.value === 'all' || torrent.siteKey === filterSite.value
+        ).filter(
+          torrent => !filterText.value || filterText.value.toLowerCase().split(' ').some(word =>
+            torrent.title.toLowerCase().indexOf(word) !== -1 ||
           (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1)
-        )
+          )
+        ),
+        t => -t.releaseDate
       )
     )
 

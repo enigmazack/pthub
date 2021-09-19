@@ -117,7 +117,7 @@ class LHD extends NexusPHPSite {
   protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
     const expireString = query.find('div[style*="color: blue"]:contains("(免费剩余") > span').attr('title')
     const expire = expireString ? Date.parse(expireString) : undefined
-    const promotion = expire ? this.genTorrentPromotion(ETorrentPromotion.free, expire) : undefined
+    const promotion = expire ? { status: ETorrentPromotion.free, isTemporary: true } : undefined
     return promotion
   }
 

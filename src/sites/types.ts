@@ -39,8 +39,7 @@ export interface SeedingInfo {
 
 export interface TorrentPromotion {
   status: ETorrentPromotion,
-  type: 'temporary'|'permanent'
-  expire?: number
+  isTemporary: boolean
 }
 
 export interface TorrentInfo {
@@ -57,8 +56,4 @@ export interface TorrentInfo {
   snatched: number,
   seeding?: boolean,
   promotion?: TorrentPromotion,
-}
-
-export interface SearchConfigParams {
-  [key: string]: string
 }

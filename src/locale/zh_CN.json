@@ -87,6 +87,10 @@
     "audio": "录音",
     "application": "软件",
     "games": "游戏",
-    "other": "其他"
+    "other": "其他",
+    "undefined": "未知"
+  },
+  "icon": {
+    "download": "下载"
   }
 }

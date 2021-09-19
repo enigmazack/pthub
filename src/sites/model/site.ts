@@ -2,13 +2,11 @@
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
 import {
-  ETorrentPromotion,
   ESiteStatus
 } from '../enum'
 import type {
   UserInfo,
   SiteConfig,
-  TorrentPromotion,
   RequestCache,
   TorrentInfo
 } from '../types'
@@ -109,13 +107,5 @@ export default class Site {
       }
     }
     return 0
-  }
-
-  protected genTorrentPromotion (status: ETorrentPromotion, expire?: number): TorrentPromotion {
-    if (expire) {
-      return { status, expire, type: 'temporary' }
-    } else {
-      return { status, type: 'permanent' }
-    }
   }
 }

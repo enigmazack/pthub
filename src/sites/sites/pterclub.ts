@@ -37,6 +37,12 @@ class PTer extends NexusPHPSite {
     return query
   }
 
+  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
+    const titleString = query.find('a[href*="details.php?id="]').first().parent().html()
+    const subTitle = titleString ? titleString.split('>').pop()?.replace('&nbsp;', '') : undefined
+    return subTitle
+  }
+
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
     const map = new Map()
     map.set('401', ETorrentCatagory.movies)

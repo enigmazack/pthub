@@ -1,10 +1,10 @@
-import { ESiteStatus, ETorrentPromotion } from '../enum'
-import Site from '../model/nexusPHPSite'
+import { ESiteStatus, ETorrentCatagory, ETorrentPromotion } from '../enum'
+import NexusPHPSite from '../model/nexusPHPSite'
 import {
   SeedingInfo, TorrentInfo, TorrentPromotion
 } from '../types'
 
-class HDRoute extends Site {
+class HDRoute extends NexusPHPSite {
   protected userPath = '/userdetail.php'
   protected userPathRegex = /userdetail\.php\?id=(\d+)/
   protected userTorrentPath = '/list_seeding.php'
@@ -183,6 +183,11 @@ class HDRoute extends Site {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
     return NaN
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+    return ETorrentCatagory.movies
   }
 
   async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {

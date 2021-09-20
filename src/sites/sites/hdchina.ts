@@ -144,8 +144,8 @@ class HDC extends NexusPHPSite {
     const statusString = query.find('td.discount > p > img').attr('class')
     const status = statusString ? map.get(statusString) : undefined
     const expireString = query.find('td.discount > span').attr('title')
-    const expire = expireString ? Date.parse(expireString) : undefined
-    const promotion = status ? this.genTorrentPromotion(status, expire) : undefined
+    const isTemporary = !!expireString
+    const promotion = status ? { status, isTemporary } : undefined
     return promotion
   }
 

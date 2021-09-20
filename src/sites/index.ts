@@ -8,6 +8,7 @@ import pterclub from './sites/pterclub'
 import opencd from './sites/opencd'
 import keepfrds from './sites/keepfrds'
 import hdroute from './sites/hdroute'
+import totheglory from './sites/totheglory'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -25,7 +26,8 @@ const sites: Sites = {
   pterclub,
   opencd,
   keepfrds,
-  hdroute
+  hdroute,
+  totheglory
 }
 
 export default sites

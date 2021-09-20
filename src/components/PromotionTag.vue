@@ -45,7 +45,7 @@ export default defineComponent({
 <style>
 .promotion-tag {
   padding: 0 4px;
-  margin-right: 4px;
+  margin-right: 8px;
   line-height: 16px
 }
 </style>

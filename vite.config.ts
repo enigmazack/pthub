@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import Icons from 'unplugin-icons/vite'
 import { port, isDev, r } from './scripts/utils'
 import aliyunTheme from '@ant-design/aliyun-theme'
 
@@ -37,7 +38,8 @@ export default defineConfig(({ command }) => {
 
     },
     plugins: [
-      vue()
+      vue(),
+      Icons({ compiler: 'vue3' })
     ],
     define: {
       __VUE_I18N_FULL_INSTALL__: true,

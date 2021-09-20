@@ -74,14 +74,16 @@
         </a>
       </a-space>
     </template>
-    <template #size="{ record }">{{ filesize(record.size).human() }}</template>
+    <template #size="{ record }">
+        {{ filesize(record.size).human() }}
+        <SeedingFilled :color="isSeeding(record)?'limegreen':'lightgray'"/>
+    </template>
     <template #torrentTitle="{ record }">
       <a-row type="flex" justify="space-between" align="middle" class="torrent-table-title">
         <a-col class="torrent-titles">
           <a
             :href="record.detailUrl"
             target="_blank"
-            :title="record.title"
             class="torrent-title"
           >{{ record.title }}</a>
           <br />
@@ -119,6 +121,7 @@
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, UnwrapRef, watch } from 'vue'
 import { DownloadOutlined } from '@ant-design/icons-vue'
+import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { EMutations, useStore } from '@/store'
@@ -219,7 +222,8 @@ export default defineComponent({
   name: 'torrents',
   components: {
     DownloadOutlined,
-    PromotionTag
+    PromotionTag,
+    SeedingFilled
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -249,6 +253,15 @@ export default defineComponent({
     }, 500)
     const filterText = ref('')
     const tList = reactive<TorrentProps[]>([])
+
+    const isSeeding = (t: TorrentProps): boolean => {
+      if (t.seeding) return true
+      let seeding = false
+      const userData = store.state.userData.userData.find(ud => ud.siteKey === t.siteKey)
+      const seedingList = userData?.seedingList
+      seeding = !!seedingList?.find(id => id === t.id)
+      return seeding
+    }
 
     const dataSource = computed(
       () => _.sortBy(
@@ -347,7 +360,8 @@ export default defineComponent({
       succeedSites,
       sites,
       isFilterSite,
-      toggleFilterSite
+      toggleFilterSite,
+      isSeeding
     }
   }
 })

@@ -52,9 +52,9 @@ export default defineConfig(({ command }) => {
       preprocessorOptions: {
         less: {
           modifyVars: {
-            ...aliyunTheme,
-            '@font-size-sm': '14px',
-            '@font-size-base': '14px'
+            ...aliyunTheme
+            // '@font-size-sm': '14px',
+            // '@font-size-base': '14px'
           },
           javascriptEnabled: true
         }

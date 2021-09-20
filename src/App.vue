@@ -71,4 +71,11 @@ export default defineComponent({
 .layout-base .preview {
   max-width: 1600px;
 }
+.compact-table .ant-table-thead > tr > th,
+.compact-table .ant-table-tbody > tr > td {
+  padding: 10px 6px;
+}
+.compact-table .ant-table-thead .ant-table-column-sorter {
+  display:none;
+}
 </style>

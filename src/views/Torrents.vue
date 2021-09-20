@@ -1,38 +1,44 @@
 <template>
   <div class="search-page-head">
     <a-space>
-      <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray">
+      <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray" class='site-tag'>
         <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
         </div>
       </a-tag>
-      <a-tag v-for="(status, siteKey) in searchingSites" :key="siteKey" color="blue">
+      <a-tag v-for="(status, siteKey) in searchingSites" :key="siteKey" color="blue" class='site-tag'>
         <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
         </div>
       </a-tag>
-      <a-tag v-for="(status, siteKey) in failedSites" :key="siteKey" color="red">
+      <a-tag v-for="(status, siteKey) in failedSites" :key="siteKey" color="red" class='site-tag'>
         <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
         </div>
       </a-tag>
       <a-tag
         v-for="(status, siteKey) in succeedSites"
         :key="siteKey"
-        :color="isFilterSite(siteKey)?'darkgreen':'green'"
+        :color="isFilterSite(siteKey) ? 'darkgreen' : 'green'"
         @click="toggleFilterSite(siteKey)"
+        class='site-tag'
       >
         <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-icon-tag" />
+          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
         </div>
       </a-tag>
     </a-space>
   </div>
-  <a-table :columns="columns" :dataSource="dataSource" :pagination="{ pageSize: 100 }">
+  <a-table
+    :columns="columns"
+    :dataSource="dataSource"
+    :pagination="{ pageSize: 100 }"
+    class="compact-table"
+  >
     <template #title>
       <a-row type="flex" justify="space-between" align="middle">
         <a-col></a-col>
@@ -61,21 +67,34 @@
     <template #operationTitle>{{ $t('tableTitle.operation') }}</template>
 
     <template #site="{ record }">
-      <SiteIcon :siteKey="record.siteKey" />
+      <a-space direction="vertical" align="center" :size="1">
+        <a-avatar :size="18" :src="sites[record.siteKey].icon.href" />
+        <a :href="sites[record.siteKey].url.href" target="_blank">
+          {{ sites[record.siteKey].name }}
+        </a>
+      </a-space>
     </template>
     <template #size="{ record }">{{ filesize(record.size).human() }}</template>
     <template #torrentTitle="{ record }">
-      <a
-        :href="record.detailUrl"
-        target="_blank"
-        :title="record.title"
-        class="torrent-title"
-      >{{ record.title }}</a>
-      <br />
-      <a-tag v-if="record.promotion" color="green">
-        {{ record.promotion.isTemporary ? '~' + record.promotion.status : record.promotion.status }}
-      </a-tag>
-      {{ record.subTitle || '' }}
+      <a-row type="flex" justify="space-between" align="middle" class="torrent-table-title">
+        <a-col class="torrent-titles">
+          <a
+            :href="record.detailUrl"
+            target="_blank"
+            :title="record.title"
+            class="torrent-title"
+          >{{ record.title }}</a>
+          <br />
+          {{ record.subTitle || '' }}
+        </a-col>
+        <a-col>
+          <PromotionTag
+            v-if="record.promotion"
+            :status="record.promotion.status"
+            :isTemporary="record.promotion.isTemporary"
+          />
+        </a-col>
+      </a-row>
     </template>
     <template #catagory="{ record }">{{ $t('catagory.' + record.catagory) }}</template>
     <template #releaseDate="{ record }">
@@ -100,7 +119,7 @@
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, UnwrapRef, watch } from 'vue'
 import { DownloadOutlined } from '@ant-design/icons-vue'
-import SiteIcon from '@/components/SIteIcon.vue'
+import PromotionTag from '@/components/PromotionTag.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { EMutations, useStore } from '@/store'
 import { ESiteStatus, Sites, TorrentInfo } from '@/sites'
@@ -146,8 +165,8 @@ const columns: ColumnProps[] = [
   },
   {
     key: 'torrentTitle',
-    ellipsis: true,
-    width: '50%',
+    // ellipsis: true,
+    width: '60%',
     slots: { title: 'titleTitle', customRender: 'torrentTitle' }
   },
   {
@@ -191,6 +210,7 @@ const columns: ColumnProps[] = [
   },
   {
     key: 'operation',
+    align: 'center',
     slots: { title: 'operationTitle', customRender: 'operation' }
   }
 ]
@@ -198,8 +218,8 @@ const columns: ColumnProps[] = [
 export default defineComponent({
   name: 'torrents',
   components: {
-    SiteIcon,
-    DownloadOutlined
+    DownloadOutlined,
+    PromotionTag
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -224,11 +244,11 @@ export default defineComponent({
     const activeSites = computed(() => _.uniq(configList.value.map(config => config.siteKey)))
     const filterSite = ref('all')
     const isFilterSite = (siteKey: string) => siteKey === filterSite.value
-    const toggleFilterSite = (siteKey: string) => {
+    const toggleFilterSite = _.debounce((siteKey: string) => {
       filterSite.value = filterSite.value === siteKey ? 'all' : siteKey
-    }
+    }, 500)
     const filterText = ref('')
-    let tList = reactive<TorrentProps[]>([])
+    const tList = reactive<TorrentProps[]>([])
 
     const dataSource = computed(
       () => _.sortBy(
@@ -240,7 +260,7 @@ export default defineComponent({
         ).filter(
           torrent => !filterText.value || filterText.value.toLowerCase().split(' ').some(word =>
             torrent.title.toLowerCase().indexOf(word) !== -1 ||
-          (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1)
+            (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1)
           )
         ),
         t => -t.releaseDate
@@ -309,7 +329,7 @@ export default defineComponent({
       () => store.state.params.runSearch,
       (newRun) => {
         if (newRun) {
-          tList = reactive<TorrentProps[]>([])
+          tList.splice(0, tList.length)
           search()
           store.commit(EMutations.setRunSearch, false)
         }
@@ -337,12 +357,24 @@ export default defineComponent({
 .torrent-title {
   font-weight: bold;
 }
-.site-icon-tag {
+.site-tag {
+  cursor:pointer
+}
+.site-tag-icon {
   height: 16px;
   width: 16px;
   margin-right: 8px;
 }
 .search-page-head {
   margin-bottom: 16px;
+}
+.torrent-table-title {
+  flex-wrap: nowrap;
+}
+.torrent-titles {
+  padding-right: 12px;
+}
+.torrent-title {
+  font-size: 14px;
 }
 </style>

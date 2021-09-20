@@ -1,5 +1,5 @@
 <template>
-  <a-table :columns="columns" :dataSource="dataSource">
+  <a-table :columns="columns" :dataSource="dataSource" class="compact-table">
     <template #title>
       <a-row type="flex" justify="space-between" align="middle">
         <a-col>
@@ -45,7 +45,7 @@
           shape="circle"
           class="site-button"
         >
-          <a-avatar size="small" :src="record.siteIcon" />
+          <a-avatar :size="18" :src="record.siteIcon" />
         </a-button>
       </a-tooltip>
       <br />
@@ -54,7 +54,6 @@
         <a
           :href="record.siteUrl"
           target="_blank"
-          :style="{ fontSize: '12px' }"
         >{{ record.siteName }}</a>
       </a-tooltip>
     </template>
@@ -199,6 +198,7 @@ const columns: ColumnProps[] = [
   {
     key: 'status',
     width: 120,
+    align: 'center',
     slots: { title: 'statusTitle', customRender: 'status' }
   }
 ]

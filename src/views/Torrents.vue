@@ -342,6 +342,7 @@ export default defineComponent({
       () => store.state.params.runSearch,
       (newRun) => {
         if (newRun) {
+          queue.clear()
           tList.splice(0, tList.length)
           search()
           store.commit(EMutations.setRunSearch, false)

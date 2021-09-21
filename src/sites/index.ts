@@ -10,6 +10,7 @@ import keepfrds from './sites/keepfrds'
 import hdroute from './sites/hdroute'
 import totheglory from './sites/totheglory'
 import broadcasthenet from './sites/broadcasthenet'
+import passthepopcorn from './sites/passthepopcorn'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -29,7 +30,8 @@ const sites: Sites = {
   keepfrds,
   hdroute,
   totheglory,
-  broadcasthenet
+  broadcasthenet,
+  passthepopcorn
 }
 
 export default sites

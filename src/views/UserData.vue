@@ -242,8 +242,7 @@ export default defineComponent({
             ratio: uData ? uData.upload / uData.download : NaN,
             seedingCounts: uData ? uData.seeding : NaN,
             seedingSize: uData ? uData.seedingSize : NaN,
-            // bug fix: JSON save NaN as null, we have to check it
-            bonus: uData && uData.bonus !== null ? uData.bonus : NaN,
+            bonus: uData && uData.bonus !== -1 ? uData.bonus : NaN,
             joinDate: uData ? uData.joinDate : 0,
             recordDate: uData ? uData.recordDate : NaN,
             status: sitesStatus[siteKey]

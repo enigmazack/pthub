@@ -7,7 +7,6 @@ import {
 import type {
   UserInfo,
   SiteConfig,
-  RequestCache,
   TorrentInfo
 } from '../types'
 
@@ -15,7 +14,6 @@ export default class Site {
   name: string
   url: URL
   icon: URL
-  private requestCache: RequestCache[]
 
   constructor (config:SiteConfig) {
     this.name = config.name
@@ -31,7 +29,6 @@ export default class Site {
       this.icon = new URL(this.url.href)
       this.icon.pathname = 'favicon.ico'
     }
-    this.requestCache = []
   }
 
   async checkStatus (): Promise<ESiteStatus> {
@@ -61,10 +58,6 @@ export default class Site {
       baseURL: this.url.href,
       timeout: 10000
     })
-  }
-
-  protected cleanRequestCache (): void {
-    this.requestCache = []
   }
 
   protected parseHTML (page: string): JQuery<Document> {

@@ -2,7 +2,6 @@ import {
   ETorrentCatagory,
   ETorrentPromotion
 } from './enum'
-import { AxiosResponse } from 'axios'
 
 export interface UserInfo {
   name: string,
@@ -18,23 +17,12 @@ export interface UserInfo {
   seedingList?: string[]
 }
 
+export type SeedingInfo = Pick<UserInfo, 'seeding'|'seedingSize'|'seedingList'>
+
 export interface SiteConfig {
   name: string,
   url: string,
   icon?: string
-}
-
-export interface RequestCache {
-  url: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  response: Promise<AxiosResponse<any>>
-  time: number
-}
-
-export interface SeedingInfo {
-  seeding: number,
-  seedingSize: number,
-  seedingList?: string[]
 }
 
 export interface TorrentPromotion {

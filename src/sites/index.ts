@@ -9,6 +9,7 @@ import opencd from './sites/opencd'
 import keepfrds from './sites/keepfrds'
 import hdroute from './sites/hdroute'
 import totheglory from './sites/totheglory'
+import broadcasthenet from './sites/broadcasthenet'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -27,7 +28,8 @@ const sites: Sites = {
   opencd,
   keepfrds,
   hdroute,
-  totheglory
+  totheglory,
+  broadcasthenet
 }
 
 export default sites

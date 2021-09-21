@@ -73,7 +73,7 @@ class LHD extends NexusPHPSite {
       index += 1
     }
     const seedersString = columns.eq(index).text()
-    const seeders = seedersString ? parseInt(seedersString) : NaN
+    const seeders = seedersString ? parseInt(seedersString) : -1
     return seeders
   }
 
@@ -84,7 +84,7 @@ class LHD extends NexusPHPSite {
       index += 1
     }
     const leechersString = columns.eq(index).text()
-    const leechers = leechersString ? parseInt(leechersString) : NaN
+    const leechers = leechersString ? parseInt(leechersString) : -1
     return leechers
   }
 
@@ -95,7 +95,7 @@ class LHD extends NexusPHPSite {
       index += 1
     }
     const snatchedString = columns.eq(index).text()
-    const snatched = snatchedString ? parseInt(snatchedString) : NaN
+    const snatched = snatchedString ? parseInt(snatchedString) : -1
     return snatched
   }
 

@@ -56,7 +56,7 @@ class HDRoute extends NexusPHPSite {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseBonus (query: JQuery<Document>): number {
-    return NaN
+    return -1
   }
 
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
@@ -170,19 +170,19 @@ class HDRoute extends NexusPHPSite {
 
   protected parseTorrentSeeders (query: JQuery<HTMLElement>): number {
     const seedersString = query.find('div.torrent_count').eq(1).text()
-    const seeders = seedersString ? parseInt(seedersString) : NaN
+    const seeders = seedersString ? parseInt(seedersString) : -1
     return seeders
   }
 
   protected parseTorrentLeechers (query: JQuery<HTMLElement>): number {
     const leechersString = query.find('div.torrent_count').eq(2).text()
-    const leechers = leechersString ? parseInt(leechersString) : NaN
+    const leechers = leechersString ? parseInt(leechersString) : -1
     return leechers
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
-    return NaN
+    return -1
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

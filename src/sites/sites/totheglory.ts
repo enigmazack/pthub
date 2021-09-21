@@ -269,19 +269,19 @@ class TTG extends NexusPHPSite {
 
   protected parseTorrentSeeders (query: JQuery<HTMLElement>): number {
     const seedersString = query.find('> td').eq(8).find('a[href*="toseeders"]').text()
-    const seeders = seedersString ? parseInt(seedersString) : NaN
+    const seeders = seedersString ? parseInt(seedersString) : -1
     return seeders
   }
 
   protected parseTorrentLeechers (query: JQuery<HTMLElement>): number {
     const leechersString = query.find('> td').eq(8).find('a[href*="todlers"]').text()
-    const leechers = leechersString ? parseInt(leechersString) : NaN
+    const leechers = leechersString ? parseInt(leechersString) : -1
     return leechers
   }
 
   protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
     const leechersString = query.find('> td').eq(7).html().split('<br>')[0]
-    const leechers = leechersString ? parseInt(leechersString) : NaN
+    const leechers = leechersString ? parseInt(leechersString) : -1
     return leechers
   }
 

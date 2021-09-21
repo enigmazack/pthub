@@ -281,19 +281,19 @@ export default class NexusPHPSite extends Site {
 
   protected parseTorrentSeeders (query: JQuery<HTMLElement>): number {
     const seedersString = query.find('> td').eq(this.tableIndex.seeders).text()
-    const seeders = seedersString ? parseInt(seedersString) : NaN
+    const seeders = seedersString ? parseInt(seedersString) : -1
     return seeders
   }
 
   protected parseTorrentLeechers (query: JQuery<HTMLElement>): number {
     const leechersString = query.find('> td').eq(this.tableIndex.leechers).text()
-    const leechers = leechersString ? parseInt(leechersString) : NaN
+    const leechers = leechersString ? parseInt(leechersString) : -1
     return leechers
   }
 
   protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
     const leechersString = query.find('> td').eq(this.tableIndex.snatched).text()
-    const leechers = leechersString ? parseInt(leechersString) : NaN
+    const leechers = leechersString ? parseInt(leechersString) : -1
     return leechers
   }
 

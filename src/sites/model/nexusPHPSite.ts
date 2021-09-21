@@ -380,10 +380,10 @@ export default class NexusPHPSite extends Site {
       if (pattern) {
         const [pathname, search] = pattern.split('?')
         url.pathname = pathname
-        url.search = search.replace('{}', keywords.replace('.', ' '))
+        url.search = search.replace('{}', keywords.replaceAll('.', ' '))
       } else {
         url.pathname = this.torrentPath
-        url.searchParams.set('search', keywords.replace('.', ' '))
+        url.searchParams.set('search', keywords.replaceAll('.', ' '))
       }
       const query = await this.getTorrentPageQuery(url.pathname + url.search)
       const maxPage = this.parseTorrentMaxPage(query)

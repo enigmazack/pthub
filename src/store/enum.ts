@@ -1,4 +1,6 @@
 export enum EGetters {
+  isEnabledSite = 'isEnabledSite',
+  getUserData = 'getUserData'
 }
 
 export enum EMutations {

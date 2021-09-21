@@ -9,6 +9,7 @@ import {
   Store
 } from 'vuex'
 import {
+  EGetters,
   EMutations,
   EActions
 } from '@/store/enum'
@@ -44,10 +45,14 @@ const state: SiteSettingsState = {
 }
 
 // getters
-type Getters = {
+type Getters<S = SiteSettingsState> = {
+  [EGetters.isEnabledSite] (state: S): (siteKey: string) => boolean
 }
 
 const getters: GetterTree<SiteSettingsState, RootState> & Getters = {
+  [EGetters.isEnabledSite] (state) {
+    return (siteKey) => state.enabledSites.indexOf(siteKey) !== -1
+  }
 }
 
 // mutations
@@ -107,7 +112,7 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
 
 // actions
 type Actions<S = SiteSettingsState, R = RootState> = {
-  [EActions.initSiteSettings] (context: ActionContext<S, R>): Promise<void>,
+  [EActions.initSiteSettings] (context: ActionContext<S, R>, payload: {siteList: string[]}): Promise<void>,
   [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>,
   [EActions.setConcurrencyRequests] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
   [EActions.setExpectTorrents] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
@@ -119,15 +124,20 @@ type Actions<S = SiteSettingsState, R = RootState> = {
 
 const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async [EActions.initSiteSettings] ({ commit, state }) {
+  async [EActions.initSiteSettings] ({ commit, state }, { siteList }) {
     // load data from the local storage when extension start
     const data = await siteSettingsStorage.get()
     if (data !== undefined) {
+      // Omit useless record
+      data.enabledSites = data.enabledSites.filter(
+        siteKey => siteList.findIndex(sKey => sKey === siteKey) !== -1
+      )
+      data.searchConfigs = data.searchConfigs.filter(
+        sConfig => siteList.findIndex(sKey => sKey === sConfig.siteKey) !== -1
+      )
       commit(EMutations.initSiteSettings, data)
-    } else {
-      // for new installed extension, init the storage with empty data
-      await siteSettingsStorage.set(state)
     }
+    await siteSettingsStorage.set(state)
   },
   async [EActions.toggleEnabledSite] ({ commit, state }, { site }) {
     commit(EMutations.toggleEnabledSite, site)

@@ -10,7 +10,8 @@ import {
 } from 'vuex'
 import {
   EMutations,
-  EActions
+  EActions,
+  EGetters
 } from '@/store/enum'
 import { RootState } from '@/store'
 import { userDataStorage } from '@/store/storage'
@@ -31,10 +32,14 @@ const state: UserDataState = {
 }
 
 // getters
-type Getters = {
+type Getters<S = UserDataState> = {
+  [EGetters.getUserData] (state: S): (siteKey: string) => UserData | undefined
 }
 
 const getters: GetterTree<UserDataState, RootState> & Getters = {
+  [EGetters.getUserData] (state) {
+    return (siteKey) => state.userData.find(ud => ud.siteKey === siteKey)
+  }
 }
 
 // mutations
@@ -62,21 +67,22 @@ const mutations: MutationTree<UserDataState> & Mutations = {
 
 // actions
 type Actions<S = UserDataState, R = RootState> = {
-  [EActions.initUserData] (context: ActionContext<S, R>): Promise<void>,
+  [EActions.initUserData] (context: ActionContext<S, R>, payload: {siteList: string[]}): Promise<void>,
   [EActions.updateUserData] (context: ActionContext<S, R>, payload: {data: UserData}): Promise<void>,
 }
 
 const actions: ActionTree<UserDataState, RootState> & Actions = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async [EActions.initUserData] ({ commit, state }) {
+  async [EActions.initUserData] ({ commit, state }, { siteList }) {
     // load data from the local storage when extension start
     const data = await userDataStorage.get()
     if (data !== undefined) {
+      data.userData = data.userData.filter(
+        uData => siteList.findIndex(sKey => sKey === uData.siteKey) !== -1
+      )
       commit(EMutations.initUserData, data)
-    } else {
-      // for new installed extension, init the storage with empty data
-      await userDataStorage.set(state)
     }
+    await userDataStorage.set(state)
   },
   async [EActions.updateUserData] ({ commit, state }, { data }) {
     commit(EMutations.updateUserData, data)

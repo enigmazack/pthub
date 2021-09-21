@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, inject, reactive, UnwrapRef } from 'vue'
+import { computed, defineComponent, ref, inject, reactive } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { useStore, EActions } from '@/store'
 import { UserData } from '@/store/modules/userData'
@@ -217,23 +217,20 @@ export default defineComponent({
     const sites = inject('sites') as Sites
     const store = useStore()
 
-    const sitesStatus: UnwrapRef<Record<string, ESiteStatus>> = reactive({})
+    const sitesStatus = reactive<Record<string, ESiteStatus>>({})
     for (const siteKey of Object.keys(sites)) {
       sitesStatus[siteKey] = ESiteStatus.empty
     }
 
-    const searchText = ref('')
-    const dataSource = computed(() => {
-      const enabledSites = store.state.siteSettings.enabledSites
-      const storeData = store.state.userData.userData
-      const userData: UserDataProps[] = []
-      let counter = 1
-      enabledSites.forEach(siteKey => {
-        if (sites[siteKey]) {
-          const uData = _.find(storeData, d => d.siteKey === siteKey)
+    const enabledSites = computed(() => store.state.siteSettings.enabledSites)
+
+    const userData = computed(
+      () => enabledSites.value.map<UserDataProps>(
+        siteKey => {
+          const uData = store.getters.getUserData(siteKey)
           const site = sites[siteKey]
-          const data: UserDataProps = {
-            key: counter.toString(),
+          return {
+            key: siteKey,
             siteKey,
             siteName: site.name,
             siteUrl: site.url.href,
@@ -245,29 +242,30 @@ export default defineComponent({
             ratio: uData ? uData.ratio : NaN,
             seedingCounts: uData ? uData.seeding : NaN,
             seedingSize: uData ? uData.seedingSize : NaN,
-            bonus: uData ? uData.bonus : NaN,
-            joinDate: uData ? uData.joinDate : NaN,
+            // bug fix: JSON save NaN as null, we have to check it
+            bonus: uData && uData.bonus !== null ? uData.bonus : NaN,
+            joinDate: uData ? uData.joinDate : 0,
             recordDate: uData ? uData.recordDate : NaN,
             status: sitesStatus[siteKey]
           }
-          userData.push(data)
-          counter += 1
         }
-      })
-      const sorteduserData = _.sortBy(userData, ['siteName'])
-      if (searchText.value === '') {
-        return sorteduserData
-      }
-      return sorteduserData.filter(data =>
-        data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
-        data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
       )
-    })
+    )
+
+    const searchText = ref('')
+    const dataSource = computed(
+      () => _.sortBy(userData.value, ['siteName'])
+        .filter(
+          uData => !searchText.value ||
+            uData.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
+            uData.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
+        )
+    )
 
     const disabled = ref(false)
     const refreshUserData = (siteKey?: string) => {
       disabled.value = true
-      const sitesList: string[] = siteKey ? [siteKey] : store.state.siteSettings.enabledSites
+      const sitesList: string[] = siteKey ? [siteKey] : enabledSites.value
       const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
       let counter = 0
       sitesList.forEach(async sKey => {

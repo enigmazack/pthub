@@ -30,12 +30,13 @@
   </a-config-provider>
 </template>
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, inject } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import Sider from './components/Sider.vue'
 import { useStore, EActions } from './store'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import enUS from 'ant-design-vue/es/locale/en_US'
+import { Sites } from './sites'
 export default defineComponent({
   name: 'app',
   components: {
@@ -43,6 +44,8 @@ export default defineComponent({
     Sider
   },
   setup () {
+    const sites = inject('sites') as Sites
+    const siteList = Object.keys(sites)
     const store = useStore()
     const locale = computed(() => {
       const slocale = store.state.uiSettings.locale
@@ -56,8 +59,8 @@ export default defineComponent({
     })
     // get state from extention's local storage
     store.dispatch(EActions.initUiSettings)
-    store.dispatch(EActions.initSiteSettings)
-    store.dispatch(EActions.initUserData)
+    store.dispatch(EActions.initSiteSettings, { siteList })
+    store.dispatch(EActions.initUserData, { siteList })
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed,

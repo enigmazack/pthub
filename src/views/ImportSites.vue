@@ -3,7 +3,7 @@
     <template #title>
       <a-button
         @click="checkSitesStatus()"
-        :disabled="disabled"
+        :disabled="buttonDisabled"
         type="primary"
         style="margin: 0px 12px"
       >
@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, inject, reactive, UnwrapRef } from 'vue'
+import { computed, defineComponent, ref, inject, reactive } from 'vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import _ from 'lodash'
 import { Sites, ESiteStatus } from '@/sites'
@@ -111,53 +111,49 @@ export default defineComponent({
   },
   setup () {
     const sites = inject('sites') as Sites
-    const searchText = ref('')
-    // use vuex store
     const store = useStore()
-    // set all sites status init value unknow
-    const sitesStatus: UnwrapRef<Record<string, ESiteStatus>> = reactive({})
-    for (const siteKey of Object.keys(sites)) {
+
+    const siteList = _.sortBy(Object.keys(sites))
+    const searchText = ref('')
+    const sitesStatus = reactive<Record<string, ESiteStatus>>({})
+    siteList.forEach(siteKey => {
       sitesStatus[siteKey] = ESiteStatus.unknow
-    }
-    // table data source is a computed props
-    const dataSource = computed(() => {
-      const sitesData: SiteDataProps[] = []
-      let key = 1
-      for (const siteKey of Object.keys(sites)) {
-        const siteData: SiteDataProps = {
-          key: key.toString(),
-          siteKey,
-          siteName: sites[siteKey].name,
-          siteUrl: sites[siteKey].url.href,
-          siteIcon: sites[siteKey].icon.href,
-          siteStatus: sitesStatus[siteKey],
-          siteEnabled: store.state.siteSettings.enabledSites.findIndex(s => s === siteKey) !== -1
-        }
-        key += 1
-        sitesData.push(siteData)
-      }
-      const sortedSitesData = _.sortBy(sitesData, ['siteName'])
-      if (searchText.value === '') {
-        return sortedSitesData
-      }
-      // TODO: maybe we want to do some fuzzy search here
-      return sortedSitesData.filter(data =>
-        data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
-        data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
-      )
     })
 
+    const sitesData = computed<SiteDataProps[]>(
+      () => siteList
+        .map(siteKey => {
+          return {
+            key: siteKey,
+            siteKey,
+            siteName: sites[siteKey].name,
+            siteUrl: sites[siteKey].url.href,
+            siteIcon: sites[siteKey].icon.href,
+            siteStatus: sitesStatus[siteKey],
+            siteEnabled: store.getters.isEnabledSite(siteKey)
+          }
+        })
+    )
+
+    const dataSource = computed(
+      () => _.sortBy(sitesData.value, ['siteName'])
+        .filter(data => !searchText.value ||
+          data.siteKey.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1 ||
+          data.siteName.toLowerCase().indexOf(searchText.value.toLowerCase()) !== -1
+        )
+    )
+
     // disabled the check all sites button
-    const disabled = ref(false)
+    const buttonDisabled = ref(false)
     // method to check sites status
     const checkSitesStatus = (siteKey?: string) => {
       // disable the button when checking
-      disabled.value = true
-      const sitesList: string[] = siteKey ? [siteKey] : Object.keys(sites)
+      buttonDisabled.value = true
+      const sList: string[] = siteKey ? [siteKey] : siteList
       // use p-queue to contral concurrency async functions
       const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
       let counter = 0
-      sitesList.forEach(async siteKey => {
+      sList.forEach(async siteKey => {
         if (sitesStatus[siteKey] !== ESiteStatus.login) {
           const newStatus = await queue.add(() => {
             sitesStatus[siteKey] = ESiteStatus.connecting
@@ -166,14 +162,13 @@ export default defineComponent({
           sitesStatus[siteKey] = newStatus
         }
         counter += 1
-        if (counter === sitesList.length) {
-          disabled.value = false
+        if (counter === sList.length) {
+          buttonDisabled.value = false
         }
       })
     }
-    // method to toggle site, it's a dispatch of the store
-    const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })
 
+    const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })
     const showRefresh = (siteStatus: ESiteStatus) =>
       siteStatus !== ESiteStatus.login && siteStatus !== ESiteStatus.connecting
     const unknow = ESiteStatus.unknow
@@ -184,7 +179,7 @@ export default defineComponent({
       columns,
       toggleEnabled,
       checkSitesStatus,
-      disabled,
+      buttonDisabled,
       showRefresh,
       unknow
     }

@@ -6,15 +6,15 @@ import { AxiosResponse } from 'axios'
 
 export interface UserInfo {
   name: string,
-  id?: string,
-  joinDate?: number,
-  upload?: number,
-  download?: number,
-  ratio?: number,
-  userClass?: string,
-  bonus?: number,
-  seeding?: number,
-  seedingSize?: number,
+  id: string,
+  joinDate: number,
+  upload: number,
+  download: number,
+  ratio: number,
+  userClass: string,
+  bonus: number,
+  seeding: number,
+  seedingSize: number,
   seedingList?: string[]
 }
 

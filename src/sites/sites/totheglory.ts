@@ -49,12 +49,12 @@ class TTG extends NexusPHPSite {
     }
   }
 
-  protected parseJoinDate (query: JQuery<Document>): number|undefined {
+  protected parseJoinDate (query: JQuery<Document>): number {
     const joinDateString = this.someSelector(query, [
       'td.rowhead:contains("注册日期")',
       'td.rowhead:contains("Join"):contains("date")'
     ]).next().text()
-    const joinDate = joinDateString ? Date.parse(joinDateString) : undefined
+    const joinDate = joinDateString ? Date.parse(joinDateString) : 0
     return joinDate
   }
 

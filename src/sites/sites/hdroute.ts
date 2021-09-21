@@ -15,12 +15,12 @@ class HDRoute extends NexusPHPSite {
     return name
   }
 
-  protected parseJoinDate (query: JQuery<Document>): number|undefined {
+  protected parseJoinDate (query: JQuery<Document>): number {
     const joinDateString = this.someSelector(query, [
       'div.userdetail-list-title:contains("注册日期")',
       'div.userdetail-list-title:contains("Reg.Date")'
     ]).next().text()
-    const joinDate = joinDateString ? Date.parse(joinDateString) : undefined
+    const joinDate = joinDateString ? Date.parse(joinDateString) : 0
     return joinDate
   }
 

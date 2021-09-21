@@ -1,5 +1,10 @@
 <template>
-  <a-table :columns="columns" :dataSource="dataSource" class="compact-table">
+  <a-table
+    :columns="columns"
+    :dataSource="dataSource"
+    class="compact-table"
+    id="userdata-table"
+  >
     <template #title>
       <a-row type="flex" justify="space-between" align="middle">
         <a-col>
@@ -234,14 +239,14 @@ export default defineComponent({
             siteUrl: site.url.href,
             siteIcon: site.icon.href,
             userName: uData ? uData.name : '',
-            userClass: uData && uData.userClass ? uData.userClass : '',
-            uploadData: uData && uData.upload ? uData.upload : NaN,
-            downloadData: uData && uData.download ? uData.download : NaN,
-            ratio: uData && uData.ratio ? uData.ratio : NaN,
-            seedingCounts: uData && uData.seeding ? uData.seeding : NaN,
-            seedingSize: uData && uData.seedingSize ? uData.seedingSize : NaN,
-            bonus: uData && uData.bonus ? uData.bonus : NaN,
-            joinDate: uData && uData.joinDate ? uData.joinDate : NaN,
+            userClass: uData ? uData.userClass : '',
+            uploadData: uData ? uData.upload : NaN,
+            downloadData: uData ? uData.download : NaN,
+            ratio: uData ? uData.ratio : NaN,
+            seedingCounts: uData ? uData.seeding : NaN,
+            seedingSize: uData ? uData.seedingSize : NaN,
+            bonus: uData ? uData.bonus : NaN,
+            joinDate: uData ? uData.joinDate : NaN,
             recordDate: uData ? uData.recordDate : NaN,
             status: sitesStatus[siteKey]
           }
@@ -301,12 +306,15 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 button.site-button {
   border: 0;
 }
 button.site-button:hover {
   border: 0;
   background-color: lightgray;
+}
+#userdata-table .site-status {
+  margin-left: 20px;
 }
 </style>

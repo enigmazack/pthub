@@ -82,10 +82,9 @@ export default class NexusPHPSite extends Site {
       const name = this.parseUserName(query)
       // join date
       const joinDate = this.parseJoinDate(query)
-      // upload download ratio
+      // upload download
       const upload = this.parseUpload(query)
       const download = this.parseDownload(query)
-      const ratio = upload / download
       // user class
       const userClass = this.parseUserClass(query)
       // bonus
@@ -98,7 +97,6 @@ export default class NexusPHPSite extends Site {
         joinDate,
         upload,
         download,
-        ratio,
         bonus,
         userClass,
         ...seedingInfo

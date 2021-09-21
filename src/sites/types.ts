@@ -9,7 +9,6 @@ export interface UserInfo {
   joinDate: number,
   upload: number,
   download: number,
-  ratio: number,
   userClass: string,
   bonus: number,
   seeding: number,

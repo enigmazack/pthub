@@ -25,7 +25,6 @@ class TTG extends NexusPHPSite {
       const joinDate = this.parseJoinDate(query)
       const upload = this.parseUpload(query)
       const download = this.parseDownload(query)
-      const ratio = upload / download
       const userClass = this.parseUserClass(query)
       const bonus = this.parseBonus(query)
       const seedingInfo = this.getTTGSeedingInfo(query)
@@ -35,7 +34,6 @@ class TTG extends NexusPHPSite {
         joinDate,
         upload,
         download,
-        ratio,
         bonus,
         userClass,
         ...seedingInfo

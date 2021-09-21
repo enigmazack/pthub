@@ -239,7 +239,7 @@ export default defineComponent({
             userClass: uData ? uData.userClass : '',
             uploadData: uData ? uData.upload : NaN,
             downloadData: uData ? uData.download : NaN,
-            ratio: uData ? uData.ratio : NaN,
+            ratio: uData ? uData.upload / uData.download : NaN,
             seedingCounts: uData ? uData.seeding : NaN,
             seedingSize: uData ? uData.seedingSize : NaN,
             // bug fix: JSON save NaN as null, we have to check it

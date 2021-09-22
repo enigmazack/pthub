@@ -17,8 +17,13 @@ class FRDS extends NexusPHPSite {
   }
 
   protected parseTorrentTitle (query: JQuery<HTMLElement>): string {
-    return query.find('a[href*="details.php?id="]').first().parent().html().split('<br>')[1].split('<')[0].trim() ||
-      query.find('a[href*="details.php?id="]').first().parent().find('> font').text()
+    const titleTd = query.find('a[href*="details.php?id="]').first().parent()
+    return titleTd.contents().filter((index, content) => content.nodeType === 3).text().trim() ||
+      titleTd.find('> font').first().contents().filter((index, content) => content.nodeType === 3).text().trim()
+  }
+
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+    return !!query.find('img[src*="up"]').length
   }
 
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {

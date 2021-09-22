@@ -16,6 +16,7 @@
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
+          <LoadingOutlined class="site-tag-counts"/>
         </div>
       </a-tag>
       <a-tag
@@ -132,7 +133,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, UnwrapRef, watch } from 'vue'
-import { DownloadOutlined } from '@ant-design/icons-vue'
+import { DownloadOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
@@ -158,7 +159,7 @@ interface SearchStatusProps {
   torrentCounts: number
 }
 
-export function genSorter<T = SearchConfigProps> (prop: keyof T) {
+function genSorter<T = SearchConfigProps> (prop: keyof T) {
   return (a: T, b: T): number => {
     const ap = a[prop]
     const bp = b[prop]
@@ -235,7 +236,8 @@ export default defineComponent({
   components: {
     DownloadOutlined,
     PromotionTag,
-    SeedingFilled
+    SeedingFilled,
+    LoadingOutlined
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -317,7 +319,7 @@ export default defineComponent({
           searchStatus[siteKey] = { status: ESiteStatus.unknow, torrentCounts: NaN }
         })
       }
-      console.log(`search ${siteList}`)
+      // console.log(`search ${siteList}`)
       siteList.forEach(sKey => {
         searchStatus[sKey].status = ESiteStatus.unknow
         let torrentCounts = 0
@@ -326,7 +328,10 @@ export default defineComponent({
         const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
         cList.forEach(async config => {
           const torrents = await queue.add(() => {
-            if (searchStatus[sKey].status === ESiteStatus.unknow) {
+            if (searchStatus[sKey].status === ESiteStatus.unknow ||
+              searchStatus[sKey].status === ESiteStatus.searchFailed ||
+              searchStatus[sKey].status === ESiteStatus.timeout
+            ) {
               searchStatus[sKey].status = ESiteStatus.connecting
             }
             return sites[sKey].search(searchText.value, expectTorrents.value, config.pattern)
@@ -336,9 +341,9 @@ export default defineComponent({
             torrentCounts += ts.length
             searchCounts += 1
             ts.forEach(t => tList.push(t))
-            console.log(`push ${ts.length} ${config.siteKey} torrents to table`)
+            // console.log(`push ${ts.length} ${config.siteKey} torrents to table`)
           } else {
-            console.log(`${config.siteKey} status ${torrents}`)
+            // console.log(`${config.siteKey} status ${torrents}`)
             searchStatus[sKey].status = torrents
           }
           if (searchCounts === cList.length) {
@@ -366,6 +371,10 @@ export default defineComponent({
       }
     )
 
+    const setStatus = (siteKey: string) => {
+      searchStatus[siteKey].status = ESiteStatus.connecting
+    }
+
     return {
       columns,
       dataSource,
@@ -380,7 +389,8 @@ export default defineComponent({
       toggleFilterSite,
       isSeeding,
       search,
-      searchStatus
+      searchStatus,
+      setStatus
     }
   }
 })

@@ -37,10 +37,14 @@ class PTer extends NexusPHPSite {
     return query
   }
 
+  protected parseTorrentTitle (query: JQuery<HTMLElement>): string {
+    return query.find('table.torrentname > tbody > tr > td').eq(1).find('a').eq(0).attr('title') || ''
+  }
+
   protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
-    const titleString = query.find('a[href*="details.php?id="]').first().parent().html()
-    const subTitle = titleString ? titleString.split('>').pop()?.replace('&nbsp;', '') : undefined
-    return subTitle
+    return query.find('table.torrentname > tbody > tr > td').eq(1).contents().filter(
+      (index, content) => content.nodeType === 3
+    ).text().trim()
   }
 
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {

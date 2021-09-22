@@ -11,6 +11,10 @@ class OpenCD extends NexusPHPSite {
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
     return ETorrentCatagory.music
   }
+
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+    return !!query.find('img[src*="seeding"]').length
+  }
 }
 
 const opencd = new OpenCD({

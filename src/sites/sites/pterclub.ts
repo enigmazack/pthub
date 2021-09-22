@@ -47,6 +47,10 @@ class PTer extends NexusPHPSite {
     ).text().trim()
   }
 
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+    return !!query.find('img.progbargreen[style*="98"]').length
+  }
+
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
     const map = new Map()
     map.set('401', ETorrentCatagory.movies)

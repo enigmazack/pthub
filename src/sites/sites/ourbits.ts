@@ -2,6 +2,10 @@ import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory } from '../enum'
 
 class OB extends NexusPHPSite {
+  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+    return !!query.find('div.progressBar.doing[title*="100.00%"]').length
+  }
+
   protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
     const map = new Map()
     map.set('401', ETorrentCatagory.movies)

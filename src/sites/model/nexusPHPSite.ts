@@ -193,7 +193,7 @@ export default class NexusPHPSite extends Site {
   // get user seeding torrent info
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
     const query = await this.getSeedingInfoQuery(id)
-    const seeding = this.parseSeedingInfoSeeding(query)
+    // const seeding = this.parseSeedingInfoSeeding(query)
     const rows = query.find('tr')
     let seedingSize = 0
     const seedingList: string[] = []
@@ -208,6 +208,7 @@ export default class NexusPHPSite extends Site {
       const torrentSizeThis = this.parseSeedingInfoSize(row)
       seedingSize += torrentSizeThis
     }
+    const seeding = seedingList.length
     return { seeding, seedingSize, seedingList }
   }
 

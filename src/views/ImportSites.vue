@@ -1,5 +1,5 @@
 <template>
-  <a-table :columns="columns" :dataSource="dataSource">
+  <a-table :columns="columns" :dataSource="dataSource" :pagination="{ pageSize: 100 }">
     <template #title>
       <a-button
         @click="checkSitesStatus()"

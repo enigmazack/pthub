@@ -11,6 +11,7 @@ import hdroute from './sites/hdroute'
 import totheglory from './sites/totheglory'
 import broadcasthenet from './sites/broadcasthenet'
 import passthepopcorn from './sites/passthepopcorn'
+import putao from './sites/putao'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -31,7 +32,8 @@ const sites: Sites = {
   hdroute,
   totheglory,
   broadcasthenet,
-  passthepopcorn
+  passthepopcorn,
+  putao
 }
 
 export default sites

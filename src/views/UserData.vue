@@ -4,6 +4,7 @@
     :dataSource="dataSource"
     class="compact-table"
     id="userdata-table"
+    :pagination="{ pageSize: 100 }"
   >
     <template #title>
       <a-row type="flex" justify="space-between" align="middle">

@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
-import {
-  ESiteStatus
-} from '../enum'
+import { ESiteStatus } from '../enum'
 import type {
   UserInfo,
   SiteConfig,
@@ -14,6 +12,7 @@ export default class Site {
   name: string
   url: URL
   icon: URL
+  private timeout = 5000
 
   constructor (config:SiteConfig) {
     this.name = config.name
@@ -47,7 +46,7 @@ export default class Site {
   get (url: string): Promise<AxiosResponse<any>> {
     const r = axios.get(url, {
       baseURL: this.url.href,
-      timeout: 10000
+      timeout: this.timeout
     })
     return r
   }
@@ -56,8 +55,12 @@ export default class Site {
   post (url: string, data: any): Promise<AxiosResponse<any>> {
     return axios.post(url, data, {
       baseURL: this.url.href,
-      timeout: 10000
+      timeout: this.timeout
     })
+  }
+
+  setTimeout (timeout: number): void {
+    this.timeout = timeout
   }
 
   protected parseHTML (page: string): JQuery<Document> {

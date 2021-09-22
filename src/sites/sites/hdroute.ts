@@ -201,6 +201,7 @@ class HDRoute extends NexusPHPSite {
         url.pathname = this.torrentPath
         url.searchParams.set('s', keywords.replaceAll('.', ' '))
       }
+      url.searchParams.set('action', 's')
       const query = await this.getTorrentPageQuery(url.pathname + url.search)
       const maxPage = this.parseTorrentMaxPage(query)
       let currentPage = 1

@@ -7,13 +7,24 @@
           {{ sites[siteKey].name }}
         </div>
       </a-tag>
-      <a-tag v-for="(status, siteKey) in searchingSites" :key="siteKey" color="blue" class='site-tag'>
+      <a-tag
+        v-for="(status, siteKey) in searchingSites"
+        :key="siteKey"
+        color="blue"
+        class='site-tag'
+      >
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
         </div>
       </a-tag>
-      <a-tag v-for="(status, siteKey) in failedSites" :key="siteKey" color="red" class='site-tag'>
+      <a-tag
+        v-for="(status, siteKey) in failedSites"
+        :key="siteKey"
+        color="red"
+        @click="search(siteKey)"
+        class='site-tag'
+      >
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
@@ -29,6 +40,7 @@
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
+          <div class="site-tag-counts"> {{ searchStatus[siteKey].torrentCounts }} </div>
         </div>
       </a-tag>
     </a-space>
@@ -276,6 +288,7 @@ export default defineComponent({
             (torrent.subTitle && torrent.subTitle.toLowerCase().indexOf(word) !== -1)
           )
         ),
+        // sort by release data
         t => -t.releaseDate
       )
     )
@@ -297,7 +310,6 @@ export default defineComponent({
       _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed)
     )
 
-    const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
     const search = (siteKey?: string) => {
       const siteList = siteKey ? [siteKey] : activeSites.value
       if (!siteKey) {
@@ -305,11 +317,13 @@ export default defineComponent({
           searchStatus[siteKey] = { status: ESiteStatus.unknow, torrentCounts: NaN }
         })
       }
+      console.log(`search ${siteList}`)
       siteList.forEach(sKey => {
         searchStatus[sKey].status = ESiteStatus.unknow
         let torrentCounts = 0
         let searchCounts = 0
         const cList = configList.value.filter(config => config.siteKey === sKey)
+        const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
         cList.forEach(async config => {
           const torrents = await queue.add(() => {
             if (searchStatus[sKey].status === ESiteStatus.unknow) {
@@ -322,7 +336,9 @@ export default defineComponent({
             torrentCounts += ts.length
             searchCounts += 1
             ts.forEach(t => tList.push(t))
+            console.log(`push ${ts.length} ${config.siteKey} torrents to table`)
           } else {
+            console.log(`${config.siteKey} status ${torrents}`)
             searchStatus[sKey].status = torrents
           }
           if (searchCounts === cList.length) {
@@ -334,7 +350,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      search()
+      // search()
       store.commit(EMutations.setRunSearch, false)
     })
 
@@ -342,7 +358,7 @@ export default defineComponent({
       () => store.state.params.runSearch,
       (newRun) => {
         if (newRun) {
-          queue.clear()
+          // queue.clear()
           tList.splice(0, tList.length)
           search()
           store.commit(EMutations.setRunSearch, false)
@@ -362,7 +378,9 @@ export default defineComponent({
       sites,
       isFilterSite,
       toggleFilterSite,
-      isSeeding
+      isSeeding,
+      search,
+      searchStatus
     }
   }
 })
@@ -391,5 +409,9 @@ export default defineComponent({
 }
 .torrent-title {
   font-size: 14px;
+}
+.site-tag-counts {
+  color: blue;
+  margin-left: 8px;
 }
 </style>

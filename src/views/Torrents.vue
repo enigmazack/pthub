@@ -310,7 +310,7 @@ export default defineComponent({
       _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed)
     )
 
-    const search = (siteKey?: string) => {
+    const search = _.debounce((siteKey?: string) => {
       const siteList = siteKey ? [siteKey] : activeSites.value
       if (!siteKey) {
         activeSites.value.forEach(siteKey => {
@@ -347,7 +347,7 @@ export default defineComponent({
           }
         })
       })
-    }
+    }, 1000)
 
     onMounted(() => {
       // search()

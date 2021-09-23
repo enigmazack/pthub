@@ -1,6 +1,6 @@
 <template>
   <div class="search-page-head">
-    <a-space>
+    <a-space class='site-tags'>
       <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray" class='site-tag'>
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
@@ -312,6 +312,8 @@ export default defineComponent({
       _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed)
     )
 
+    const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
+
     const search = _.debounce((siteKey?: string) => {
       const siteList = siteKey ? [siteKey] : activeSites.value
       if (!siteKey) {
@@ -325,7 +327,6 @@ export default defineComponent({
         let torrentCounts = 0
         let searchCounts = 0
         const cList = configList.value.filter(config => config.siteKey === sKey)
-        const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
         cList.forEach(async config => {
           const torrents = await queue.add(() => {
             if (searchStatus[sKey].status === ESiteStatus.unknow ||
@@ -354,19 +355,34 @@ export default defineComponent({
       })
     }, 1000)
 
+    const reset = () => {
+      store.commit(EMutations.setRunSearch, false)
+      queue.clear()
+      // clear the reactives
+      Object.keys(searchStatus).forEach(siteKey => {
+        delete searchStatus[siteKey]
+      })
+      tList.splice(0, tList.length)
+    }
+
     onMounted(() => {
-      // search()
+      // reset()
       store.commit(EMutations.setRunSearch, false)
     })
+
+    watch(
+      () => store.state.siteSettings.enabledSites.length,
+      () => {
+        reset()
+      }
+    )
 
     watch(
       () => store.state.params.runSearch,
       (newRun) => {
         if (newRun) {
-          // queue.clear()
-          tList.splice(0, tList.length)
+          reset()
           search()
-          store.commit(EMutations.setRunSearch, false)
         }
       }
     )
@@ -397,6 +413,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.site-tags {
+  width: 100%;
+  flex-wrap: wrap;
+}
 .torrent-title {
   font-weight: bold;
 }

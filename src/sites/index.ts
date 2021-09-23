@@ -12,6 +12,7 @@ import totheglory from './sites/totheglory'
 import broadcasthenet from './sites/broadcasthenet'
 import passthepopcorn from './sites/passthepopcorn'
 import putao from './sites/putao'
+import redacted from './sites/redacted'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -33,7 +34,8 @@ const sites: Sites = {
   totheglory,
   broadcasthenet,
   passthepopcorn,
-  putao
+  putao,
+  redacted
 }
 
 export default sites

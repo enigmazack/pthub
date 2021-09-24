@@ -29,3 +29,41 @@ export function parseSize (sizeString: string): number {
   }
   return 0
 }
+
+/**
+ * parse time ago string
+ * @param timeStr
+ * @returns
+ */
+export function parseTimeAgo (timeStr: string): number {
+  const timeRegex = timeStr.match(
+    /((\d+).+?(minute|hour|day|week|month|year)s?.*?(,|and))?.*?(\d+).+?(minute|hour|day|week|month|year)s?/
+  )
+  let milliseconds = 0
+  if (timeRegex) {
+    if (timeRegex[1] === undefined) {
+      milliseconds = getMilliseconds(parseInt(timeRegex[5]), timeRegex[6])
+    } else {
+      milliseconds = getMilliseconds(parseInt(timeRegex[2]), timeRegex[3]) +
+        getMilliseconds(parseInt(timeRegex[5]), timeRegex[6])
+    }
+  }
+  const timeStamp = Date.now() - milliseconds
+  return timeStamp
+}
+
+function getMilliseconds (num: number, unit: string): number {
+  let milliseconds = 0
+  milliseconds = num * 60 * 1000
+  if (unit === 'minute') { return milliseconds }
+  milliseconds = milliseconds * 60
+  if (unit === 'hour') { return milliseconds }
+  milliseconds = milliseconds * 24
+  if (unit === 'day') { return milliseconds }
+  milliseconds = milliseconds * 7
+  if (unit === 'week') { return milliseconds }
+  milliseconds = milliseconds * 30 / 7
+  if (unit === 'month') { return milliseconds }
+  milliseconds = milliseconds * 12
+  return milliseconds
+}

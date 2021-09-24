@@ -1,21 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Site from './site'
-import {
-  ETorrentCatagory,
-  ETorrentPromotion,
-  ESiteStatus
-} from '../enum'
-import {
-  UserInfo,
-  SeedingInfo,
-  TorrentInfo,
-  TorrentPromotion
-} from '../types'
+import { ESiteStatus, ETorrentCatagory, ETorrentPromotion } from '../enum'
+import { UserInfo, SeedingInfo, TorrentInfo, TorrentPromotion } from '../types'
 import { parseSize } from '../utils'
 
 export default class GazelleSite extends Site {
   protected userId = ''
-  protected passKey = ''
-  protected authKey = ''
+  protected tableIndex = {
+    size: 4,
+    seeders: 6,
+    leechers: 7,
+    snatched: 5
+  }
+
   async checkStatus (): Promise<ESiteStatus> {
     try {
       let isLogin = false
@@ -136,8 +133,110 @@ export default class GazelleSite extends Site {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentPage = (query: JQuery<Document>): TorrentInfo[] => {
-    return []
+    const torrents: TorrentInfo[] = []
+    const rows = this.findTorrentRows(query)
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows.eq(i)
+      const catagory = this.parseTorrentCatagory(row)
+      const id = this.parseTorrentId(row)
+      const detailUrl = this.parseTorrentDetailsUrl(row)
+      const downloadUrl = this.parseTorrentDownloadUrl(row)
+      const title = this.parseTorrentTitle(row)
+      const subTitle = this.parseTorrentSubTitle(row)
+      const releaseDate = this.parseTorrentReleaseDate(row)
+      const size = this.parseTorrentSize(row)
+      const seeders = this.parseTorrentSeeders(row)
+      const leechers = this.parseTorrentLeechers(row)
+      const snatched = this.parseTorrentSnatched(row)
+      const seeding = this.parseTorrentSeeding(row)
+      const promotion = this.parseTorrentPromotion(row)
+      const data = {
+        id,
+        title,
+        subTitle,
+        detailUrl,
+        downloadUrl,
+        size,
+        seeders,
+        leechers,
+        snatched,
+        releaseDate,
+        catagory,
+        seeding,
+        promotion
+      }
+      torrents.push(data)
+    }
+    return torrents
+  }
+
+  protected findTorrentRows = (query: JQuery<Document>): JQuery<HTMLElement> => {
+    return query.find('table#torrent_table > tbody > tr:not(:eq(0))')
+  }
+
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+    return ETorrentCatagory.undefined
+  }
+
+  protected parseTorrentId = (query: JQuery<HTMLElement>): string => {
+    const idString = query.find('a[href*="torrents.php?id="]').attr('href')
+    const idMatch = idString ? idString.match(/torrentid=(\d+)/) : undefined
+    const id = idMatch ? idMatch[1] : ''
+    return id
+  }
+
+  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion|undefined => {
+    return undefined
+  }
+
+  protected parseTorrentTitle = (query: JQuery<HTMLElement>): string => {
+    return ''
+  }
+
+  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string|undefined => {
+    return ''
+  }
+
+  protected parseTorrentReleaseDate = (query: JQuery<HTMLElement>): number => {
+    return 0
+  }
+
+  protected parseTorrentDetailsUrl = (query: JQuery<HTMLElement>): string => {
+    const href = query.find('a[href*="torrents.php?id="]').attr('href')
+    return this.url.href + href
+  }
+
+  protected parseTorrentDownloadUrl = (query: JQuery<HTMLElement>): string => {
+    const href = query.find('a[href*="action=download"]').attr('href')
+    return this.url.href + href
+  }
+
+  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean|undefined => {
+    return undefined
+  }
+
+  protected parseTorrentSize = (query: JQuery<HTMLElement>): number => {
+    const sizeString = query.find('> td').eq(this.tableIndex.size).text()
+    const size = sizeString ? parseSize(sizeString) : 0
+    return size
+  }
+
+  protected parseTorrentSeeders = (query: JQuery<HTMLElement>): number => {
+    const seedersString = query.find('> td').eq(this.tableIndex.seeders).text()
+    const seeders = seedersString ? parseInt(seedersString) : -1
+    return seeders
+  }
+
+  protected parseTorrentLeechers = (query: JQuery<HTMLElement>): number => {
+    const leechersString = query.find('> td').eq(this.tableIndex.leechers).text()
+    const leechers = leechersString ? parseInt(leechersString) : -1
+    return leechers
+  }
+
+  protected parseTorrentSnatched = (query: JQuery<HTMLElement>): number => {
+    const leechersString = query.find('> td').eq(this.tableIndex.snatched).text()
+    const leechers = leechersString ? parseInt(leechersString) : -1
+    return leechers
   }
 }

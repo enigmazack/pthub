@@ -13,6 +13,7 @@ import broadcasthenet from './sites/broadcasthenet'
 import passthepopcorn from './sites/passthepopcorn'
 import putao from './sites/putao'
 import redacted from './sites/redacted'
+import orpheus from './sites/orpheus'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -35,7 +36,8 @@ const sites: Sites = {
   broadcasthenet,
   passthepopcorn,
   putao,
-  redacted
+  redacted,
+  orpheus
 }
 
 export default sites

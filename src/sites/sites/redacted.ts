@@ -1,60 +1,36 @@
 import GazelleApiSite from '../model/gazelleApiSite'
-import { SeedingInfo } from '../types'
+import { SeedingInfo, SeedingTorrentInfo } from '../types'
+import { parseSize } from '../utils'
 
 class Redacted extends GazelleApiSite {
   protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    const url = new URL(this.url.href)
-    url.pathname = '/torrents.php'
-    url.searchParams.set('userid', id)
-    url.searchParams.set('type', 'seeding')
-    const r = await this.get(url.pathname + url.search)
-    const query = this.parseHTML(r.data)
-    let seeding = 0
+    const seedingTorrents = await this.parsePagination<SeedingTorrentInfo>(
+      `/torrents.php?userid=${id}&type=seeding`, this.parseSeedingInfoPage, 1
+    )
+    const seeding = seedingTorrents.length
     let seedingSize = 0
-    let seedingList: string[] = []
-    let currentPage = this.parseSeedingInfoPage(query)
-    seeding += currentPage.seeding
-    seedingSize += currentPage.seedingSize
-    if (currentPage.seedingList) {
-      seedingList = seedingList.concat(currentPage.seedingList)
-    }
-    const pageString = query.find('a[href*="page"]').last().attr('href')
-    const pageMatch = pageString ? pageString.match(/page=(\d+)/) : undefined
-    const maxPage = pageMatch ? parseInt(pageMatch[1]) : 0
-    if (maxPage) {
-      for (let i = 2; i <= maxPage; i++) {
-        url.searchParams.set('page', i.toString())
-        const rPage = await this.get(url.pathname + url.search)
-        const qPage = this.parseHTML(rPage.data)
-        currentPage = this.parseSeedingInfoPage(qPage)
-        seeding += currentPage.seeding
-        seedingSize += currentPage.seedingSize
-        if (currentPage.seedingList) {
-          seedingList = seedingList.concat(currentPage.seedingList)
-        }
-      }
-    }
+    seedingTorrents.forEach(t => {
+      seedingSize += t.size
+    })
+    const seedingList = seedingTorrents.map(t => t.id)
     return { seeding, seedingSize, seedingList }
   }
 
-  private parseSeedingInfoPage (query: JQuery<Document>): SeedingInfo {
-    let seedingSize = 0
-    const seedingList: string[] = []
+  private parseSeedingInfoPage = (query: JQuery<Document>): SeedingTorrentInfo[] => {
+    const seedingTorrents: SeedingTorrentInfo[] = []
     const rows = query.find('table.torrent_table > tbody > tr:not(:eq(0))')
     for (let i = 0; i < rows.length; i++) {
       const row = rows.eq(i)
-      const torrentIdString = row.find('a[href*="torrents.php?id="]').attr('href')
-      const torrentIdMatch = torrentIdString ? torrentIdString.match(/torrentid=(\d+)/) : undefined
-      const torrentId = torrentIdMatch ? torrentIdMatch[1] : undefined
-      if (torrentId) {
-        seedingList.push(torrentId)
-      }
+      const idString = row.find('a[href*="torrents.php?id="]').attr('href')
+      const idMatch = idString ? idString.match(/torrentid=(\d+)/) : undefined
+      const id = idMatch ? idMatch[1] : undefined
       const sizeString = row.find('> td').eq(3).text()
-      const size = sizeString ? this.parseSize(sizeString) : 0
-      seedingSize += size
+      const size = sizeString ? parseSize(sizeString) : 0
+      if (id) {
+        seedingTorrents.push({ id, size })
+      }
     }
-    const seeding = seedingList.length
-    return { seeding, seedingSize, seedingList }
+    return seedingTorrents
   }
 }
 

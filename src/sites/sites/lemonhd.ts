@@ -24,7 +24,7 @@ class LHD extends NexusPHPSite {
     const seeding = seedingMatch ? parseInt(seedingMatch[1]) : -1
     const seedingSize = seedingMatch ? this.parseSize(seedingMatch[2]) : -1
     // lhd has no seeding list info
-    return { seeding, seedingSize }
+    return { seeding, seedingSize, seedingList: [] }
   }
 
   protected parseTorrentId (query: JQuery<HTMLElement>): string {

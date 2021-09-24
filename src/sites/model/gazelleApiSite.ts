@@ -12,7 +12,6 @@ import {
   TorrentInfo,
   TorrentPromotion
 } from '../types'
-import Group from 'ant-design-vue/lib/avatar/Group'
 
 export interface GResponseData<T> {
   status: string,

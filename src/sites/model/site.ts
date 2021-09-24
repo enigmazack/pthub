@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
@@ -38,29 +40,19 @@ export default class Site {
     return ESiteStatus.getUserDataFailed
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {
     return ESiteStatus.searchFailed
   }
 
-  get (url: string): Promise<AxiosResponse<any>> {
-    const r = axios.get(url, {
-      baseURL: this.url.href,
-      timeout: this.timeout
-    })
-    return r
-  }
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  post (url: string, data: any): Promise<AxiosResponse<any>> {
-    return axios.post(url, data, {
-      baseURL: this.url.href,
-      timeout: this.timeout
-    })
-  }
-
   setTimeout (timeout: number): void {
     this.timeout = timeout
+  }
+
+  protected get (url: string): Promise<AxiosResponse<any>> {
+    return axios.get(url, {
+      baseURL: this.url.href,
+      timeout: this.timeout
+    })
   }
 
   protected parseHTML (page: string): JQuery<Document> {
@@ -69,6 +61,24 @@ export default class Site {
     return j
   }
 
+  protected async getAsQuery (url: string): Promise<JQuery<Document>> {
+    const r = await this.get(url)
+    return this.parseHTML(r.data)
+  }
+
+  protected post (url: string, data: any): Promise<AxiosResponse<any>> {
+    return axios.post(url, data, {
+      baseURL: this.url.href,
+      timeout: this.timeout
+    })
+  }
+
+  /**
+   * find any matched element from the query by a selector list
+   * @param query
+   * @param selectorList
+   * @returns
+   */
   protected someSelector (query: JQuery<any>, selectorList: string[]): JQuery<any> {
     let r = query
     selectorList.some(selector => {
@@ -78,30 +88,59 @@ export default class Site {
     return r
   }
 
-  protected parseSize (sizeString: string): number {
-    const sizeMatch = sizeString.match(/^(\d+\.?\d*).*?([ZEPTGMK]?i?B$)/i)
-    if (sizeMatch) {
-      const sizeNumber = parseFloat(sizeMatch[1])
-      const sizeUnit = sizeMatch[2]
-      switch (true) {
-        case /Zi?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 70)
-        case /Ei?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 60)
-        case /Pi?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 50)
-        case /Ti?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 40)
-        case /Gi?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 30)
-        case /Mi?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 20)
-        case /Ki?B/i.test(sizeUnit):
-          return sizeNumber * Math.pow(2, 10)
-        default:
-          return sizeNumber
-      }
+  /**
+   * find max page number of pagination
+   * @param query
+   * @returns
+   */
+  protected parseMaxPage (query: JQuery<Document>): number {
+    const aPages = query.find('a[href*="page="]')
+    let maxPage = 0
+    for (let i = 0; i < aPages.length; i++) {
+      const href = aPages.eq(i).attr('href')
+      const pageMatch = href?.match(/page=(\d+)/)
+      const page = pageMatch ? parseInt(pageMatch[1]) : 0
+      if (page > maxPage) maxPage = page
     }
-    return 0
+    return maxPage
+  }
+
+  protected parseUrlPath (path: string): URL {
+    const url = new URL(this.url.href)
+    const [pathname, search] = path.split('?')
+    url.pathname = pathname
+    url.search = search
+    return url
+  }
+
+  /**
+   * parse something with pagination, like the search result and seeding torrents
+   * USE arrow function to define parseFunction, otherwise 'this' will be unreachable
+   * @param path
+   * @param parseFunction
+   * @param start start index of pagination, 0 or 1, depends on the site
+   * @param maxCounts
+   * @returns
+   */
+  protected async parsePagination<T> (
+    path: string,
+    parseFunction: (query: JQuery<Document>) => T[],
+    start: 0|1,
+    maxCounts?: number
+  ): Promise<T[]> {
+    const url = this.parseUrlPath(path)
+    const qStart = await this.getAsQuery(url.pathname + url.search)
+    const maxPage = this.parseMaxPage(qStart)
+    let list = parseFunction(qStart)
+    let currentPage = start
+    while (currentPage <= maxPage) {
+      currentPage += 1
+      if (maxCounts && maxCounts <= list.length) break
+      url.searchParams.set('page', currentPage.toString())
+      const qNext = await this.getAsQuery(url.pathname + url.search)
+      const addition = parseFunction(qNext)
+      list = list.concat(addition)
+    }
+    return list
   }
 }

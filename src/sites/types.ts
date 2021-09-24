@@ -13,7 +13,7 @@ export interface UserInfo {
   bonus: number,
   seeding: number,
   seedingSize: number,
-  seedingList?: string[]
+  seedingList: string[]
 }
 
 export type SeedingInfo = Pick<UserInfo, 'seeding'|'seedingSize'|'seedingList'>
@@ -44,3 +44,5 @@ export interface TorrentInfo {
   seeding?: boolean,
   promotion?: TorrentPromotion,
 }
+
+export type SeedingTorrentInfo = Pick<TorrentInfo, 'id'|'size'>

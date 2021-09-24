@@ -3,6 +3,7 @@ import NexusPHPSite from '../model/nexusPHPSite'
 import {
   SeedingInfo, TorrentInfo, TorrentPromotion, UserInfo
 } from '../types'
+import { parseSize } from '../utils'
 
 class TTG extends NexusPHPSite {
   protected torrentPath = '/browse.php'
@@ -61,7 +62,7 @@ class TTG extends NexusPHPSite {
       'td.rowhead:contains("上传量")',
       'td.rowhead:contains("Uploaded")'
     ]).next().text()
-    const upload = this.parseSize(transfersString)
+    const upload = parseSize(transfersString)
     return upload
   }
 
@@ -70,7 +71,7 @@ class TTG extends NexusPHPSite {
       'td.rowhead:contains("下载量")',
       'td.rowhead:contains("Downloaded")'
     ]).next().text()
-    const download = this.parseSize(transfersString)
+    const download = parseSize(transfersString)
     return download
   }
 
@@ -108,7 +109,7 @@ class TTG extends NexusPHPSite {
         seedingList.push(id)
       }
       const sizeString = row.find('> td').eq(3).html().replace('<br>', ' ')
-      const size = this.parseSize(sizeString)
+      const size = parseSize(sizeString)
       seedingSize += size
     }
     const seeding = seedingList.length
@@ -263,7 +264,7 @@ class TTG extends NexusPHPSite {
 
   protected parseTorrentSize (query: JQuery<HTMLElement>): number {
     const sizeString = query.find('> td').eq(6).html().replace('<br>', ' ')
-    const size = sizeString ? this.parseSize(sizeString) : 0
+    const size = sizeString ? parseSize(sizeString) : 0
     return size
   }
 

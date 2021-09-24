@@ -271,7 +271,7 @@ export default defineComponent({
     const isSeeding = (t: TorrentProps): boolean => {
       if (t.seeding) return true
       let seeding = false
-      const userData = store.state.userData.userData.find(ud => ud.siteKey === t.siteKey)
+      const userData = store.getters.getUserData(t.siteKey)
       const seedingList = userData?.seedingList
       seeding = !!seedingList?.find(id => id === t.id)
       return seeding

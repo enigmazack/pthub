@@ -3,6 +3,7 @@ import NexusPHPSite from '../model/nexusPHPSite'
 import {
   SeedingInfo, TorrentInfo, TorrentPromotion
 } from '../types'
+import { parseSize } from '../utils'
 
 class BTN extends NexusPHPSite {
   protected userPath = '/user.php'
@@ -40,14 +41,14 @@ class BTN extends NexusPHPSite {
   protected parseUpload (query: JQuery<Document>): number {
     const uploadString = query.find('#section2').find('li:contains("Upload")')
       .first().text().split(':')[1].trim()
-    const upload = this.parseSize(uploadString)
+    const upload = parseSize(uploadString)
     return upload
   }
 
   protected parseDownload (query: JQuery<Document>): number {
     const downloadString = query.find('#section2').find('li:contains("Downloaded")')
       .first().text().split(':')[1].trim()
-    const download = this.parseSize(downloadString)
+    const download = parseSize(downloadString)
     return download
   }
 
@@ -69,7 +70,7 @@ class BTN extends NexusPHPSite {
       if (torrentId) {
         seedingList.push(torrentId)
       }
-      const torrentSizeThis = this.parseSize(row.find('> td').eq(2).text())
+      const torrentSizeThis = parseSize(row.find('> td').eq(2).text())
       seedingSize += torrentSizeThis
     }
     const seeding = seedingList.length

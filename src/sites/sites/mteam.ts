@@ -1,6 +1,7 @@
 import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory } from '../enum'
 import type { SeedingInfo } from '../types'
+import { parseSize } from '../utils'
 
 class MT extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
@@ -55,7 +56,7 @@ class MT extends NexusPHPSite {
         seedingList.push(torrentId)
       }
       const sizeString = row.parent().next().text()
-      const size = sizeString ? this.parseSize(sizeString) : 0
+      const size = sizeString ? parseSize(sizeString) : 0
       seedingSize += size
     }
     return { seeding, seedingSize, seedingList }

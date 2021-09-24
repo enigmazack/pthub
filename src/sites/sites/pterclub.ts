@@ -1,5 +1,6 @@
 import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory } from '../enum'
+import { parseSize } from '../utils'
 
 class PTer extends NexusPHPSite {
   protected userTorrentPath = '/getusertorrentlist.php'
@@ -22,7 +23,7 @@ class PTer extends NexusPHPSite {
   protected parseSeedingInfoSize (query: JQuery<HTMLElement>): number {
     // td 3 not 2 for pterclub
     const torrentSizeString = query.find('td').eq(3).text()
-    const torrentSizeThis = torrentSizeString ? this.parseSize(torrentSizeString) : 0
+    const torrentSizeThis = torrentSizeString ? parseSize(torrentSizeString) : 0
     return torrentSizeThis
   }
 

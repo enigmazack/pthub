@@ -3,6 +3,7 @@ import NexusPHPSite from '../model/nexusPHPSite'
 import {
   SeedingInfo, TorrentInfo
 } from '../types'
+import { parseSize } from '../utils'
 
 interface PTPTorrents {
   Checked: boolean,
@@ -78,14 +79,14 @@ class PTP extends NexusPHPSite {
   protected parseUpload (query: JQuery<Document>): number {
     const uploadString = query.find('li:contains("Uploaded:")')
       .first().text().split(':')[1].trim()
-    const upload = this.parseSize(uploadString)
+    const upload = parseSize(uploadString)
     return upload
   }
 
   protected parseDownload (query: JQuery<Document>): number {
     const downloadString = query.find('li:contains("Downloaded:")')
       .first().text().split(':')[1].trim()
-    const download = this.parseSize(downloadString)
+    const download = parseSize(downloadString)
     return download
   }
 
@@ -135,7 +136,7 @@ class PTP extends NexusPHPSite {
       if (torrentId) {
         seedingList.push(torrentId)
       }
-      const torrentSizeThis = this.parseSize(row.find('> td').eq(2).text().trim())
+      const torrentSizeThis = parseSize(row.find('> td').eq(2).text().trim())
       seedingSize += torrentSizeThis
     }
     const seeding = seedingList.length

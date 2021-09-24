@@ -10,6 +10,7 @@ import {
   TorrentInfo,
   TorrentPromotion
 } from '../types'
+import { parseSize } from '../utils'
 
 export default class NexusPHPSite extends Site {
   protected userId = ''
@@ -45,7 +46,7 @@ export default class NexusPHPSite extends Site {
     }
   }
 
-  async getUserId (): Promise<string|ESiteStatus> {
+  protected async getUserId (): Promise<string|ESiteStatus> {
     if (this.userId) {
       return this.userId
     }
@@ -132,7 +133,7 @@ export default class NexusPHPSite extends Site {
     ]).next().text()
     const uploadMatch = transfersString.match(/(上[传傳]量|Uploaded).+?(\d+\.?\d* *[ZEPTGMK]?i?B)/)
     const uploadString = uploadMatch ? uploadMatch[2] : ''
-    const upload = this.parseSize(uploadString)
+    const upload = parseSize(uploadString)
     return upload
   }
 
@@ -144,7 +145,7 @@ export default class NexusPHPSite extends Site {
     ]).next().text()
     const downloadMatch = transfersString.match(/(下[载載]量|Downloaded).+?(\d+\.?\d* *[ZEPTGMK]?i?B)/)
     const downloadString = downloadMatch ? downloadMatch[2] : ''
-    const download = this.parseSize(downloadString)
+    const download = parseSize(downloadString)
     return download
   }
 
@@ -179,7 +180,7 @@ export default class NexusPHPSite extends Site {
   // parse size of a seeding torrent
   protected parseSeedingInfoSize (query: JQuery<HTMLElement>): number {
     const torrentSizeString = query.find('td').eq(2).text()
-    const torrentSizeThis = torrentSizeString ? this.parseSize(torrentSizeString) : 0
+    const torrentSizeThis = torrentSizeString ? parseSize(torrentSizeString) : 0
     return torrentSizeThis
   }
 
@@ -276,7 +277,7 @@ export default class NexusPHPSite extends Site {
 
   protected parseTorrentSize (query: JQuery<HTMLElement>): number {
     const sizeString = query.find('> td').eq(this.tableIndex.size).text()
-    const size = sizeString ? this.parseSize(sizeString) : 0
+    const size = sizeString ? parseSize(sizeString) : 0
     return size
   }
 

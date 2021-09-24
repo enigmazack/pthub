@@ -18,36 +18,55 @@ interface HDCPromotionData {
 }
 
 class HDC extends NexusPHPSite {
-  protected userTorrentPath = '/ajax_getusertorrentlist.php'
-  protected promotionPath = '/ajax_promotion.php'
+  // protected userTorrentPath = '/ajax_getusertorrentlist.php'
+  // protected promotionPath = '/ajax_promotion.php'
   protected csrf = ''
 
-  protected async getCsrf (): Promise<string> {
-    if (this.csrf) {
-      return this.csrf
+  protected async getCsrf (): Promise<void> {
+    if (!this.csrf) {
+      const rIndex = await this.get('/index.php')
+      const qIndex = this.parseHTML(rIndex.data)
+      const csrf = qIndex.find('meta[name="x-csrf"]').attr('content') || ''
+      this.csrf = csrf
     }
-    const rIndex = await this.get(this.indexPath)
-    const qIndex = this.parseHTML(rIndex.data)
-    const csrf = qIndex.find('meta[name="x-csrf"]').attr('content') || ''
-    this.csrf = csrf
-    return csrf
   }
 
-  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
-    const csrf = await this.getCsrf()
+  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
+    await this.getCsrf()
     // hdc use a post request to get seeding torrent info
     const params = new URLSearchParams()
     params.append('userid', id)
     params.append('type', 'seeding')
-    params.append('csrf', csrf)
-    const rTorrent = await this.post(this.userTorrentPath, params)
+    params.append('csrf', this.csrf)
+    const rTorrent = await this.post('/ajax_getusertorrentlist.php', params)
     const query = this.parseHTML(rTorrent.data.message)
     return query
   }
 
-  protected async getTorrentPageQuery (path: string): Promise<JQuery<Document>> {
-    const r = await this.get(path)
-    const query = this.parseHTML(r.data)
+  protected async parsePagination<T> (
+    path: string,
+    parseFunction: (query: JQuery<Document>) => T[],
+    start: 0|1,
+    maxCounts?: number
+  ): Promise<T[]> {
+    const url = this.parseUrlPath(path)
+    const qStart = await this.getTorrentPageAsQuery(url.pathname + url.search)
+    const maxPage = this.parseMaxPage(qStart)
+    let list = parseFunction(qStart)
+    let currentPage = start
+    while (currentPage <= maxPage) {
+      currentPage += 1
+      if (maxCounts && maxCounts <= list.length) break
+      url.searchParams.set('page', currentPage.toString())
+      const qNext = await this.getTorrentPageAsQuery(url.pathname + url.search)
+      const addition = parseFunction(qNext)
+      list = list.concat(addition)
+    }
+    return list
+  }
+
+  protected getTorrentPageAsQuery = async (path: string): Promise<JQuery<Document>> => {
+    const query = await this.getAsQuery(path)
     // try get torrent promotion info
     try {
       const csrf = query.find('meta[name="x-csrf"]').attr('content') || ''
@@ -59,7 +78,7 @@ class HDC extends NexusPHPSite {
         params.append('ids[]', id)
       }
       params.append('csrf', csrf)
-      const rPromotion = await this.post(this.promotionPath, params)
+      const rPromotion = await this.post('/ajax_promotion.php', params)
       const response: HDCPromotionData = rPromotion.data
       for (const [key, value] of Object.entries(response.message)) {
         query.find(`span#${key}.sp_state_placeholder`).replaceWith(`<p>${value.sp_state}</p>${value.timeout}`)
@@ -70,37 +89,30 @@ class HDC extends NexusPHPSite {
     return query
   }
 
-  protected parseSeedingInfoSeeding (query: JQuery<Document>): number {
-    const seedingString = query.find('body > p').first().text()
-    const seeding = seedingString ? parseInt(seedingString) : -1
-    return seeding
-  }
-
-  // HDC use a different torrent table selector
-  protected findTorrentRows (query: JQuery<Document>): JQuery<HTMLElement> {
+  protected findTorrentRows = (query: JQuery<Document>): JQuery<HTMLElement> => {
     const table = query.find('table.torrent_list').last()
     const rows = table.find('> tbody > tr:not(:eq(0))')
     return rows
   }
 
-  protected parseTorrentDownloadUrl (query: JQuery<HTMLElement>): string {
+  protected parseTorrentDownloadUrl = (query: JQuery<HTMLElement>): string => {
     const hashString = query.find('a[href*="download.php?hash="]').attr('href')
     const hashMacth = hashString ? hashString.match(/hash=(.+)/) : undefined
     const hash = hashMacth ? hashMacth[1] : ''
     const url = new URL(this.url.href)
-    url.pathname = this.torrentDownloadPath
+    url.pathname = '/download.php'
     url.searchParams.set('hash', hash)
     const downloadUrl = url.href
     return downloadUrl
   }
 
-  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string {
+  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string => {
     const titleString = query.find('a[href*="details.php?id="]').parent().parent().find('h4').text().trim()
     const subTitle = titleString || ''
     return subTitle
   }
 
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
     const map = new Map()
     map.set('20', ETorrentCatagory.movies)
     map.set('17', ETorrentCatagory.movies)
@@ -133,7 +145,7 @@ class HDC extends NexusPHPSite {
     return catagory || ETorrentCatagory.other
   }
 
-  protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
+  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion|undefined => {
     const map = new Map()
     map.set('pro_free', ETorrentPromotion.free)
     map.set('pro_2up', ETorrentPromotion.double)
@@ -149,7 +161,7 @@ class HDC extends NexusPHPSite {
     return promotion
   }
 
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean {
+  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean => {
     const seedingString = query.find('div.progress >  div').attr('class')
     const seeding = seedingString === 'progress_seeding'
     return seeding

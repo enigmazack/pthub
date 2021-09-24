@@ -49,7 +49,7 @@ interface PTPSearchData {
 
 class PTP extends GazelleSite {
   protected async getSeedingInfo (): Promise<SeedingInfo> {
-    const seedingTorrents = await this.parsePagination<SeedingTorrentInfo>(
+    const seedingTorrents = await this.parsePagination(
       '/bprate.php', this.parseSeedingInfoPage, 1
     )
     const seeding = seedingTorrents.length

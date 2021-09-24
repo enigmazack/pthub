@@ -1,68 +1,38 @@
 import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory } from '../enum'
-import type { SeedingInfo } from '../types'
+import type { SeedingInfo, SeedingTorrentInfo } from '../types'
 import { parseSize } from '../utils'
 
 class MT extends NexusPHPSite {
-  protected userTorrentPath = '/getusertorrentlist.php'
-  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    const url = new URL(this.url.href)
-    url.pathname = this.userTorrentPath
-    url.searchParams.set('userid', id)
-    url.searchParams.set('type', 'seeding')
-    const rSeeding = await this.get(url.pathname + url.search)
-    const query = this.parseHTML(rSeeding.data)
-    let seeding = 0
+  protected async getSeedingInfo (): Promise<SeedingInfo> {
+    const seedingTorrents = await this.parsePagination(
+      '/getusertorrentlist.php?userid=6719&type=seeding', this.parseSeedingInfoPage, 0
+    )
+    const seeding = seedingTorrents.length
     let seedingSize = 0
-    let seedingList: string[] = []
-    let currentPage = this.parseSeedingInfoPage(query)
-    seeding += currentPage.seeding
-    seedingSize += currentPage.seedingSize
-    if (currentPage.seedingList) {
-      seedingList = seedingList.concat(currentPage.seedingList)
-    }
-    // if more pages
-    const pageString = query.find('a[href*="type=seeding"]:contains("1")').last().attr('href')
-    const pageMatch = pageString ? pageString.match(/page=(\d+)/) : undefined
-    const maxPage = pageMatch ? parseInt(pageMatch[1]) : 0
-    if (maxPage) {
-      for (let i = 1; i <= maxPage; i++) {
-        url.searchParams.set('page', i.toString())
-        const rPage = await this.get(url.pathname + url.search)
-        const qPage = this.parseHTML(rPage.data)
-        currentPage = this.parseSeedingInfoPage(qPage)
-        seeding += currentPage.seeding
-        seedingSize += currentPage.seedingSize
-        if (currentPage.seedingList) {
-          seedingList = seedingList.concat(currentPage.seedingList)
-        }
-      }
-    }
+    seedingTorrents.forEach(t => { seedingSize += t.size })
+    const seedingList = seedingTorrents.map(t => t.id)
     return { seeding, seedingSize, seedingList }
   }
 
-  private parseSeedingInfoPage (query: JQuery<Document>): SeedingInfo {
-    let seeding = 0
-    let seedingSize = 0
-    const seedingList: string[] = []
+  private parseSeedingInfoPage = (query: JQuery<Document>): SeedingTorrentInfo[] => {
+    const seedingTorrents: SeedingTorrentInfo[] = []
     const rows = query.find('a[href*="details.php?id="]:not(:eq(0))')
-    seeding = rows.length
-    for (let i = 0; i < seeding; i++) {
+    for (let i = 0; i < rows.length; i++) {
       const row = rows.eq(i)
-      const torrentIdString = row.attr('href')
-      const torrentIdMatch = torrentIdString ? torrentIdString.match(/id=(\d+)/) : undefined
-      const torrentId = torrentIdMatch ? torrentIdMatch[1] : undefined
-      if (torrentId) {
-        seedingList.push(torrentId)
-      }
+      const idString = row.attr('href')
+      const idMatch = idString ? idString.match(/id=(\d+)/) : undefined
+      const id = idMatch ? idMatch[1] : undefined
       const sizeString = row.parent().next().text()
       const size = sizeString ? parseSize(sizeString) : 0
-      seedingSize += size
+      if (id) {
+        seedingTorrents.push({ id, size })
+      }
     }
-    return { seeding, seedingSize, seedingList }
+    return seedingTorrents
   }
 
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
     const map = new Map()
     map.set('401', ETorrentCatagory.movies)
     map.set('419', ETorrentCatagory.movies)
@@ -85,7 +55,7 @@ class MT extends NexusPHPSite {
     return catagory || ETorrentCatagory.other
   }
 
-  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
+  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string|undefined => {
     const titleString = query.find('a[href*="details.php?id="]').eq(1).parent().html()
     const subTitle = titleString ? titleString.split('>').pop() : undefined
     return subTitle

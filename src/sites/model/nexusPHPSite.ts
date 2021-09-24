@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Site from './site'
 import {
   ETorrentCatagory,
@@ -14,14 +15,6 @@ import { parseSize } from '../utils'
 
 export default class NexusPHPSite extends Site {
   protected userId = ''
-  protected indexPath = '/index.php'
-  protected indexPathRegex = /index\.php/
-  protected userPath = '/userdetails.php'
-  protected userPathRegex = /userdetails\.php\?id=(\d+)/
-  protected userTorrentPath = '/getusertorrentlistajax.php'
-  protected torrentPath = '/torrents.php'
-  protected torrentDetailsPath = '/details.php'
-  protected torrentDownloadPath = '/download.php'
   protected tableIndex = {
     releaseDate: 3,
     size: 4,
@@ -33,9 +26,9 @@ export default class NexusPHPSite extends Site {
   async checkStatus (): Promise<ESiteStatus> {
     try {
       let isLogin = false
-      const r = await this.get(this.indexPath)
+      const r = await this.get('/index.php')
       if (r.request && r.request.responseURL) {
-        isLogin = r.request.responseURL.match(this.indexPathRegex)
+        isLogin = r.request.responseURL.match(/index\.php/)
       }
       return isLogin ? ESiteStatus.login : ESiteStatus.logout
     } catch (error) {
@@ -48,8 +41,8 @@ export default class NexusPHPSite extends Site {
 
   protected async getUserId (): Promise<void> {
     if (!this.userId) {
-      const r = await this.get(this.indexPath)
-      const idMatch = r.data.match(this.userPathRegex)
+      const r = await this.get('/index.php')
+      const idMatch = r.data.match(/userdetails\.php\?id=(\d+)/)
       const id = idMatch ? idMatch[1] : ''
       this.userId = id
     }
@@ -62,22 +55,16 @@ export default class NexusPHPSite extends Site {
         return ESiteStatus.getUserIdFailed
       }
       const url = new URL(this.url.href)
-      url.pathname = this.userPath
+      url.pathname = '/userdetails.php'
       url.searchParams.set('id', this.userId)
       const r = await this.get(url.pathname + url.search)
       const query = this.parseHTML(r.data)
-      // user name
       const name = this.parseUserName(query)
-      // join date
       const joinDate = this.parseJoinDate(query)
-      // upload download
       const upload = this.parseUpload(query)
       const download = this.parseDownload(query)
-      // user class
       const userClass = this.parseUserClass(query)
-      // bonus
       const bonus = this.parseBonus(query)
-      // seeding size list
       const seedingInfo = await this.getSeedingInfo()
       return {
         name,
@@ -154,34 +141,23 @@ export default class NexusPHPSite extends Site {
     return bonus
   }
 
-  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
+  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
     const url = new URL(this.url.href)
-    url.pathname = this.userTorrentPath
+    url.pathname = '/getusertorrentlistajax.php'
     url.searchParams.set('userid', id)
     url.searchParams.set('type', 'seeding')
-    const rSeeding = await this.get(url.pathname + url.search)
-    const query = this.parseHTML(rSeeding.data)
+    const query = await this.getAsQuery(url.pathname + url.search)
     return query
   }
 
-  // parse size of a seeding torrent
   protected parseSeedingInfoSize (query: JQuery<HTMLElement>): number {
     const torrentSizeString = query.find('td').eq(2).text()
     const torrentSizeThis = torrentSizeString ? parseSize(torrentSizeString) : 0
     return torrentSizeThis
   }
 
-  // parse seeding torrent counts
-  protected parseSeedingInfoSeeding (query: JQuery<Document>): number {
-    const seedingString = query.find('body > b').first().text()
-    const seeding = seedingString ? parseInt(seedingString) : 0
-    return seeding
-  }
-
-  // get user seeding torrent info
   protected async getSeedingInfo (): Promise<SeedingInfo> {
-    const query = await this.getSeedingInfoQuery(this.userId)
-    // const seeding = this.parseSeedingInfoSeeding(query)
+    const query = await this.getSeedingInfoAsQuery(this.userId)
     const rows = query.find('tr')
     let seedingSize = 0
     const seedingList: string[] = []
@@ -192,140 +168,31 @@ export default class NexusPHPSite extends Site {
       const torrentId = torrentIdMatch ? torrentIdMatch[1] : undefined
       if (torrentId) {
         seedingList.push(torrentId)
+        const torrentSizeThis = this.parseSeedingInfoSize(row)
+        seedingSize += torrentSizeThis
       }
-      const torrentSizeThis = this.parseSeedingInfoSize(row)
-      seedingSize += torrentSizeThis
     }
     const seeding = seedingList.length
     return { seeding, seedingSize, seedingList }
   }
 
-  protected parseTorrentCatagoryKey (query: JQuery<HTMLElement>): string|undefined {
-    const cString = query.find('a[href*="?cat="]').first().attr('href')
-    const cMatch = cString ? cString.match(/\?cat=(\d+)/) : undefined
-    const cNum = cMatch ? cMatch[1] : undefined
-    return cNum
+  async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {
+    try {
+      if (!pattern) {
+        pattern = '/torrents.php?search={}'
+      }
+      const path = pattern.replace('{}', keywords.replaceAll('.', ' '))
+      const torrents = await this.parsePagination(path, this.parseTorrentPage, 0, expectTorrents)
+      return torrents
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('timeout')) {
+        return ESiteStatus.timeout
+      }
+      return ESiteStatus.searchFailed
+    }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
-    return ETorrentCatagory.undefined
-  }
-
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
-    const seedingString = query.find('td.peer-active').text()
-    const seeding = seedingString ? seedingString.trim() === '100%' : false
-    return seeding
-  }
-
-  protected parseTorrentPromotion (query: JQuery<HTMLElement>): TorrentPromotion|undefined {
-    const map = new Map()
-    map.set('pro_free', ETorrentPromotion.free)
-    map.set('pro_2up', ETorrentPromotion.double)
-    map.set('pro_free2up', ETorrentPromotion.doubleFree)
-    map.set('pro_50pctdown', ETorrentPromotion.half)
-    map.set('pro_50pctdown2up', ETorrentPromotion.doubleHalf)
-    map.set('pro_30pctdown', ETorrentPromotion.thirtyPercent)
-    const promotionString = this.someSelector(query, [
-      'img.pro_free',
-      'img.pro_2up',
-      'img.pro_free2up',
-      'img.pro_50pctdown',
-      'img.pro_50pctdown2up',
-      'img.pro_30pctdown'
-    ]).attr('class')
-    const status = map.get(promotionString)
-    const promotion = status ? { status, isTemporary: false } : undefined
-    return promotion
-  }
-
-  protected parseTorrentId (query: JQuery<HTMLElement>): string {
-    const idString = query.find('a[href*="details.php?id="]').attr('href')
-    const idMatch = idString ? idString.match(/id=(\d+)/) : undefined
-    const id = idMatch ? idMatch[1] : ''
-    return id
-  }
-
-  protected parseTorrentTitle (query: JQuery<HTMLElement>): string {
-    return query.find('a[href*="details.php?id="]').attr('title') || ''
-  }
-
-  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
-    const titleString = query.find('a[href*="details.php?id="]').first().parent().html()
-    const subTitle = titleString ? titleString.split('>').pop() : undefined
-    return subTitle
-  }
-
-  protected parseTorrentReleaseDate (query: JQuery<HTMLElement>): number {
-    const dateString = query.find('> td').eq(this.tableIndex.releaseDate).find('span').attr('title')
-    const releaseDate = dateString ? Date.parse(dateString) : 0
-    return releaseDate
-  }
-
-  protected parseTorrentSize (query: JQuery<HTMLElement>): number {
-    const sizeString = query.find('> td').eq(this.tableIndex.size).text()
-    const size = sizeString ? parseSize(sizeString) : 0
-    return size
-  }
-
-  protected parseTorrentSeeders (query: JQuery<HTMLElement>): number {
-    const seedersString = query.find('> td').eq(this.tableIndex.seeders).text()
-    const seeders = seedersString ? parseInt(seedersString) : -1
-    return seeders
-  }
-
-  protected parseTorrentLeechers (query: JQuery<HTMLElement>): number {
-    const leechersString = query.find('> td').eq(this.tableIndex.leechers).text()
-    const leechers = leechersString ? parseInt(leechersString) : -1
-    return leechers
-  }
-
-  protected parseTorrentSnatched (query: JQuery<HTMLElement>): number {
-    const leechersString = query.find('> td').eq(this.tableIndex.snatched).text()
-    const leechers = leechersString ? parseInt(leechersString) : -1
-    return leechers
-  }
-
-  protected parseTorrentDetailsUrl (query: JQuery<HTMLElement>): string {
-    const id = this.parseTorrentId(query)
-    const url = new URL(this.url.href)
-    url.pathname = this.torrentDetailsPath
-    url.searchParams.set('id', id)
-    url.searchParams.set('hit', '1')
-    const detailUrl = url.href
-    return detailUrl
-  }
-
-  protected parseTorrentDownloadUrl (query: JQuery<HTMLElement>): string {
-    const id = this.parseTorrentId(query)
-    const url = new URL(this.url.href)
-    url.pathname = this.torrentDownloadPath
-    url.searchParams.set('id', id)
-    const downloadUrl = url.href
-    return downloadUrl
-  }
-
-  protected parseTorrentMaxPage (query: JQuery<Document>): number {
-    const pageString = query.find('a[href*="&page="]').eq(-2).attr('href')
-    const p = pageString ? new URLSearchParams(pageString) : undefined
-    const nPage = p ? p.get('page') : undefined
-    const maxPage = nPage ? parseInt(nPage) : 0
-    return maxPage
-  }
-
-  protected findTorrentRows (query: JQuery<Document>): JQuery<HTMLElement> {
-    const table = query.find('table.torrents').last()
-    const rows = table.find('> tbody > tr:not(:eq(0))')
-    return rows
-  }
-
-  protected async getTorrentPageQuery (path: string): Promise<JQuery<Document>> {
-    const r = await this.get(path)
-    const query = this.parseHTML(r.data)
-    return query
-  }
-
-  protected parseTorrentPage (query: JQuery<Document>): TorrentInfo[] {
+  protected parseTorrentPage = (query: JQuery<Document>): TorrentInfo[] => {
     const torrents: TorrentInfo[] = []
     const rows = this.findTorrentRows(query)
     for (let i = 0; i < rows.length; i++) {
@@ -363,34 +230,113 @@ export default class NexusPHPSite extends Site {
     return torrents
   }
 
-  async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {
-    try {
-      const url = new URL(this.url.href)
-      if (pattern) {
-        const [pathname, search] = pattern.split('?')
-        url.pathname = pathname
-        url.search = search.replace('{}', keywords.replaceAll('.', ' '))
-      } else {
-        url.pathname = this.torrentPath
-        url.searchParams.set('search', keywords.replaceAll('.', ' '))
-      }
-      const query = await this.getTorrentPageQuery(url.pathname + url.search)
-      const maxPage = this.parseTorrentMaxPage(query)
-      let currentPage = 0
-      let torrents = this.parseTorrentPage(query)
-      while (currentPage < maxPage && torrents.length < expectTorrents) {
-        currentPage += 1
-        url.searchParams.set('page', currentPage.toString())
-        const query = await this.getTorrentPageQuery(url.pathname + url.search)
-        const moreTorrents = this.parseTorrentPage(query)
-        torrents = torrents.concat(moreTorrents)
-      }
-      return torrents
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('timeout')) {
-        return ESiteStatus.timeout
-      }
-      return ESiteStatus.searchFailed
-    }
+  protected parseTorrentCatagoryKey = (query: JQuery<HTMLElement>): string|undefined => {
+    const cString = query.find('a[href*="?cat="]').first().attr('href')
+    const cMatch = cString ? cString.match(/\?cat=(\d+)/) : undefined
+    const cNum = cMatch ? cMatch[1] : undefined
+    return cNum
+  }
+
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+    return ETorrentCatagory.undefined
+  }
+
+  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean|undefined => {
+    const seedingString = query.find('td.peer-active').text()
+    const seeding = seedingString ? seedingString.trim() === '100%' : false
+    return seeding
+  }
+
+  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion|undefined => {
+    const map = new Map()
+    map.set('pro_free', ETorrentPromotion.free)
+    map.set('pro_2up', ETorrentPromotion.double)
+    map.set('pro_free2up', ETorrentPromotion.doubleFree)
+    map.set('pro_50pctdown', ETorrentPromotion.half)
+    map.set('pro_50pctdown2up', ETorrentPromotion.doubleHalf)
+    map.set('pro_30pctdown', ETorrentPromotion.thirtyPercent)
+    const promotionString = this.someSelector(query, [
+      'img.pro_free',
+      'img.pro_2up',
+      'img.pro_free2up',
+      'img.pro_50pctdown',
+      'img.pro_50pctdown2up',
+      'img.pro_30pctdown'
+    ]).attr('class')
+    const status = map.get(promotionString)
+    const promotion = status ? { status, isTemporary: false } : undefined
+    return promotion
+  }
+
+  protected parseTorrentId = (query: JQuery<HTMLElement>): string => {
+    const idString = query.find('a[href*="details.php?id="]').attr('href')
+    const idMatch = idString ? idString.match(/id=(\d+)/) : undefined
+    const id = idMatch ? idMatch[1] : ''
+    return id
+  }
+
+  protected parseTorrentTitle = (query: JQuery<HTMLElement>): string => {
+    return query.find('a[href*="details.php?id="]').attr('title') || ''
+  }
+
+  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string|undefined => {
+    const titleString = query.find('a[href*="details.php?id="]').first().parent().html()
+    const subTitle = titleString ? titleString.split('>').pop() : undefined
+    return subTitle
+  }
+
+  protected parseTorrentReleaseDate = (query: JQuery<HTMLElement>): number => {
+    const dateString = query.find('> td').eq(this.tableIndex.releaseDate).find('span').attr('title')
+    const releaseDate = dateString ? Date.parse(dateString) : 0
+    return releaseDate
+  }
+
+  protected parseTorrentSize = (query: JQuery<HTMLElement>): number => {
+    const sizeString = query.find('> td').eq(this.tableIndex.size).text()
+    const size = sizeString ? parseSize(sizeString) : 0
+    return size
+  }
+
+  protected parseTorrentSeeders = (query: JQuery<HTMLElement>): number => {
+    const seedersString = query.find('> td').eq(this.tableIndex.seeders).text()
+    const seeders = seedersString ? parseInt(seedersString) : -1
+    return seeders
+  }
+
+  protected parseTorrentLeechers = (query: JQuery<HTMLElement>): number => {
+    const leechersString = query.find('> td').eq(this.tableIndex.leechers).text()
+    const leechers = leechersString ? parseInt(leechersString) : -1
+    return leechers
+  }
+
+  protected parseTorrentSnatched = (query: JQuery<HTMLElement>): number => {
+    const leechersString = query.find('> td').eq(this.tableIndex.snatched).text()
+    const leechers = leechersString ? parseInt(leechersString) : -1
+    return leechers
+  }
+
+  protected parseTorrentDetailsUrl = (query: JQuery<HTMLElement>): string => {
+    const id = this.parseTorrentId(query)
+    const url = new URL(this.url.href)
+    url.pathname = '/details.php'
+    url.searchParams.set('id', id)
+    url.searchParams.set('hit', '1')
+    const detailUrl = url.href
+    return detailUrl
+  }
+
+  protected parseTorrentDownloadUrl = (query: JQuery<HTMLElement>): string => {
+    const id = this.parseTorrentId(query)
+    const url = new URL(this.url.href)
+    url.pathname = '/download.php'
+    url.searchParams.set('id', id)
+    const downloadUrl = url.href
+    return downloadUrl
+  }
+
+  protected findTorrentRows = (query: JQuery<Document>): JQuery<HTMLElement> => {
+    const table = query.find('table.torrents').last()
+    const rows = table.find('> tbody > tr:not(:eq(0))')
+    return rows
   }
 }

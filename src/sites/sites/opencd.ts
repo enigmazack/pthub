@@ -8,11 +8,11 @@ class OpenCD extends NexusPHPSite {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.music
   }
 
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean|undefined => {
     return !!query.find('img[src*="seeding"]').length
   }
 }

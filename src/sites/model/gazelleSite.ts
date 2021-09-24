@@ -121,9 +121,7 @@ export default class GazelleSite extends Site {
         pattern = '/torrents.php?grouping=0&searchstr={}'
       }
       const path = pattern.replace('{}', keywords.replaceAll('.', ' '))
-      const torrents = this.parsePagination<TorrentInfo>(
-        path, this.parseTorrentPage, 1, expectTorrents
-      )
+      const torrents = await this.parsePagination(path, this.parseTorrentPage, 1, expectTorrents)
       return torrents
     } catch (error) {
       if (error instanceof Error && error.message.includes('timeout')) {

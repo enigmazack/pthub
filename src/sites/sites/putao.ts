@@ -2,13 +2,12 @@ import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory } from '../enum'
 
 class Putao extends NexusPHPSite {
-  protected async getSeedingInfoQuery (id: string): Promise<JQuery<Document>> {
+  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
     const url = new URL(this.url.href)
     url.pathname = '/viewusertorrents.php'
     url.searchParams.set('id', id)
     url.searchParams.set('show', 'seeding')
-    const rSeeding = await this.get(url.pathname + url.search)
-    const query = this.parseHTML(rSeeding.data)
+    const query = await this.getAsQuery(url.pathname + url.search)
     return query
   }
 
@@ -21,17 +20,17 @@ class Putao extends NexusPHPSite {
     return joinDate
   }
 
-  protected parseTorrentReleaseDate (query: JQuery<HTMLElement>): number {
+  protected parseTorrentReleaseDate = (query: JQuery<HTMLElement>): number => {
     const dateString = query.find('> td').eq(this.tableIndex.releaseDate).find('> span').html().replace('<br>', ' ')
     const releaseDate = dateString ? Date.parse(dateString) : 0
     return releaseDate
   }
 
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean|undefined => {
     return !!query.find('> td').eq(this.tableIndex.snatched).attr('title')?.match(/在做种/)
   }
 
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
     const map = new Map()
     map.set('401', ETorrentCatagory.movies)
     map.set('402', ETorrentCatagory.movies)
@@ -63,14 +62,6 @@ class Putao extends NexusPHPSite {
     const cKey = this.parseTorrentCatagoryKey(query)
     const catagory = cKey ? map.get(cKey) : undefined
     return catagory || ETorrentCatagory.other
-  }
-
-  protected parseTorrentMaxPage (query: JQuery<Document>): number {
-    const pageString = query.find('a[href*="&page="]').eq(-3).attr('href')
-    const p = pageString ? new URLSearchParams(pageString) : undefined
-    const nPage = p ? p.get('page') : undefined
-    const maxPage = nPage ? parseInt(nPage) : 0
-    return maxPage
   }
 }
 

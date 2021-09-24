@@ -22,17 +22,17 @@ class SSD extends NexusPHPSite {
     return bonus
   }
 
-  protected parseTorrentSeeding (query: JQuery<HTMLElement>): boolean|undefined {
+  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean|undefined => {
     return !!query.find('div.p_seeding').length
   }
 
-  protected parseTorrentSubTitle (query: JQuery<HTMLElement>): string|undefined {
+  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string|undefined => {
     return query.find('a[href*="details.php?id="]').first().parent().contents().filter(
       (index, content) => content.nodeType === 3
     ).text().trim()
   }
 
-  protected parseTorrentCatagory (query: JQuery<HTMLElement>): ETorrentCatagory {
+  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
     const map = new Map()
     map.set('501', ETorrentCatagory.movies)
     map.set('502', ETorrentCatagory.tv)

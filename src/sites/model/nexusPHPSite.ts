@@ -46,37 +46,24 @@ export default class NexusPHPSite extends Site {
     }
   }
 
-  protected async getUserId (): Promise<string|ESiteStatus> {
-    if (this.userId) {
-      return this.userId
-    }
-    try {
+  protected async getUserId (): Promise<void> {
+    if (!this.userId) {
       const r = await this.get(this.indexPath)
       const idMatch = r.data.match(this.userPathRegex)
       const id = idMatch ? idMatch[1] : ''
       this.userId = id
-      return id
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('timeout')) {
-        return ESiteStatus.timeout
-      }
-      console.log(error)
-      return ''
     }
   }
 
   async getUserInfo (): Promise<UserInfo|ESiteStatus> {
-    const id = await this.getUserId()
-    if (!id) {
-      return ESiteStatus.getUserIdFailed
-    }
-    if (id === ESiteStatus.timeout) {
-      return ESiteStatus.timeout
-    }
     try {
+      await this.getUserId()
+      if (!this.userId) {
+        return ESiteStatus.getUserIdFailed
+      }
       const url = new URL(this.url.href)
       url.pathname = this.userPath
-      url.searchParams.set('id', id)
+      url.searchParams.set('id', this.userId)
       const r = await this.get(url.pathname + url.search)
       const query = this.parseHTML(r.data)
       // user name
@@ -91,10 +78,10 @@ export default class NexusPHPSite extends Site {
       // bonus
       const bonus = this.parseBonus(query)
       // seeding size list
-      const seedingInfo = await this.getSeedingInfo(id)
+      const seedingInfo = await this.getSeedingInfo()
       return {
         name,
-        id,
+        id: this.userId,
         joinDate,
         upload,
         download,
@@ -192,8 +179,8 @@ export default class NexusPHPSite extends Site {
   }
 
   // get user seeding torrent info
-  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    const query = await this.getSeedingInfoQuery(id)
+  protected async getSeedingInfo (): Promise<SeedingInfo> {
+    const query = await this.getSeedingInfoQuery(this.userId)
     // const seeding = this.parseSeedingInfoSeeding(query)
     const rows = query.find('tr')
     let seedingSize = 0

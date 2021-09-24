@@ -1,8 +1,6 @@
 import { ESiteStatus, ETorrentCatagory, ETorrentPromotion } from '../enum'
-import NexusPHPSite from '../model/nexusPHPSite'
-import {
-  SeedingInfo, TorrentInfo
-} from '../types'
+import GazelleSite from '../model/gazelleSite'
+import { SeedingInfo, SeedingTorrentInfo, TorrentInfo } from '../types'
 import { parseSize } from '../utils'
 
 interface PTPTorrents {
@@ -49,98 +47,32 @@ interface PTPSearchData {
   PassKey: string
 }
 
-class PTP extends NexusPHPSite {
-  protected userPath = '/user.php'
-  protected userPathRegex = /user\.php\?id=(\d+)/
-
-  protected parseUserName (query: JQuery<Document>): string {
-    const name = query.find('a[href*="user.php?id="]').first().text()
-    return name
-  }
-
-  protected parseJoinDate (query: JQuery<Document>): number {
-    const joinDateString = query.find('li:contains("Joined")').find('> span').attr('title')
-    const joinDate = joinDateString ? Date.parse(joinDateString) : 0
-    return joinDate
-  }
-
-  protected parseUserClass (query: JQuery<Document>): string {
-    const userClass = query.find('li:contains("Class")').text().split(':')[1].trim() || ''
-    return userClass
-  }
-
-  protected parseBonus (query: JQuery<Document>): number {
-    const bonusString = query.find('li:contains("Points")')
-      .text().split(':')[1].trim().replaceAll(',', '')
-    const bonus = parseFloat(bonusString)
-    return bonus
-  }
-
-  protected parseUpload (query: JQuery<Document>): number {
-    const uploadString = query.find('li:contains("Uploaded:")')
-      .first().text().split(':')[1].trim()
-    const upload = parseSize(uploadString)
-    return upload
-  }
-
-  protected parseDownload (query: JQuery<Document>): number {
-    const downloadString = query.find('li:contains("Downloaded:")')
-      .first().text().split(':')[1].trim()
-    const download = parseSize(downloadString)
-    return download
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
-    const url = new URL(this.url.href)
-    url.pathname = '/bprate.php'
-    const rSeeding = await this.get(url.pathname)
-    const query = this.parseHTML(rSeeding.data)
-    let seeding = 0
+class PTP extends GazelleSite {
+  protected async getSeedingInfo (): Promise<SeedingInfo> {
+    const seedingTorrents = await this.parsePagination<SeedingTorrentInfo>(
+      '/bprate.php', this.parseSeedingInfoPage, 1
+    )
+    const seeding = seedingTorrents.length
     let seedingSize = 0
-    let seedingList: string[] = []
-    let currentPage = this.parseSeedingInfoPage(query)
-    seeding += currentPage.seeding
-    seedingSize += currentPage.seedingSize
-    if (currentPage.seedingList) {
-      seedingList = seedingList.concat(currentPage.seedingList)
-    }
-    const pageString = query.find('a[href*="bprate.php"]').last().attr('href')
-    const pageMatch = pageString ? pageString.match(/page=(\d+)/) : undefined
-    const maxPage = pageMatch ? parseInt(pageMatch[1]) : 0
-    if (maxPage) {
-      for (let i = 2; i <= maxPage; i++) {
-        url.searchParams.set('page', i.toString())
-        const rPage = await this.get(url.pathname + url.search)
-        const qPage = this.parseHTML(rPage.data)
-        currentPage = this.parseSeedingInfoPage(qPage)
-        seeding += currentPage.seeding
-        seedingSize += currentPage.seedingSize
-        if (currentPage.seedingList) {
-          seedingList = seedingList.concat(currentPage.seedingList)
-        }
-      }
-    }
+    seedingTorrents.forEach(t => { seedingSize += t.size })
+    const seedingList = seedingTorrents.map(t => t.id)
     return { seeding, seedingSize, seedingList }
   }
 
-  private parseSeedingInfoPage (query: JQuery<Document>): SeedingInfo {
-    let seedingSize = 0
-    const seedingList: string[] = []
+  private parseSeedingInfoPage = (query: JQuery<Document>): SeedingTorrentInfo[] => {
+    const seedingTorrents: SeedingTorrentInfo[] = []
     const rows = query.find('table').last().find('> tbody > tr')
     for (let i = 0; i < rows.length; i++) {
       const row = rows.eq(i)
-      const torrentIdString = row.find('a[href*="torrents.php?id="]').attr('href')
-      const torrentIdMatch = torrentIdString ? torrentIdString.match(/torrentid=(\d+)/) : undefined
-      const torrentId = torrentIdMatch ? torrentIdMatch[1] : undefined
-      if (torrentId) {
-        seedingList.push(torrentId)
+      const idString = row.find('a[href*="torrents.php?id="]').attr('href')
+      const idMatch = idString ? idString.match(/torrentid=(\d+)/) : undefined
+      const id = idMatch ? idMatch[1] : undefined
+      const size = parseSize(row.find('> td').eq(2).text().trim())
+      if (id) {
+        seedingTorrents.push({ id, size })
       }
-      const torrentSizeThis = parseSize(row.find('> td').eq(2).text().trim())
-      seedingSize += torrentSizeThis
     }
-    const seeding = seedingList.length
-    return { seeding, seedingSize, seedingList }
+    return seedingTorrents
   }
 
   async search (keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[]|ESiteStatus> {
@@ -151,7 +83,7 @@ class PTP extends NexusPHPSite {
         url.pathname = pathname
         url.search = search.replace('{}', keywords.replaceAll('.', ' '))
       } else {
-        url.pathname = this.torrentPath
+        url.pathname = '/torrents.php'
         url.searchParams.set('searchstr', keywords.replaceAll('.', ' '))
       }
       url.searchParams.set('json', 'noredirect')
@@ -186,13 +118,13 @@ class PTP extends NexusPHPSite {
       const torrent = movie.Torrents[0]
       const id = torrent.Id.toString()
       const dlUrl = new URL(this.url.href)
-      dlUrl.pathname = this.torrentPath
+      dlUrl.pathname = '/torrents.php'
       dlUrl.searchParams.set('action', 'download')
       dlUrl.searchParams.set('id', id)
       dlUrl.searchParams.set('authkey', authKey)
       dlUrl.searchParams.set('passKey', passKey)
       const detailUrl = new URL(this.url.href)
-      detailUrl.pathname = this.torrentPath
+      detailUrl.pathname = '/torrents.php'
       detailUrl.searchParams.set('id', groupId)
       detailUrl.searchParams.set('torrentid', id)
       const title = `${movie.Title} [${movie.Year}] ${torrent.Codec} / ${torrent.Container} / ${torrent.Source} / ${torrent.Resolution}`

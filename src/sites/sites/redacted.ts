@@ -9,9 +9,7 @@ class Redacted extends GazelleApiSite {
     )
     const seeding = seedingTorrents.length
     let seedingSize = 0
-    seedingTorrents.forEach(t => {
-      seedingSize += t.size
-    })
+    seedingTorrents.forEach(t => { seedingSize += t.size })
     const seedingList = seedingTorrents.map(t => t.id)
     return { seeding, seedingSize, seedingList }
   }

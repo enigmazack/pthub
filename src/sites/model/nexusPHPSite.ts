@@ -1,16 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Site from './site'
-import {
-  ETorrentCatagory,
-  ETorrentPromotion,
-  ESiteStatus
-} from '../enum'
-import {
-  UserInfo,
-  SeedingInfo,
-  TorrentInfo,
-  TorrentPromotion
-} from '../types'
+import { ETorrentCatagory, ETorrentPromotion, ESiteStatus } from '../enum'
+import { UserInfo, SeedingInfo, TorrentInfo, TorrentPromotion } from '../types'
 import { parseSize } from '../utils'
 
 export default class NexusPHPSite extends Site {

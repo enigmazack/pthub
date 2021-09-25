@@ -4,11 +4,7 @@
 import axios, { AxiosResponse } from 'axios'
 import $ from 'jquery'
 import { ESiteStatus } from '../enum'
-import type {
-  UserInfo,
-  SiteConfig,
-  TorrentInfo
-} from '../types'
+import type { UserInfo, SiteConfig, TorrentInfo } from '../types'
 
 export default class Site {
   name: string

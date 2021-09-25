@@ -54,8 +54,9 @@ class BTN extends GazelleSite {
     return { seeding, seedingSize, seedingList }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
-    return query.find('img[title="Episode"]').length ? ETorrentCatagory.tvEpisode : ETorrentCatagory.tvSeason
+    return ETorrentCatagory.tv
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

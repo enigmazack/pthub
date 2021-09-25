@@ -34,10 +34,10 @@ class FRDS extends NexusPHPSite {
     map.set('304', ETorrentCatagory.documentary)
     map.set('405', ETorrentCatagory.animation)
     map.set('305', ETorrentCatagory.animation)
-    map.set('402', ETorrentCatagory.tvSeason)
-    map.set('302', ETorrentCatagory.tvSeason)
-    map.set('403', ETorrentCatagory.tvShow)
-    map.set('303', ETorrentCatagory.tvShow)
+    map.set('402', ETorrentCatagory.tv)
+    map.set('302', ETorrentCatagory.tv)
+    map.set('403', ETorrentCatagory.tv)
+    map.set('303', ETorrentCatagory.tv)
     const cKey = this.parseTorrentCatagoryKey(query)
     const catagory = cKey ? map.get(cKey) : undefined
     return catagory || ETorrentCatagory.other

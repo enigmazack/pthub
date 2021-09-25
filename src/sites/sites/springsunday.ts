@@ -38,7 +38,7 @@ class SSD extends NexusPHPSite {
     map.set('502', ETorrentCatagory.tv)
     map.set('503', ETorrentCatagory.documentary)
     map.set('504', ETorrentCatagory.animation)
-    map.set('505', ETorrentCatagory.tvShow)
+    map.set('505', ETorrentCatagory.tv)
     map.set('506', ETorrentCatagory.sports)
     map.set('507', ETorrentCatagory.mv)
     map.set('508', ETorrentCatagory.music)

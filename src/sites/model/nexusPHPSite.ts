@@ -132,12 +132,8 @@ export default class NexusPHPSite extends Site {
     return bonus
   }
 
-  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
-    const url = new URL(this.url.href)
-    url.pathname = '/getusertorrentlistajax.php'
-    url.searchParams.set('userid', id)
-    url.searchParams.set('type', 'seeding')
-    const query = await this.getAsQuery(url.pathname + url.search)
+  protected async getSeedingInfoAsQuery (): Promise<JQuery<Document>> {
+    const query = await this.getAsQuery(`/getusertorrentlistajax.php?type=seeding&userid=${this.userId}`)
     return query
   }
 
@@ -148,7 +144,7 @@ export default class NexusPHPSite extends Site {
   }
 
   protected async getSeedingInfo (): Promise<SeedingInfo> {
-    const query = await this.getSeedingInfoAsQuery(this.userId)
+    const query = await this.getSeedingInfoAsQuery()
     const rows = query.find('tr')
     let seedingSize = 0
     const seedingList: string[] = []

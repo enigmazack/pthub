@@ -1,64 +1,38 @@
-import { parseInt } from 'lodash'
-import GazelleApiSite from '../model/gazelleApiSite'
-import { SeedingInfo } from '../types'
+import GazelleApiSite, { GIndex } from '../model/gazelleApiSite'
+import { SeedingInfo, SeedingTorrentInfo } from '../types'
 import { parseSize } from '../utils'
 
 class Orpheus extends GazelleApiSite {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async getBonusAndSeedingInfo (id: string): Promise<{bonus: number, seedingInfo: SeedingInfo}> {
-    const url = new URL(this.url.href)
-    url.pathname = '/bonus.php'
-    url.searchParams.set('action', 'bprates')
-    const r = await this.get(url.pathname + url.search)
-    const query = this.parseHTML(r.data)
-    const bonusString = query.find('div#content > div.header > h3').text().split(':')[1].trim().replaceAll(',', '')
-    const bonus = bonusString ? parseInt(bonusString) : -1
-    let seeding = 0
-    let seedingSize = 0
-    let seedingList: string[] = []
-    let currentPage = this.parseSeedingInfoPage(query)
-    seeding += currentPage.seeding
-    seedingSize += currentPage.seedingSize
-    if (currentPage.seedingList) {
-      seedingList = seedingList.concat(currentPage.seedingList)
-    }
-    const pageString = query.find('div#content > div.linkbox > a[href*="page="]').last().attr('href')
-    const pageMatch = pageString ? pageString.match(/page=(\d+)/) : undefined
-    const maxPage = pageMatch ? parseInt(pageMatch[1]) : 1
-    if (maxPage > 1) {
-      for (let i = 2; i <= maxPage; i++) {
-        url.searchParams.set('page', i.toString())
-        const rPage = await this.get(url.pathname + url.search)
-        const qPage = this.parseHTML(rPage.data)
-        currentPage = this.parseSeedingInfoPage(qPage)
-        seeding += currentPage.seeding
-        seedingSize += currentPage.seedingSize
-        if (currentPage.seedingList) {
-          seedingList = seedingList.concat(currentPage.seedingList)
-        }
-      }
-    }
-    return { seedingInfo: { seeding, seedingSize, seedingList }, bonus }
+  protected async getBonus (rIndex: GIndex): Promise<number> {
+    return rIndex.userstats.bonusPoints || -1
   }
 
-  private parseSeedingInfoPage (query: JQuery<Document>): SeedingInfo {
+  protected async getSeedingInfo (): Promise<SeedingInfo> {
+    const seedingTorrents = await this.parsePagination(
+      '/bonus.php?action=bprates', this.parseSeedingInfoPage, 1
+    )
+    const seeding = seedingTorrents.length
     let seedingSize = 0
-    const seedingList: string[] = []
+    seedingTorrents.forEach(t => { seedingSize += t.size })
+    const seedingList = seedingTorrents.map(t => t.id)
+    return { seeding, seedingSize, seedingList }
+  }
+
+  private parseSeedingInfoPage = (query: JQuery<Document>): SeedingTorrentInfo[] => {
+    const seedingTorrents: SeedingTorrentInfo[] = []
     const rows = query.find('div#content > table').last().find('> tbody > tr')
     for (let i = 0; i < rows.length; i++) {
       const row = rows.eq(i)
-      const torrentIdString = row.find('a[href*="torrents.php?id="]').attr('href')
-      const torrentIdMatch = torrentIdString ? torrentIdString.match(/torrentid=(\d+)/) : undefined
-      const torrentId = torrentIdMatch ? torrentIdMatch[1] : undefined
-      if (torrentId) {
-        seedingList.push(torrentId)
-      }
+      const idString = row.find('a[href*="torrents.php?id="]').attr('href')
+      const idMatch = idString ? idString.match(/torrentid=(\d+)/) : undefined
+      const id = idMatch ? idMatch[1] : undefined
       const sizeString = row.find('> td').eq(1).text()
       const size = sizeString ? parseSize(sizeString) : 0
-      seedingSize += size
+      if (id) {
+        seedingTorrents.push({ id, size })
+      }
     }
-    const seeding = seedingList.length
-    return { seeding, seedingSize, seedingList }
+    return seedingTorrents
   }
 }
 

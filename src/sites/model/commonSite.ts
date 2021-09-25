@@ -210,8 +210,6 @@ export default class CommonSite extends Site {
   }
 
   protected findTorrentRows = (query: JQuery<Document>): JQuery<HTMLElement> => {
-    const table = query.find('table.torrents').last()
-    const rows = table.find('> tbody > tr:not(:eq(0))')
-    return rows
+    return query.find('table.torrents > tbody > tr')
   }
 }

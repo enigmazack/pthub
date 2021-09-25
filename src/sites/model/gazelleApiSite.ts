@@ -1,17 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Site from './site'
-import {
-  ETorrentCatagory,
-  ETorrentPromotion,
-  ESiteStatus
-} from '../enum'
-import {
-  UserInfo,
-  SeedingInfo,
-  TorrentInfo,
-  TorrentPromotion
-} from '../types'
+import { ETorrentCatagory, ETorrentPromotion, ESiteStatus } from '../enum'
+import { UserInfo, SeedingInfo, TorrentInfo, TorrentPromotion } from '../types'
 
 export interface GResponseData<T> {
   status: string,
@@ -35,7 +26,7 @@ interface GIndexStats {
   bonusPoints?: number
 }
 
-interface GIndex {
+export interface GIndex {
   // eslint-disable-next-line camelcase
   api_version?: string
   authkey: string
@@ -122,6 +113,7 @@ interface GBrowse {
 export default class GazelleApiSite extends Site {
   protected passKey = ''
   protected authKey = ''
+  protected userId = ''
   async checkStatus (): Promise<ESiteStatus> {
     try {
       let isLogin = false
@@ -154,6 +146,7 @@ export default class GazelleApiSite extends Site {
       const rData = r.data as GResponseData<GIndex>
       const rIndex = rData.response
       const id = rIndex.id.toString()
+      this.userId = id
       const rU = await this.get(`/ajax.php?action=user&id=${id}`)
       const rUserData = rU.data as GResponseData<GUser>
       const rUser = rUserData.response
@@ -162,7 +155,8 @@ export default class GazelleApiSite extends Site {
       const upload = rIndex.userstats.uploaded
       const download = rIndex.userstats.downloaded
       const userClass = rIndex.userstats.class
-      const { bonus, seedingInfo } = await this.getBonusAndSeedingInfo(id)
+      const bonus = await this.getBonus(rIndex)
+      const seedingInfo = await this.getSeedingInfo()
       return {
         name,
         id,
@@ -182,14 +176,7 @@ export default class GazelleApiSite extends Site {
     }
   }
 
-  protected async getBonusAndSeedingInfo (id: string): Promise<{bonus: number, seedingInfo: SeedingInfo}> {
-    const seedingInfo = await this.getSeedingInfo(id)
-    const bonus = await this.getBonus(id)
-    return { bonus, seedingInfo }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
+  protected async getSeedingInfo (): Promise<SeedingInfo> {
     return {
       seeding: 0,
       seedingSize: 0,
@@ -198,7 +185,7 @@ export default class GazelleApiSite extends Site {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async getBonus (id: string): Promise<number> {
+  protected async getBonus (rIndex: GIndex): Promise<number> {
     return -1
   }
 

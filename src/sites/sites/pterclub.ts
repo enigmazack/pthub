@@ -27,11 +27,11 @@ class PTer extends NexusPHPSite {
     return torrentSizeThis
   }
 
-  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
+  protected async getSeedingInfoAsQuery (): Promise<JQuery<Document>> {
     const url = new URL(this.url.href)
     url.pathname = '/getusertorrentlist.php'
     url.searchParams.set('do_ajax', '1')
-    url.searchParams.set('userid', id)
+    url.searchParams.set('userid', this.userId)
     url.searchParams.set('type', 'seeding')
     const query = await this.getAsQuery(url.pathname + url.search)
     return query

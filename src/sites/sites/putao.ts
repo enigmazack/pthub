@@ -2,12 +2,8 @@ import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory } from '../enum'
 
 class Putao extends NexusPHPSite {
-  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
-    const url = new URL(this.url.href)
-    url.pathname = '/viewusertorrents.php'
-    url.searchParams.set('id', id)
-    url.searchParams.set('show', 'seeding')
-    const query = await this.getAsQuery(url.pathname + url.search)
+  protected async getSeedingInfoAsQuery (): Promise<JQuery<Document>> {
+    const query = await this.getAsQuery(`/viewusertorrents.php?show=seeding&id=${this.userId}`)
     return query
   }
 

@@ -31,11 +31,11 @@ class HDC extends NexusPHPSite {
     }
   }
 
-  protected async getSeedingInfoAsQuery (id: string): Promise<JQuery<Document>> {
+  protected async getSeedingInfoAsQuery (): Promise<JQuery<Document>> {
     await this.getCsrf()
     // hdc use a post request to get seeding torrent info
     const params = new URLSearchParams()
-    params.append('userid', id)
+    params.append('userid', this.userId)
     params.append('type', 'seeding')
     params.append('csrf', this.csrf)
     const rTorrent = await this.post('/ajax_getusertorrentlist.php', params)

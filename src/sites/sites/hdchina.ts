@@ -86,6 +86,7 @@ class HDC extends NexusPHPSite {
     } catch {
       return query
     }
+    // console.log(query.find('body').html())
     return query
   }
 

@@ -57,7 +57,7 @@ interface GUser {
   username: string
 }
 
-interface GTorrent {
+export interface GTorrent {
   artists: {id: number, name: string, aliasid: number}[]
   canUseToken?: boolean
   editionId: number
@@ -84,24 +84,38 @@ interface GTorrent {
   time: string
   torrentId: number
   vanityHouse?: boolean
+  codec?: string
+  source?: string
+  resolution?: string
+  container?: string
+  processing? : string
 }
 
-interface GGroup {
+export interface GGroup {
   artist: string
   bookmarked: boolean
   cover: string
   groupId: number
   groupName: string
+  groupSubName?: string
   groupTime: string
   groupYear: number
   maxSize: number
   releaseType: string
   tags: string[]
-  torrents: GTorrent[]
+  torrents?: GTorrent[]
   totalLeechers: number
   totalSeeders: number
   totalSnatched: number
   vanityHouse?: boolean
+  torrentId?: number
+  size?: number
+  seeders?: number
+  leechers?: number
+  snatches?: number
+  isFreeleech?: boolean
+  isNeutralLeech?: boolean
+  isPersonalFreeleech?: boolean
 }
 
 interface GBrowse {
@@ -222,6 +236,7 @@ export default class GazelleApiSite extends Site {
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
+      console.log(error)
       return ESiteStatus.searchFailed
     }
   }
@@ -229,7 +244,7 @@ export default class GazelleApiSite extends Site {
   protected parseTorrentPage (rGroups: GGroup[]): TorrentInfo[] {
     const torrents: TorrentInfo[] = []
     rGroups.forEach(group => {
-      group.torrents.forEach(torrent => {
+      group.torrents?.forEach(torrent => {
         const id = torrent.torrentId.toString()
         const dlUrl = new URL(this.url.href)
         dlUrl.pathname = '/torrents.php'
@@ -256,6 +271,33 @@ export default class GazelleApiSite extends Site {
           promotion: this.parseTorrentPromotion(group, torrent)
         })
       })
+      if (!group.torrents) {
+        const id = group.torrentId?.toString() || ''
+        const dlUrl = new URL(this.url.href)
+        dlUrl.pathname = '/torrents.php'
+        dlUrl.searchParams.set('action', 'download')
+        dlUrl.searchParams.set('id', id)
+        dlUrl.searchParams.set('authkey', this.authKey)
+        dlUrl.searchParams.set('torrent_pass', this.passKey)
+        const detailUrl = new URL(this.url.href)
+        detailUrl.pathname = '/torrents.php'
+        detailUrl.searchParams.set('id', group.groupId.toString())
+        detailUrl.searchParams.set('torrentid', id)
+        torrents.push({
+          id,
+          downloadUrl: dlUrl.href,
+          detailUrl: detailUrl.href,
+          title: group.groupName,
+          releaseDate: parseInt(group.groupTime),
+          subTitle: undefined,
+          catagory: this.parseTorrentCatagory(group),
+          size: group.size || 0,
+          seeders: group.seeders || 0,
+          leechers: group.leechers || 0,
+          snatched: group.snatches || 0,
+          promotion: this.parseTorrentPromotion(group)
+        })
+      }
     })
     return torrents
   }
@@ -272,12 +314,20 @@ export default class GazelleApiSite extends Site {
     return subTitle
   }
 
-  protected parseTorrentCatagory (group: GGroup, torrent: GTorrent): ETorrentCatagory {
-    return ETorrentCatagory.music
+  protected parseTorrentCatagory (group: GGroup, torrent?: GTorrent): ETorrentCatagory {
+    if (torrent) {
+      return ETorrentCatagory.music
+    }
+    return ETorrentCatagory.other
   }
 
-  protected parseTorrentPromotion (group: GGroup, torrent: GTorrent): TorrentPromotion|undefined {
-    return torrent.isFreeleech || torrent.isNeutralLeech || torrent.isPersonalFreeleech
+  protected parseTorrentPromotion (group: GGroup, torrent?: GTorrent): TorrentPromotion|undefined {
+    if (torrent) {
+      return torrent.isFreeleech || torrent.isNeutralLeech || torrent.isPersonalFreeleech
+        ? { status: ETorrentPromotion.free, isTemporary: false }
+        : undefined
+    }
+    return group.isFreeleech || group.isNeutralLeech || group.isPersonalFreeleech
       ? { status: ETorrentPromotion.free, isTemporary: false }
       : undefined
   }

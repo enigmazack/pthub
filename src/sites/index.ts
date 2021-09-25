@@ -14,6 +14,8 @@ import passthepopcorn from './sites/passthepopcorn'
 import putao from './sites/putao'
 import redacted from './sites/redacted'
 import orpheus from './sites/orpheus'
+import dicmusic from './sites/dicmusic'
+import greatposterwall from './sites/greatposterwall'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -37,7 +39,9 @@ const sites: Sites = {
   passthepopcorn,
   putao,
   redacted,
-  orpheus
+  orpheus,
+  dicmusic,
+  greatposterwall
 }
 
 export default sites

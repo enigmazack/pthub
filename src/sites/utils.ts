@@ -67,3 +67,9 @@ function getMilliseconds (num: number, unit: string): number {
   milliseconds = milliseconds * 12
   return milliseconds
 }
+
+export function unescapeHTML (str: string): string {
+  const temp = document.createElement('div')
+  temp.innerHTML = str
+  return temp.innerText
+}

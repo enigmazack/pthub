@@ -3,9 +3,9 @@ import { SeedingInfo, SeedingTorrentInfo } from '../types'
 import { parseSize } from '../utils'
 
 class Redacted extends GazelleApiSite {
-  protected async getSeedingInfo (id: string): Promise<SeedingInfo> {
+  protected async getSeedingInfo (): Promise<SeedingInfo> {
     const seedingTorrents = await this.parsePagination(
-      `/torrents.php?userid=${id}&type=seeding`, this.parseSeedingInfoPage, 1
+      `/torrents.php?userid=${this.userId}&type=seeding`, this.parseSeedingInfoPage, 1
     )
     const seeding = seedingTorrents.length
     let seedingSize = 0

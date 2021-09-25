@@ -10,7 +10,7 @@ export default class Site {
   name: string
   url: URL
   icon: URL
-  private timeout = 5000
+  private timeout = 10000
 
   constructor (config:SiteConfig) {
     this.name = config.name

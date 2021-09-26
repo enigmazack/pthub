@@ -4,6 +4,7 @@ specifiers:
   '@ant-design/aliyun-theme': ^0.0.4
   '@ant-design/icons-vue': ^6.0.1
   '@iconify/json': ^1.1.404
+  '@types/file-saver': ^2.0.3
   '@types/file-size': ^1.0.1
   '@types/fs-extra': ^9.0.12
   '@types/jquery': ^3.5.6
@@ -30,6 +31,7 @@ specifiers:
   eslint-plugin-promise: ^5.1.0
   eslint-plugin-vue: ^7.16.0
   esno: ^0.9.1
+  file-saver: ^2.0.5
   file-size: ^1.0.0
   fs-extra: ^10.0.0
   jquery: ^3.6.0
@@ -59,6 +61,7 @@ dependencies:
   axios: 0.21.1
   byte-size: 8.1.0
   dayjs: 1.10.6
+  file-saver: 2.0.5
   file-size: 1.0.0
   jquery: 3.6.0
   lodash: 4.17.21
@@ -72,6 +75,7 @@ dependencies:
 
 devDependencies:
   '@iconify/json': 1.1.404
+  '@types/file-saver': 2.0.3
   '@types/file-size': 1.0.1
   '@types/fs-extra': 9.0.12
   '@types/jquery': 3.5.6
@@ -344,6 +348,10 @@ packages:
 
   /@types/estree/0.0.48:
     resolution: {integrity: sha512-LfZwXoGUDo0C3me81HXgkBg5CTQYb6xzEl+fNmbO4JdRiSKQ8A0GD1OBBvKAIsbCUgoyAty7m99GqqMQe784ew==}
+    dev: true
+
+  /@types/file-saver/2.0.3:
+    resolution: {integrity: sha512-MBIou8pd/41jkff7s97B47bc9+p0BszqqDJsO51yDm49uUxeKzrfuNl5fSLC6BpLEWKA8zlwyqALVmXrFwoBHQ==}
     dev: true
 
   /@types/file-size/1.0.1:
@@ -1572,6 +1580,10 @@ packages:
     dependencies:
       flat-cache: 3.0.4
     dev: true
+
+  /file-saver/2.0.5:
+    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
+    dev: false
 
   /file-size/1.0.0:
     resolution: {integrity: sha1-MzgmfV0ga79g9N9gwZ1+04E6Rlc=}

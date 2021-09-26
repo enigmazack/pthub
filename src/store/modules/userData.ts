@@ -67,15 +67,17 @@ const mutations: MutationTree<UserDataState> & Mutations = {
 
 // actions
 type Actions<S = UserDataState, R = RootState> = {
-  [EActions.initUserData] (context: ActionContext<S, R>, payload: {siteList: string[]}): Promise<void>,
+  [EActions.initUserData] (context: ActionContext<S, R>, payload: {siteList: string[], data?: UserDataState}): Promise<void>,
   [EActions.updateUserData] (context: ActionContext<S, R>, payload: {data: UserData}): Promise<void>,
 }
 
 const actions: ActionTree<UserDataState, RootState> & Actions = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async [EActions.initUserData] ({ commit, state }, { siteList }) {
+  async [EActions.initUserData] ({ commit, state }, { siteList, data }) {
     // load data from the local storage when extension start
-    const data = await userDataStorage.get()
+    if (!data) {
+      data = await userDataStorage.get()
+    }
     if (data !== undefined) {
       data.userData = data.userData.filter(
         uData => siteList.findIndex(sKey => sKey === uData.siteKey) !== -1

@@ -48,7 +48,8 @@
     "retry": "Retry",
     "check": "Check",
     "refresh": "Refresh",
-    "getUserDataFailed": "Get user data failed"
+    "getUserDataFailed": "Get user data failed",
+    "exportConfigs": "Export Configs"
   },
   "button": {
     "checkAll": "Check All",

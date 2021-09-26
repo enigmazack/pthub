@@ -5,10 +5,22 @@
         @click="checkSitesStatus()"
         :disabled="buttonDisabled"
         type="primary"
-        style="margin: 0px 12px"
+        style="margin-left: 12px"
+      >{{ $t('button.checkAll') }}</a-button>
+      <a-button
+        @click="exportConfigs()"
+        :disabled="buttonDisabled"
+        type="primary"
+        style="margin-left: 12px"
+      >{{ $t('button.exportConfigs') }}</a-button>
+      <a-upload
+        :showUploadList="false"
+        :beforeUpload="loadConfigs"
       >
-        {{ $t('button.checkAll') }}
-      </a-button>
+        <a-button type="primary" :disabled="buttonDisabled" style="margin-left: 12px">
+          {{ $t('button.importConfigs') }}
+        </a-button>
+      </a-upload>
       <a-input-search
         v-model:value="searchText"
         :placeholder="$t('placeholder.searchSites')"
@@ -21,18 +33,10 @@
         }"
       />
     </template>
-    <template #siteTitle>
-      {{ $t('tableTitle.site') }}
-    </template>
-    <template #urlTitle>
-      {{ $t('tableTitle.url') }}
-    </template>
-    <template #enableTitle>
-      {{ $t('tableTitle.enable') }}
-    </template>
-    <template #statusTitle>
-      {{ $t('tableTitle.status') }}
-    </template>
+    <template #siteTitle>{{ $t('tableTitle.site') }}</template>
+    <template #urlTitle>{{ $t('tableTitle.url') }}</template>
+    <template #enableTitle>{{ $t('tableTitle.enable') }}</template>
+    <template #statusTitle>{{ $t('tableTitle.status') }}</template>
     <template #url="{ text }">
       <a :href="text" target="_blank">{{ text }}</a>
     </template>
@@ -44,9 +48,7 @@
       <a
         v-if="showRefresh(record.siteStatus)"
         @click="checkSitesStatus(record.siteKey)"
-      >
-        {{ record.siteStatus !== unknow ? $t('siteStatus.retry') : $t('siteStatus.check') }}
-      </a>
+      >{{ record.siteStatus !== unknow ? $t('siteStatus.retry') : $t('siteStatus.check') }}</a>
     </template>
   </a-table>
 </template>
@@ -59,6 +61,8 @@ import { Sites, ESiteStatus } from '@/sites'
 import SiteStatus from '@/components/SiteStatus.vue'
 import { useStore, EActions } from '@/store'
 import PQueue from 'p-queue'
+import { saveAs } from 'file-saver'
+// import { userDataStorage, siteSettingsStorage } from '@/store/storage'
 
 interface SiteDataProps {
   key: string
@@ -168,6 +172,28 @@ export default defineComponent({
       })
     }
 
+    const exportConfigs = () => {
+      const config = {
+        userData: store.state.userData,
+        siteSettings: store.state.siteSettings
+      }
+      const configFile = new File([JSON.stringify(config)], 'config.json', { type: 'text/plain' })
+      saveAs(configFile)
+    }
+
+    const loadConfigs = (file: File) => {
+      const reader = new FileReader()
+      reader.readAsText(file)
+      reader.onload = evt => {
+        if (evt.target) {
+          const configs = JSON.parse(evt.target.result as string)
+          store.dispatch(EActions.initSiteSettings, { siteList, data: configs.siteSettings })
+          store.dispatch(EActions.initUserData, { siteList, data: configs.userData })
+        }
+      }
+      return false
+    }
+
     const toggleEnabled = (siteKey: string) => store.dispatch(EActions.toggleEnabledSite, { site: siteKey })
     const showRefresh = (siteStatus: ESiteStatus) =>
       siteStatus !== ESiteStatus.login && siteStatus !== ESiteStatus.connecting
@@ -179,6 +205,8 @@ export default defineComponent({
       columns,
       toggleEnabled,
       checkSitesStatus,
+      exportConfigs,
+      loadConfigs,
       buttonDisabled,
       showRefresh,
       unknow

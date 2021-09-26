@@ -119,7 +119,7 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
 
 // actions
 type Actions<S = SiteSettingsState, R = RootState> = {
-  [EActions.initSiteSettings] (context: ActionContext<S, R>, payload: {siteList: string[]}): Promise<void>,
+  [EActions.initSiteSettings] (context: ActionContext<S, R>, payload: {siteList: string[], data?:SiteSettingsState}): Promise<void>,
   [EActions.toggleEnabledSite] (context: ActionContext<S, R>, payload: {site: string}): Promise<void>,
   [EActions.setConcurrencyRequests] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
   [EActions.setExpectTorrents] (context: ActionContext<S, R>, payload: {number: number}): Promise<void>,
@@ -132,9 +132,11 @@ type Actions<S = SiteSettingsState, R = RootState> = {
 
 const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async [EActions.initSiteSettings] ({ commit, state }, { siteList }) {
+  async [EActions.initSiteSettings] ({ commit, state }, { siteList, data }) {
     // load data from the local storage when extension start
-    const data = await siteSettingsStorage.get()
+    if (!data) {
+      data = await siteSettingsStorage.get()
+    }
     if (data !== undefined) {
       // Omit useless record
       data.enabledSites = data.enabledSites.filter(

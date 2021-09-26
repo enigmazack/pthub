@@ -18,7 +18,8 @@ export enum EMutations {
   addSearchConfigs = 'addSearchConfigs',
   setSelectedConfig = 'setSelectedConfig',
   setSearchText = 'setSearchText',
-  setRunSearch = 'setRunSearch'
+  setRunSearch = 'setRunSearch',
+  setTimeout = 'setTimeout'
 }
 
 export enum EActions {
@@ -34,5 +35,6 @@ export enum EActions {
   updateSearchConfigs = 'updateSearchConfigs',
   deleteSearchConfigs = 'deleteSearchConfigs',
   addSearchConfigs = 'addSearchConfigs',
-  setSelectedConfig = 'setSelectedConfig'
+  setSelectedConfig = 'setSelectedConfig',
+  setTimeout = 'setTimeout'
 }

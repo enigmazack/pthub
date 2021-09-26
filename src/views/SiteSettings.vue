@@ -50,6 +50,20 @@
             size="small"
           />
         </div>
+        <div>
+          <a-tooltip>
+            <template #title>{{ $t('settings.timeoutTip') }}</template>
+            {{ $t('settings.timeout') + ':' }}
+          </a-tooltip>
+          <a-input-number
+            id="timeout"
+            v-model:value="timeout"
+            :min="5000"
+            :max="30000"
+            :step="5000"
+            size="small"
+          />
+        </div>
       </a-space>
     </a-collapse-panel>
     <a-collapse-panel v-for="siteKey in showSites" :key="siteKey" :header="sites[siteKey].name">
@@ -114,13 +128,22 @@ export default defineComponent({
       }
     )
 
+    const timeout = ref(store.state.siteSettings.timeout)
+    watch(
+      () => timeout.value,
+      (newNumber) => {
+        store.dispatch(EActions.setTimeout, { timeout: newNumber })
+      }
+    )
+
     return {
       activeKey,
       searchText,
       sites,
       showSites,
       concurrencyRequests,
-      expectTorrents
+      expectTorrents,
+      timeout
     }
   }
 })

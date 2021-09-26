@@ -34,6 +34,7 @@ export interface SiteSettingsState {
   enabledSites: string[],
   searchConfigs: SearchConfigWithKey[],
   selectedConfig: string,
+  timeout: number
 }
 
 const state: SiteSettingsState = {
@@ -41,7 +42,8 @@ const state: SiteSettingsState = {
   expectTorrents: 50,
   enabledSites: [],
   searchConfigs: [],
-  selectedConfig: 'default'
+  selectedConfig: 'default',
+  timeout: 5000
 }
 
 // getters
@@ -65,6 +67,7 @@ type Mutations<S = SiteSettingsState> = {
   [EMutations.deleteSearchConfigs] (state: S, payload: string): void,
   [EMutations.addSearchConfigs] (state: S, payload: SearchConfigWithKey): void,
   [EMutations.setSelectedConfig] (state: S, payload: string): void,
+  [EMutations.setTimeout] (state: S, payload: number): void,
 }
 
 const mutations: MutationTree<SiteSettingsState> & Mutations = {
@@ -74,6 +77,7 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
     state.concurrencyRequests = data.concurrencyRequests || 5
     state.expectTorrents = data.expectTorrents || 50
     state.selectedConfig = data.selectedConfig || 'default'
+    state.timeout = data.timeout || 5000
   },
   [EMutations.toggleEnabledSite] (state, site) {
     const index = state.enabledSites.findIndex(s => site === s)
@@ -107,6 +111,9 @@ const mutations: MutationTree<SiteSettingsState> & Mutations = {
   },
   [EMutations.setSelectedConfig] (state, configName) {
     state.selectedConfig = configName
+  },
+  [EMutations.setTimeout] (state, timeout) {
+    state.timeout = timeout
   }
 }
 
@@ -120,6 +127,7 @@ type Actions<S = SiteSettingsState, R = RootState> = {
   [EActions.deleteSearchConfigs] (context: ActionContext<S, R>, payload: {key: string}): Promise<void>,
   [EActions.addSearchConfigs] (context: ActionContext<S, R>, payload: {searchConfigWithKey: SearchConfigWithKey}): Promise<void>,
   [EActions.setSelectedConfig] (context: ActionContext<S, R>, payload: {configName: string}): Promise<void>
+  [EActions.setTimeout] (context: ActionContext<S, R>, payload: {timeout: number}): Promise<void>
 }
 
 const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
@@ -165,6 +173,10 @@ const actions: ActionTree<SiteSettingsState, RootState> & Actions = {
   },
   async [EActions.setSelectedConfig] ({ commit, state }, { configName }) {
     commit(EActions.setSelectedConfig, configName)
+    await siteSettingsStorage.set(state)
+  },
+  async [EActions.setTimeout] ({ commit, state }, { timeout }) {
+    commit(EMutations.setTimeout, timeout)
     await siteSettingsStorage.set(state)
   }
 }

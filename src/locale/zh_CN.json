@@ -68,7 +68,9 @@
     "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围",
     "searchConfig": "搜索配置",
     "expectTorrents": "期望种子数量",
-    "expectTorrentsTip": "每次搜索期望返回的种子数量，当网站每页种子数量有限时尝试翻页"
+    "expectTorrentsTip": "每次搜索期望返回的种子数量，当网站每页种子数量有限时尝试翻页",
+    "timeout": "超时时间",
+    "timeoutTip": "ms"
   },
   "catagory": {
     "movies": "电影",

@@ -61,6 +61,9 @@ export default defineComponent({
     store.dispatch(EActions.initUiSettings)
     store.dispatch(EActions.initSiteSettings, { siteList })
     store.dispatch(EActions.initUserData, { siteList })
+    Object.keys(sites).forEach(siteKey => {
+      sites[siteKey].setTimeout(store.state.siteSettings.timeout)
+    })
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed,

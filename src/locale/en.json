@@ -68,7 +68,9 @@
     "concurrencyRequestsTip": "Limit the concurrency async requests.",
     "searchConfig": "Search Config",
     "expectTorrents": "Expected Torrents Counts",
-    "expectTorrentsTip": "Searching will try reading torrents data from the next page, when total amount is not sufficient."
+    "expectTorrentsTip": "Searching will try reading torrents data from the next page, when total amount is not sufficient.",
+    "timeout": "Timeout",
+    "timeoutTip": "ms"
   },
   "catagory": {
     "movies": "Movies",

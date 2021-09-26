@@ -49,7 +49,8 @@
     "check": "Check",
     "refresh": "Refresh",
     "getUserDataFailed": "Get user data failed",
-    "exportConfigs": "Export Configs"
+    "exportConfigs": "Export Configs",
+    "importConfigs": "Import Configs"
   },
   "button": {
     "checkAll": "Check All",

@@ -174,7 +174,7 @@ export default defineComponent({
 
     const exportConfigs = () => {
       const config = {
-        userData: store.state.userData,
+        // userData: store.state.userData,
         siteSettings: store.state.siteSettings
       }
       const configFile = new File([JSON.stringify(config)], 'config.json', { type: 'text/plain' })
@@ -188,7 +188,7 @@ export default defineComponent({
         if (evt.target) {
           const configs = JSON.parse(evt.target.result as string)
           store.dispatch(EActions.initSiteSettings, { siteList, data: configs.siteSettings })
-          store.dispatch(EActions.initUserData, { siteList, data: configs.userData })
+          // store.dispatch(EActions.initUserData, { siteList, data: configs.userData })
         }
       }
       return false

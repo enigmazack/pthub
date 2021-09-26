@@ -387,10 +387,6 @@ export default defineComponent({
       }
     )
 
-    const setStatus = (siteKey: string) => {
-      searchStatus[siteKey].status = ESiteStatus.connecting
-    }
-
     return {
       columns,
       dataSource,
@@ -405,8 +401,7 @@ export default defineComponent({
       toggleFilterSite,
       isSeeding,
       search,
-      searchStatus,
-      setStatus
+      searchStatus
     }
   }
 })

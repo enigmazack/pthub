@@ -184,11 +184,13 @@ class TTG extends CommonSite {
   }
 
   protected parseTorrentTitle = (query: JQuery<HTMLElement>): string => {
-    return query.find('a[href*="/t/"]').find('> b').html().split('<')[0].trim() || ''
+    return query.find('a[href*="/t/"]').find('> b').html().split('<')[0].trim() ||
+      query.find('a[href*="/t/"]').find('> b > font').html().split('<')[0].trim() || ''
   }
 
   protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string|undefined => {
-    return query.find('a[href*="/t/"]').find('> b > span').last().text() || ''
+    return query.find('a[href*="/t/"]').find('> b > span').last().text() ||
+      query.find('a[href*="/t/"]').find('> b > font > span').last().text() || ''
   }
 
   protected parseTorrentReleaseDate = (query: JQuery<HTMLElement>): number => {

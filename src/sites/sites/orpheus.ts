@@ -37,7 +37,7 @@ class Orpheus extends GazelleApiSite {
 }
 
 const orpheus = new Orpheus({
-  name: 'Redacted',
+  name: 'Orpheus',
   url: 'https://orpheus.network/'
 })
 

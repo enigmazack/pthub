@@ -198,7 +198,7 @@ export default class CommonSite extends Site {
   }
 
   protected parseTorrentSnatched = (query: JQuery<HTMLElement>): number => {
-    return -1
+    return NaN
   }
 
   protected parseTorrentDetailsUrl = (query: JQuery<HTMLElement>): string => {

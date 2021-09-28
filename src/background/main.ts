@@ -18,7 +18,7 @@ browser.browserAction.onClicked.addListener(function () {
 declare global {
   interface Window {
     sites: any,
-    axios: any
+    axios: any,
   }
 }
 

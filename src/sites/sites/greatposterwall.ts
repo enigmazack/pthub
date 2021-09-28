@@ -1,3 +1,4 @@
+import { ETorrentCatagory } from '../enum'
 import GazelleApiSite, { GIndex, GGroup, GTorrent } from '../model/gazelleApiSite'
 import { SeedingInfo, SeedingTorrentInfo } from '../types'
 import { parseSize, unescapeHTML } from '../utils'
@@ -56,6 +57,11 @@ class GPW extends GazelleApiSite {
     subTitle += t.container ? `${t.container}` : ''
     subTitle += t.scene ? ' / Scene' : ''
     return subTitle
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseTorrentCatagory (group: GGroup, torrent?: GTorrent): ETorrentCatagory {
+    return ETorrentCatagory.movies
   }
 }
 

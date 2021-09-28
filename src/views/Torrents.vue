@@ -126,14 +126,27 @@
             <DownloadOutlined />
           </a>
         </a-tooltip>
+        <a-tooltip>
+          <DiffOutlined @click="doCrossSeedAnalysis(record)"/>
+        </a-tooltip>
       </a-space>
     </template>
   </a-table>
+  <a-modal
+    v-model:visible="crossSeedVisible"
+    title="Basic Modal"
+    @ok="handleOk"
+  >
+    <p v-if="targetTorrent"> {{ targetTorrent.siteKey + ' / ' + filesize(targetTorrent.size).calculate().fixed}} </p>
+    <p v-for="(torrent, torrentKey) in similarTorrents" :key="torrentKey">
+     {{ torrent.siteKey + ' / ' + filesize(torrent.size).calculate().fixed}}
+    </p>
+  </a-modal>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onMounted, reactive, ref, UnwrapRef, watch } from 'vue'
-import { DownloadOutlined, LoadingOutlined } from '@ant-design/icons-vue'
+import { computed, defineComponent, inject, onMounted, reactive, ref, watch } from 'vue'
+import { DownloadOutlined, LoadingOutlined, DiffOutlined } from '@ant-design/icons-vue'
 import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
@@ -237,7 +250,8 @@ export default defineComponent({
     DownloadOutlined,
     PromotionTag,
     SeedingFilled,
-    LoadingOutlined
+    LoadingOutlined,
+    DiffOutlined
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -295,7 +309,7 @@ export default defineComponent({
       )
     )
 
-    const searchStatus: UnwrapRef<Record<string, SearchStatusProps>> = reactive({})
+    const searchStatus = reactive<Record<string, SearchStatusProps>>({})
     const waitingSites = computed<Record<string, SearchStatusProps>>(() =>
       _.pickBy(searchStatus, v => v.status === ESiteStatus.unknow)
     )
@@ -355,21 +369,6 @@ export default defineComponent({
       })
     }, 1000)
 
-    const reset = () => {
-      store.commit(EMutations.setRunSearch, false)
-      queue.clear()
-      // clear the reactives
-      Object.keys(searchStatus).forEach(siteKey => {
-        delete searchStatus[siteKey]
-      })
-      tList.splice(0, tList.length)
-    }
-
-    onMounted(() => {
-      // reset()
-      store.commit(EMutations.setRunSearch, false)
-    })
-
     watch(
       () => store.state.siteSettings.enabledSites.length,
       () => {
@@ -387,6 +386,41 @@ export default defineComponent({
       }
     )
 
+    // cross seeding
+    const crossSeedVisible = ref<boolean>(false)
+    const similarTorrents = reactive<Record<string, TorrentProps>>({})
+    const targetTorrent = ref<TorrentProps>()
+
+    const doCrossSeedAnalysis = async (t: TorrentProps) => {
+      crossSeedVisible.value = true
+      targetTorrent.value = t
+      // clear similarTorrents record first
+      Object.keys(similarTorrents).forEach(key => { delete similarTorrents[key] })
+      tList.filter(torrent => torrent.key !== t.key &&
+        Math.abs(filesize(torrent.size).calculate().result - filesize(t.size).calculate().result) <= 0.01)
+        .forEach(torrent => {
+          similarTorrents[torrent.key] = torrent
+        })
+    }
+    const handleOk = () => {
+      crossSeedVisible.value = false
+    }
+
+    const reset = () => {
+      store.commit(EMutations.setRunSearch, false)
+      queue.clear()
+      // clear the reactives
+      Object.keys(searchStatus).forEach(siteKey => {
+        delete searchStatus[siteKey]
+      })
+      tList.splice(0, tList.length)
+    }
+
+    onMounted(() => {
+      // reset()
+      store.commit(EMutations.setRunSearch, false)
+    })
+
     return {
       columns,
       dataSource,
@@ -401,7 +435,12 @@ export default defineComponent({
       toggleFilterSite,
       isSeeding,
       search,
-      searchStatus
+      searchStatus,
+      crossSeedVisible,
+      targetTorrent,
+      similarTorrents,
+      doCrossSeedAnalysis,
+      handleOk
     }
   }
 })

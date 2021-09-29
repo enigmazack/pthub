@@ -62,7 +62,8 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
-    "sureToDelete": "Sure to delete?"
+    "sureToDelete": "Sure to delete?",
+    "downloadTorrents": "Download Torrents"
   },
   "settings": {
     "globalSettings": "Global Settings",

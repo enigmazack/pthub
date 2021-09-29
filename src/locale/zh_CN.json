@@ -62,7 +62,8 @@
     "delete": "删除",
     "sureToDelete": "确认删除?",
     "exportConfigs": "导出设置",
-    "importConfigs": "导入设置"
+    "importConfigs": "导入设置",
+    "downloadTorrents": "下载种子"
   },
   "settings": {
     "globalSettings": "全局设置",

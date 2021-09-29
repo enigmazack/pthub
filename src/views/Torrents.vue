@@ -126,16 +126,21 @@
       </a-space>
     </template>
   </a-table>
-  <a-modal v-model:visible="crossSeedVisible" @ok="handleOk" width="800px">
-    <p
-      v-for="(t, tKey) in crossSeedTorrents"
-      :key="tKey"
-    >
-      {{ t.siteKey }}
-      <a :href="t.url"> {{t.name }}</a>
-      {{ t.status }}
-      {{ t.match }}
-    </p>
+  <a-modal
+    v-model:visible="crossSeedVisible"
+    @ok="handleOk"
+    width="800px"
+    :okButtonProps="{ disabled: okButtonDisabled }"
+    :okText="$t('button.downloadTorrents')"
+  >
+    <div v-for="(t, tKey) in crossSeedTorrents" :key="tKey" style="margin-bottom: 8px;">
+      <a-space>
+        <a-avatar :size="18" :src="sites[t.siteKey].icon.href" />
+        <a v-if="t.match !== 'none'" :href="t.url">{{ t.name }}</a>
+        <span v-if="t.match === 'none'" style="text-decoration:line-through">{{ t.name }}</span>
+        <span>{{ t.status }}</span>
+      </a-space>
+    </div>
   </a-modal>
 </template>
 
@@ -399,6 +404,7 @@ export default defineComponent({
      * cross seeding
      */
     const crossSeedVisible = ref<boolean>(false)
+    const okButtonDisabled = ref<boolean>(true)
     const crossSeedTorrents = reactive<Record<string, CrossSeedTorrentProps>>({})
     const tfiles: Record<string, TorrentFile> = {}
 
@@ -422,9 +428,10 @@ export default defineComponent({
       Object.keys(tfiles).forEach(key => { delete tfiles[key] })
       // open the view
       crossSeedVisible.value = true
+      okButtonDisabled.value = true
 
       const torrentList: TorrentProps[] = []
-      tList.filter(torrent => torrent.key !== t.key &&
+      tList.filter(torrent => torrent.key !== t.key && !isSeeding(t) &&
         Math.abs(filesize(torrent.size).calculate().result - filesize(t.size).calculate().result) <= 0.01)
         .forEach(torrent => { torrentList.push(torrent) })
 
@@ -444,6 +451,7 @@ export default defineComponent({
         return
       }
 
+      let counts = 0
       torrentList.forEach(async (torrent) => {
         const file = tfiles[torrent.key]
         crossSeedTorrents[torrent.key].status = ESiteStatus.connecting
@@ -456,6 +464,10 @@ export default defineComponent({
           crossSeedTorrents[torrent.key].match = 'filesHash'
         } else {
           crossSeedTorrents[torrent.key].match = 'none'
+        }
+        counts += 1
+        if (counts === torrentList.length) {
+          okButtonDisabled.value = false
         }
       })
     }
@@ -508,7 +520,8 @@ export default defineComponent({
       crossSeedVisible,
       doCrossSeedAnalysis,
       handleOk,
-      crossSeedTorrents
+      crossSeedTorrents,
+      okButtonDisabled
     }
   }
 })

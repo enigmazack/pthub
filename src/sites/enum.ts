@@ -9,7 +9,8 @@ export enum ESiteStatus {
   succeed = 'succeed',
   getUserDataFailed = 'getUserDataFailed',
   getUserIdFailed = 'getUserIdFailed',
-  searchFailed = 'searchFailed'
+  searchFailed = 'searchFailed',
+  getTorrentFailed = 'getTorrentFailed'
 }
 
 export enum ETorrentCatagory {

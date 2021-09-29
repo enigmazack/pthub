@@ -9,6 +9,7 @@ export default class CommonSite extends Site {
   protected userIdRegex = /.*/
   protected userPath = '/'
   protected defaultSearchPattern = ''
+  protected paginationStartIndex: 0|1 = 0
 
   async checkStatus (): Promise<ESiteStatus> {
     try {
@@ -105,7 +106,7 @@ export default class CommonSite extends Site {
         pattern = this.defaultSearchPattern
       }
       const path = pattern.replace('{}', keywords.replaceAll('.', ' '))
-      const torrents = await this.parsePagination(path, this.parseTorrentPage, 0, expectTorrents)
+      const torrents = await this.parsePagination(path, this.parseTorrentPage, this.paginationStartIndex, expectTorrents)
       return torrents
     } catch (error) {
       if (error instanceof Error && error.message.includes('timeout')) {

@@ -1,7 +1,7 @@
 <template>
   <div class="search-page-head">
-    <a-space class='site-tags'>
-      <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray" class='site-tag'>
+    <a-space class="site-tags">
+      <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray" class="site-tag">
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
@@ -11,12 +11,12 @@
         v-for="(status, siteKey) in searchingSites"
         :key="siteKey"
         color="blue"
-        class='site-tag'
+        class="site-tag"
       >
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
-          <LoadingOutlined class="site-tag-counts"/>
+          <LoadingOutlined class="site-tag-counts" />
         </div>
       </a-tag>
       <a-tag
@@ -24,7 +24,7 @@
         :key="siteKey"
         color="red"
         @click="search(siteKey)"
-        class='site-tag'
+        class="site-tag"
       >
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
@@ -36,12 +36,12 @@
         :key="siteKey"
         :color="isFilterSite(siteKey) ? 'darkgreen' : 'green'"
         @click="toggleFilterSite(siteKey)"
-        class='site-tag'
+        class="site-tag"
       >
         <div :style="{ display: 'flex', alignItems: 'center' }">
           <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
           {{ sites[siteKey].name }}
-          <div class="site-tag-counts"> {{ searchStatus[siteKey].torrentCounts }} </div>
+          <div class="site-tag-counts">{{ searchStatus[siteKey].torrentCounts }}</div>
         </div>
       </a-tag>
     </a-space>
@@ -82,23 +82,17 @@
     <template #site="{ record }">
       <a-space direction="vertical" align="center" :size="1">
         <a-avatar :size="18" :src="sites[record.siteKey].icon.href" />
-        <a :href="sites[record.siteKey].url.href" target="_blank">
-          {{ sites[record.siteKey].name }}
-        </a>
+        <a :href="sites[record.siteKey].url.href" target="_blank">{{ sites[record.siteKey].name }}</a>
       </a-space>
     </template>
     <template #size="{ record }">
-        {{ filesize(record.size).human() }}
-        <SeedingFilled :color="isSeeding(record)?'limegreen':'lightgray'"/>
+      {{ filesize(record.size).human() }}
+      <SeedingFilled :color="isSeeding(record) ? 'limegreen' : 'lightgray'" />
     </template>
     <template #torrentTitle="{ record }">
       <a-row type="flex" justify="space-between" align="middle" class="torrent-table-title">
         <a-col class="torrent-titles">
-          <a
-            :href="record.detailUrl"
-            target="_blank"
-            class="torrent-title"
-          >{{ record.title }}</a>
+          <a :href="record.detailUrl" target="_blank" class="torrent-title">{{ record.title }}</a>
           <br />
           {{ record.subTitle || '' }}
         </a-col>
@@ -127,19 +121,20 @@
           </a>
         </a-tooltip>
         <a-tooltip>
-          <DiffOutlined @click="doCrossSeedAnalysis(record)"/>
+          <DiffOutlined @click="doCrossSeedAnalysis(record)" />
         </a-tooltip>
       </a-space>
     </template>
   </a-table>
-  <a-modal
-    v-model:visible="crossSeedVisible"
-    title="Basic Modal"
-    @ok="handleOk"
-  >
-    <p v-if="targetTorrent"> {{ targetTorrent.siteKey + ' / ' + filesize(targetTorrent.size).calculate().fixed}} </p>
-    <p v-for="(torrent, torrentKey) in similarTorrents" :key="torrentKey">
-     {{ torrent.siteKey + ' / ' + filesize(torrent.size).calculate().fixed}}
+  <a-modal v-model:visible="crossSeedVisible" @ok="handleOk" width="800px">
+    <p
+      v-for="(t, tKey) in crossSeedTorrents"
+      :key="tKey"
+    >
+      {{ t.siteKey }}
+      <a :href="t.url"> {{t.name }}</a>
+      {{ t.status }}
+      {{ t.match }}
     </p>
   </a-modal>
 </template>
@@ -156,10 +151,24 @@ import PQueue from 'p-queue'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import filesize from 'file-size'
+import TorrentFile from '@/torrent'
+import { saveAs } from 'file-saver'
 
 interface TorrentProps extends TorrentInfo {
   key: string,
   siteKey: string
+}
+
+interface CrossSeedTorrentProps {
+  siteKey: string,
+  url: string,
+  name: string,
+  size: number,
+  hash: string,
+  cleanHash: string,
+  filesHash: string,
+  status: string,
+  match: string
 }
 
 interface SearchConfigProps {
@@ -386,23 +395,83 @@ export default defineComponent({
       }
     )
 
-    // cross seeding
+    /**
+     * cross seeding
+     */
     const crossSeedVisible = ref<boolean>(false)
-    const similarTorrents = reactive<Record<string, TorrentProps>>({})
-    const targetTorrent = ref<TorrentProps>()
+    const crossSeedTorrents = reactive<Record<string, CrossSeedTorrentProps>>({})
+    const tfiles: Record<string, TorrentFile> = {}
+
+    const setCrossSeedTorrent = (tf: TorrentFile, t: TorrentProps) => {
+      crossSeedTorrents[t.key] = {
+        siteKey: t.siteKey,
+        url: tf.url,
+        name: tf.name || '',
+        size: tf.size || 0,
+        hash: tf.hash || '',
+        cleanHash: tf.cleanHash || '',
+        filesHash: tf.filesHash || '',
+        status: ESiteStatus.unknow,
+        match: 'self'
+      }
+    }
 
     const doCrossSeedAnalysis = async (t: TorrentProps) => {
+      // clear torrentFiles
+      Object.keys(crossSeedTorrents).forEach(key => { delete crossSeedTorrents[key] })
+      Object.keys(tfiles).forEach(key => { delete tfiles[key] })
+      // open the view
       crossSeedVisible.value = true
-      targetTorrent.value = t
-      // clear similarTorrents record first
-      Object.keys(similarTorrents).forEach(key => { delete similarTorrents[key] })
+
+      const torrentList: TorrentProps[] = []
       tList.filter(torrent => torrent.key !== t.key &&
         Math.abs(filesize(torrent.size).calculate().result - filesize(t.size).calculate().result) <= 0.01)
-        .forEach(torrent => {
-          similarTorrents[torrent.key] = torrent
-        })
+        .forEach(torrent => { torrentList.push(torrent) })
+
+      tfiles[t.key] = new TorrentFile(t.downloadUrl)
+      torrentList.forEach(torrent => { tfiles[torrent.key] = new TorrentFile(torrent.downloadUrl) })
+      const timeout = store.state.siteSettings.timeout
+      Object.keys(tfiles).forEach(key => { tfiles[key].setTimeout(timeout) })
+
+      setCrossSeedTorrent(tfiles[t.key], t)
+      torrentList.forEach(torrent => { setCrossSeedTorrent(tfiles[torrent.key], torrent) })
+
+      crossSeedTorrents[t.key].status = ESiteStatus.connecting
+      const tStatus = await tfiles[t.key].getTorrent()
+      setCrossSeedTorrent(tfiles[t.key], t)
+      crossSeedTorrents[t.key].status = tStatus
+      if (tStatus !== ESiteStatus.succeed) {
+        return
+      }
+
+      torrentList.forEach(async (torrent) => {
+        const file = tfiles[torrent.key]
+        crossSeedTorrents[torrent.key].status = ESiteStatus.connecting
+        const status = await queue.add(() => file.getTorrent())
+        setCrossSeedTorrent(file, torrent)
+        crossSeedTorrents[torrent.key].status = status
+        if (file.cleanHash && file.cleanHash === tfiles[t.key].cleanHash) {
+          crossSeedTorrents[torrent.key].match = 'cleanHash'
+        } else if (file.filesHash && file.filesHash === tfiles[t.key].filesHash) {
+          crossSeedTorrents[torrent.key].match = 'filesHash'
+        } else {
+          crossSeedTorrents[torrent.key].match = 'none'
+        }
+      })
     }
+
     const handleOk = () => {
+      Object.keys(crossSeedTorrents).forEach(key => {
+        const t = crossSeedTorrents[key]
+        if (t.match !== 'none' && t.match !== 'self') {
+          const tf = tfiles[key]
+          const fileBlob = tf.file
+          const fileName = `[${t.siteKey}].${tf.name}.torrent`
+          if (fileBlob) {
+            saveAs(fileBlob, fileName)
+          }
+        }
+      })
       crossSeedVisible.value = false
     }
 
@@ -437,10 +506,9 @@ export default defineComponent({
       search,
       searchStatus,
       crossSeedVisible,
-      targetTorrent,
-      similarTorrents,
       doCrossSeedAnalysis,
-      handleOk
+      handleOk,
+      crossSeedTorrents
     }
   }
 })
@@ -455,7 +523,7 @@ export default defineComponent({
   font-weight: bold;
 }
 .site-tag {
-  cursor:pointer
+  cursor: pointer;
 }
 .site-tag-icon {
   height: 16px;

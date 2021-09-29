@@ -37,6 +37,7 @@ specifiers:
   file-size: ^1.0.0
   fs-extra: ^10.0.0
   jquery: ^3.6.0
+  jssha: ^3.2.0
   kolorist: ^1.5.0
   less: ^4.1.1
   less-loader: ^10.0.1
@@ -66,6 +67,7 @@ dependencies:
   file-saver: 2.0.5
   file-size: 1.0.0
   jquery: 3.6.0
+  jssha: 3.2.0
   lodash: 4.17.21
   p-queue: 7.1.0
   uuid: 8.3.2
@@ -2526,6 +2528,10 @@ packages:
     resolution: {integrity: sha1-P02uSpH6wxX3EGL4UhzCOfE2YoA=}
     engines: {'0': node >= 0.2.0}
     dev: true
+
+  /jssha/3.2.0:
+    resolution: {integrity: sha512-QuruyBENDWdN4tZwJbQq7/eAK85FqrI4oDbXjy5IBhYD+2pTJyBUWZe8ctWaCkrV0gy6AaelgOZZBMeswEa/6Q==}
+    dev: false
 
   /jstransformer/1.0.0:
     resolution: {integrity: sha1-7Yvwkh4vPx7U1cGkT2hwntJHIsM=}

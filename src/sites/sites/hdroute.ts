@@ -8,6 +8,7 @@ class HDRoute extends CommonSite {
   protected userPath = '/userdetail.php'
   protected userIdRegex = /userdetail\.php\?id=(\d+)/
   protected defaultSearchPattern = '/browse.php?s={}&dp=0&add=0&action=s&or=1'
+  protected paginationStartIndex: 0|1 = 1
 
   protected parseUserName (query: JQuery<Document>): string {
     const name = query.find('a[href*="userdetail.php?id="]').first().text()

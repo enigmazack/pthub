@@ -1,54 +1,21 @@
 <template>
   <div class="search-page-head">
-    <a-space class="site-tags">
-      <a-tag v-for="(status, siteKey) in waitingSites" :key="siteKey" color="gray" class="site-tag">
-        <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
-          {{ sites[siteKey].name }}
-        </div>
-      </a-tag>
-      <a-tag
-        v-for="(status, siteKey) in searchingSites"
+    <a-space class="searching-status">
+      <SearchingTag
+        v-for="(status, siteKey) in searchStatus"
         :key="siteKey"
-        color="blue"
-        class="site-tag"
-      >
-        <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
-          {{ sites[siteKey].name }}
-          <LoadingOutlined class="site-tag-counts" />
-        </div>
-      </a-tag>
-      <a-tag
-        v-for="(status, siteKey) in failedSites"
-        :key="siteKey"
-        color="red"
-        @click="search(siteKey)"
-        class="site-tag"
-      >
-        <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
-          {{ sites[siteKey].name }}
-        </div>
-      </a-tag>
-      <a-tag
-        v-for="(status, siteKey) in succeedSites"
-        :key="siteKey"
-        :color="isFilterSite(siteKey) ? 'darkgreen' : 'green'"
-        @click="toggleFilterSite(siteKey)"
-        class="site-tag"
-      >
-        <div :style="{ display: 'flex', alignItems: 'center' }">
-          <img :src="sites[siteKey].icon.href" class="site-tag-icon" />
-          {{ sites[siteKey].name }}
-          <div class="site-tag-counts">{{ searchStatus[siteKey].torrentCounts }}</div>
-        </div>
-      </a-tag>
+        :siteKey="siteKey"
+        :status="status.status"
+        :torrentCounts="status.torrentCounts"
+        :isFilterSite="isFilterSite(siteKey)"
+        @retrySearching="search(siteKey)"
+        @toggleFilterSite="toggleFilterSite(siteKey)"
+      />
     </a-space>
   </div>
   <a-table
     :columns="columns"
-    :dataSource="dataSource"
+    :dataSource="displayTorrents"
     :pagination="{ pageSize: 100 }"
     class="compact-table"
   >
@@ -146,9 +113,10 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, watch } from 'vue'
-import { DownloadOutlined, LoadingOutlined, DiffOutlined } from '@ant-design/icons-vue'
+import { DownloadOutlined, DiffOutlined } from '@ant-design/icons-vue'
 import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
+import SearchingTag from '@/components/SearchingTag.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
 import { EMutations, useStore } from '@/store'
 import { ESiteStatus, Sites, TorrentInfo } from '@/sites'
@@ -264,8 +232,8 @@ export default defineComponent({
     DownloadOutlined,
     PromotionTag,
     SeedingFilled,
-    LoadingOutlined,
-    DiffOutlined
+    DiffOutlined,
+    SearchingTag
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -276,6 +244,8 @@ export default defineComponent({
     const expectTorrents = computed(() => store.state.siteSettings.expectTorrents)
     const enabledSites = computed(() => store.state.siteSettings.enabledSites)
     const selectedConfig = computed(() => store.state.siteSettings.selectedConfig)
+
+    // pick selected config
     const configList = computed<SearchConfigProps[]>(() => {
       if (selectedConfig.value === 'default') {
         return enabledSites.value.map(siteKey => Object({ siteKey }))
@@ -287,17 +257,26 @@ export default defineComponent({
         ).map(config => Object({ siteKey: config.siteKey, pattern: config.pattern }))
       }
     })
+
+    // pick sites depending on the configs
     const activeSites = computed(() => _.uniq(configList.value.map(config => config.siteKey)))
+
+    // set filters
     const filterSite = ref('all')
     const isFilterSite = (siteKey: string) => siteKey === filterSite.value
     const toggleFilterSite = _.debounce((siteKey: string) => {
       filterSite.value = filterSite.value === siteKey ? 'all' : siteKey
     }, 500)
     const filterText = ref('')
+
+    // all search results store in 'tList' locally
     const tList = reactive<TorrentProps[]>([])
 
+    // is a torrent seeding, if torrent.seeding is true or check the seeding list of the user data
     const isSeeding = (t: TorrentProps): boolean => {
-      if (t.seeding) return true
+      if (t.seeding) {
+        return true
+      }
       let seeding = false
       const userData = store.getters.getUserData(t.siteKey)
       const seedingList = userData?.seedingList
@@ -305,7 +284,8 @@ export default defineComponent({
       return seeding
     }
 
-    const dataSource = computed(
+    // display torrents are tList filter by search text and selected site
+    const displayTorrents = computed(
       () => _.sortBy(
         _.uniqWith(
           tList,
@@ -323,59 +303,49 @@ export default defineComponent({
       )
     )
 
+    // local store to contain site searching status
     const searchStatus = reactive<Record<string, SearchStatusProps>>({})
-    const waitingSites = computed<Record<string, SearchStatusProps>>(() =>
-      _.pickBy(searchStatus, v => v.status === ESiteStatus.unknow)
-    )
-    const searchingSites = computed<Record<string, SearchStatusProps>>(() =>
-      _.pickBy(searchStatus, v => v.status === ESiteStatus.connecting)
-    )
-    const failedSites = computed<Record<string, SearchStatusProps>>(() =>
-      _.pickBy(
-        searchStatus,
-        v => v.status === ESiteStatus.searchFailed || v.status === ESiteStatus.timeout
-      )
-    )
-    const succeedSites = computed<Record<string, SearchStatusProps>>(() =>
-      _.pickBy(searchStatus, v => v.status === ESiteStatus.succeed)
-    )
 
+    // queue for async calling, guarantee acceptable payloads
     const queue = new PQueue({ concurrency: store.state.siteSettings.concurrencyRequests })
 
     const search = _.debounce((siteKey?: string) => {
+      // if no site specified, search all the active sites
       const siteList = siteKey ? [siteKey] : activeSites.value
+      // init the searching status
       if (!siteKey) {
         activeSites.value.forEach(siteKey => {
           searchStatus[siteKey] = { status: ESiteStatus.unknow, torrentCounts: NaN }
         })
       }
-      // console.log(`search ${siteList}`)
+
       siteList.forEach(sKey => {
         searchStatus[sKey].status = ESiteStatus.unknow
         let torrentCounts = 0
         let searchCounts = 0
+        let succeedCounts = 0
+        // in most case one config per site, but some site may have more
         const cList = configList.value.filter(config => config.siteKey === sKey)
         cList.forEach(async config => {
           const torrents = await queue.add(() => {
-            if (searchStatus[sKey].status === ESiteStatus.unknow ||
-              searchStatus[sKey].status === ESiteStatus.searchFailed ||
-              searchStatus[sKey].status === ESiteStatus.timeout
-            ) {
+            // change the status into connecting
+            if (searchCounts === 0) {
               searchStatus[sKey].status = ESiteStatus.connecting
             }
+            // call the sites method search
             return sites[sKey].search(searchText.value, expectTorrents.value, config.pattern)
           })
+          searchCounts += 1
           if (typeof torrents !== 'string') {
             const ts: TorrentProps[] = torrents.map(t => Object({ key: uuidv4(), siteKey: sKey, ...t }))
             torrentCounts += ts.length
-            searchCounts += 1
+            succeedCounts += 1
             ts.forEach(t => tList.push(t))
-            // console.log(`push ${ts.length} ${config.siteKey} torrents to table`)
           } else {
-            // console.log(`${config.siteKey} status ${torrents}`)
             searchStatus[sKey].status = torrents
           }
-          if (searchCounts === cList.length) {
+          // only when all async calling of the cList finished with no error
+          if (succeedCounts === cList.length) {
             searchStatus[sKey].status = ESiteStatus.succeed
             searchStatus[sKey].torrentCounts = torrentCounts
           }
@@ -504,13 +474,9 @@ export default defineComponent({
 
     return {
       columns,
-      dataSource,
+      displayTorrents,
       filesize,
       filterText,
-      waitingSites,
-      searchingSites,
-      failedSites,
-      succeedSites,
       sites,
       isFilterSite,
       toggleFilterSite,
@@ -528,20 +494,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.site-tags {
+.searching-status {
   width: 100%;
   flex-wrap: wrap;
 }
 .torrent-title {
   font-weight: bold;
-}
-.site-tag {
-  cursor: pointer;
-}
-.site-tag-icon {
-  height: 16px;
-  width: 16px;
-  margin-right: 8px;
 }
 .search-page-head {
   margin-bottom: 16px;
@@ -554,9 +512,5 @@ export default defineComponent({
 }
 .torrent-title {
   font-size: 14px;
-}
-.site-tag-counts {
-  color: blue;
-  margin-left: 8px;
 }
 </style>

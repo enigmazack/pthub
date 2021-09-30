@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
+import { computed, defineComponent, inject } from 'vue'
 import { ESiteStatus, Sites } from '@/sites'
 import { LoadingOutlined } from '@ant-design/icons-vue'
 
@@ -44,24 +44,26 @@ export default defineComponent({
   setup (props, context) {
     const sites = inject('sites') as Sites
     // set color
-    let color = ''
-    switch (props.status) {
-      case ESiteStatus.connecting:
-        color = 'blue'
-        break
-      case ESiteStatus.timeout:
-      case ESiteStatus.searchFailed:
-        color = 'red'
-        break
-      case ESiteStatus.succeed:
-        color = props.isFilterSite ? 'darkgreen' : 'green'
-        break
-
-      case ESiteStatus.unknow:
-      default:
-        color = 'gray'
-        break
-    }
+    const color = computed(() => {
+      let color = ''
+      switch (props.status) {
+        case ESiteStatus.connecting:
+          color = 'blue'
+          break
+        case ESiteStatus.timeout:
+        case ESiteStatus.searchFailed:
+          color = 'red'
+          break
+        case ESiteStatus.succeed:
+          color = props.isFilterSite ? 'darkgreen' : 'green'
+          break
+        case ESiteStatus.unknow:
+        default:
+          color = 'gray'
+          break
+      }
+      return color
+    })
 
     // click action
     const handleClick = () => {

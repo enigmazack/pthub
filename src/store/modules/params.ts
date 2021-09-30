@@ -17,12 +17,10 @@ import { RootState } from '@/store'
 // state
 export interface ParamsState {
   searchText: string
-  runSearch: boolean
 }
 
 const state: ParamsState = {
-  searchText: '',
-  runSearch: false
+  searchText: ''
 }
 
 // getters
@@ -35,15 +33,11 @@ const getters: GetterTree<ParamsState, RootState> & Getters = {
 // mutations
 type Mutations<S = ParamsState> = {
   [EMutations.setSearchText] (state: S, payload: string): void
-  [EMutations.setRunSearch] (state: S, payload: boolean): void
 }
 
 const mutations: MutationTree<ParamsState> & Mutations = {
   [EMutations.setSearchText] (state, searchText) {
     state.searchText = searchText
-  },
-  [EMutations.setRunSearch] (state, run) {
-    state.runSearch = run
   }
 }
 

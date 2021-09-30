@@ -118,7 +118,7 @@ import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
 import SearchingTag from '@/components/SearchingTag.vue'
 import { ColumnProps } from 'ant-design-vue/es/table/interface'
-import { EMutations, useStore } from '@/store'
+import { useStore } from '@/store'
 import { ESiteStatus, Sites, TorrentInfo } from '@/sites'
 import PQueue from 'p-queue'
 import _ from 'lodash'
@@ -126,6 +126,7 @@ import { v4 as uuidv4 } from 'uuid'
 import filesize from 'file-size'
 import TorrentFile from '@/torrent'
 import { saveAs } from 'file-saver'
+import bus from '@/bus'
 
 interface TorrentProps extends TorrentInfo {
   key: string,
@@ -311,14 +312,13 @@ export default defineComponent({
 
     const search = _.debounce((siteKey?: string) => {
       // if no site specified, search all the active sites
-      const siteList = siteKey ? [siteKey] : activeSites.value
-      // init the searching status
       if (!siteKey) {
-        activeSites.value.forEach(siteKey => {
-          searchStatus[siteKey] = { status: ESiteStatus.unknow, torrentCounts: NaN }
-        })
+        reset()
+      } else {
+        // if site specified, remove torrents of this site from tList
+        _.remove(tList, t => t.siteKey === siteKey)
       }
-
+      const siteList = siteKey ? [siteKey] : activeSites.value
       siteList.forEach(sKey => {
         searchStatus[sKey].status = ESiteStatus.unknow
         let torrentCounts = 0
@@ -353,22 +353,29 @@ export default defineComponent({
       })
     }, 1000)
 
-    watch(
-      () => store.state.siteSettings.enabledSites.length,
-      () => {
-        reset()
-      }
-    )
+    const reset = () => {
+      // clear the queue of async callings
+      queue.clear()
+      // clear the reactives
+      Object.keys(searchStatus).forEach(siteKey => {
+        delete searchStatus[siteKey]
+      })
+      tList.splice(0, tList.length)
+      // init the searching status
+      activeSites.value.forEach(siteKey => {
+        searchStatus[siteKey] = { status: ESiteStatus.unknow, torrentCounts: NaN }
+      })
+    }
 
-    watch(
-      () => store.state.params.runSearch,
-      (newRun) => {
-        if (newRun) {
-          reset()
-          search()
-        }
-      }
-    )
+    onMounted(() => {
+      reset()
+      bus.on('search', search)
+    })
+
+    // when enabled sites changed, reset the page
+    watch(() => store.state.siteSettings.enabledSites.length, () => { reset() })
+    // when seleted config changed, reset the page
+    watch(() => store.state.siteSettings.selectedConfig, () => { reset() })
 
     /**
      * cross seeding
@@ -456,21 +463,6 @@ export default defineComponent({
       })
       crossSeedVisible.value = false
     }
-
-    const reset = () => {
-      store.commit(EMutations.setRunSearch, false)
-      queue.clear()
-      // clear the reactives
-      Object.keys(searchStatus).forEach(siteKey => {
-        delete searchStatus[siteKey]
-      })
-      tList.splice(0, tList.length)
-    }
-
-    onMounted(() => {
-      // reset()
-      store.commit(EMutations.setRunSearch, false)
-    })
 
     return {
       columns,

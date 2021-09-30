@@ -44,6 +44,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
 import { useStore, EActions, EMutations } from '@/store'
 import { useRouter } from 'vue-router'
 import _ from 'lodash'
+import bus from '@/bus'
 
 export default defineComponent({
   name: 'appHeader',
@@ -62,7 +63,7 @@ export default defineComponent({
     const search = ref('')
     const toSearch = () => {
       store.commit(EMutations.setSearchText, search.value)
-      store.commit(EMutations.setRunSearch, true)
+      bus.emit('search')
       router.push({ path: '/torrents' })
     }
 

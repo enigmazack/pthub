@@ -67,7 +67,11 @@ export default defineComponent({
 
     // click action
     const handleClick = () => {
-      if (props.status === ESiteStatus.timeout || props.status === ESiteStatus.error) {
+      if (
+        props.status === ESiteStatus.timeout ||
+        props.status === ESiteStatus.error ||
+        props.status === ESiteStatus.unknow
+      ) {
         context.emit('retrySearching')
       } else if (props.status === ESiteStatus.succeed) {
         context.emit('toggleFilterSite')

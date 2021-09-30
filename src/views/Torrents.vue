@@ -113,10 +113,10 @@
           {{ $t('siteStatus.matchFailed') }}
         </span>
         <LoadingOutlined v-if="t.status===ESiteStatus.connecting" :style="{color: 'blue'}" />
-        <CloseCircleOutlined
-          v-if="t.status===ESiteStatus.timeout||t.status===ESiteStatus.getTorrentFailed"
-          :style="{color: 'red'}"
-        />
+        <div v-if="t.status===ESiteStatus.timeout||t.status===ESiteStatus.getTorrentFailed">
+          <CloseCircleOutlined :style="{color: 'red'}"/>
+          <a @click="retryCrossSeedAnalysis(tKey)">{{ $t('siteStatus.retry') }}</a>
+        </div>
       </a-space>
     </div>
   </a-modal>
@@ -466,6 +466,30 @@ export default defineComponent({
       })
     }
 
+    const retryCrossSeedAnalysis = async (tKey: string) => {
+      const torrent = tList.find(t => t.key === tKey)
+      if (!targetTorrent.value || !torrent) {
+        return
+      }
+      if (tKey === targetTorrent.value.key) {
+        doCrossSeedAnalysis(torrent)
+      } else {
+        const t = targetTorrent.value
+        const file = tFiles[tKey]
+        crossSeedTorrents[tKey].status = ESiteStatus.connecting
+        const status = await queue.add(() => file.getTorrent())
+        setCrossSeedTorrent(file, torrent)
+        crossSeedTorrents[tKey].status = status
+        if (file.cleanHash && file.cleanHash === tFiles[t.key].cleanHash) {
+          crossSeedTorrents[tKey].match = 'cleanHash'
+        } else if (file.filesHash && file.filesHash === tFiles[t.key].filesHash) {
+          crossSeedTorrents[tKey].match = 'filesHash'
+        } else {
+          crossSeedTorrents[tKey].match = 'none'
+        }
+      }
+    }
+
     const downloadCompatibleTorrents = () => {
       Object.keys(crossSeedTorrents).forEach(key => {
         const t = crossSeedTorrents[key]
@@ -494,6 +518,7 @@ export default defineComponent({
       searchStatus,
       crossSeedVisible,
       doCrossSeedAnalysis,
+      retryCrossSeedAnalysis,
       downloadCompatibleTorrents,
       crossSeedTorrents,
       okButtonDisabled,

@@ -1,9 +1,7 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
-    "volar.tsPlugin": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true,
     },
-    "editor.tabSize": 2,
-    "volar.tsPluginStatus": true
+    "editor.tabSize": 2
 }

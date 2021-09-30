@@ -95,7 +95,7 @@
   </a-table>
   <a-modal
     v-model:visible="crossSeedVisible"
-    @ok="handleOk"
+    @ok="downloadCompatibleTorrents"
     width="800px"
     :okButtonProps="{ disabled: okButtonDisabled }"
     :okText="$t('button.downloadTorrents')"
@@ -103,9 +103,20 @@
     <div v-for="(t, tKey) in crossSeedTorrents" :key="tKey" style="margin-bottom: 8px;">
       <a-space>
         <a-avatar :size="18" :src="sites[t.siteKey].icon.href" />
-        <a v-if="t.match !== 'none'" :href="t.url">{{ t.name }}</a>
-        <span v-if="t.match === 'none'" style="text-decoration:line-through">{{ t.name }}</span>
-        <span>{{ t.status }}</span>
+        <a v-if="t.match!=='none'" :href="t.url">{{ t.name }}</a>
+        <span v-else style="text-decoration:line-through">{{ t.name }}</span>
+        <span v-if="t.match==='self'"></span>
+        <span v-else-if="t.match!=='none'" :style="{color: 'green'}">
+          {{ $t('siteStatus.matchSucceed') }}
+        </span>
+        <span v-else :style="{color: 'red'}">
+          {{ $t('siteStatus.matchFailed') }}
+        </span>
+        <LoadingOutlined v-if="t.status===ESiteStatus.connecting" :style="{color: 'blue'}" />
+        <CloseCircleOutlined
+          v-if="t.status===ESiteStatus.timeout||t.status===ESiteStatus.getTorrentFailed"
+          :style="{color: 'red'}"
+        />
       </a-space>
     </div>
   </a-modal>
@@ -113,7 +124,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, watch } from 'vue'
-import { DownloadOutlined, DiffOutlined } from '@ant-design/icons-vue'
+import { DownloadOutlined, DiffOutlined, LoadingOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
 import SearchingTag from '@/components/SearchingTag.vue'
@@ -234,7 +245,9 @@ export default defineComponent({
     PromotionTag,
     SeedingFilled,
     DiffOutlined,
-    SearchingTag
+    SearchingTag,
+    LoadingOutlined,
+    CloseCircleOutlined
   },
   setup () {
     const sites = inject('sites') as Sites
@@ -382,8 +395,9 @@ export default defineComponent({
      */
     const crossSeedVisible = ref<boolean>(false)
     const okButtonDisabled = ref<boolean>(true)
+    const targetTorrent = ref<TorrentProps>()
     const crossSeedTorrents = reactive<Record<string, CrossSeedTorrentProps>>({})
-    const tfiles: Record<string, TorrentFile> = {}
+    const tFiles: Record<string, TorrentFile> = {}
 
     const setCrossSeedTorrent = (tf: TorrentFile, t: TorrentProps) => {
       crossSeedTorrents[t.key] = {
@@ -400,29 +414,32 @@ export default defineComponent({
     }
 
     const doCrossSeedAnalysis = async (t: TorrentProps) => {
+      targetTorrent.value = t
       // clear torrentFiles
       Object.keys(crossSeedTorrents).forEach(key => { delete crossSeedTorrents[key] })
-      Object.keys(tfiles).forEach(key => { delete tfiles[key] })
+      Object.keys(tFiles).forEach(key => { delete tFiles[key] })
       // open the view
       crossSeedVisible.value = true
       okButtonDisabled.value = true
 
+      // select torrents by size from the tList to analysis
       const torrentList: TorrentProps[] = []
       tList.filter(torrent => torrent.key !== t.key && !isSeeding(t) &&
         Math.abs(filesize(torrent.size).calculate().result - filesize(t.size).calculate().result) <= 0.01)
         .forEach(torrent => { torrentList.push(torrent) })
 
-      tfiles[t.key] = new TorrentFile(t.downloadUrl)
-      torrentList.forEach(torrent => { tfiles[torrent.key] = new TorrentFile(torrent.downloadUrl) })
+      // set the torrent files
+      tFiles[t.key] = new TorrentFile(t.downloadUrl)
+      torrentList.forEach(torrent => { tFiles[torrent.key] = new TorrentFile(torrent.downloadUrl) })
       const timeout = store.state.siteSettings.timeout
-      Object.keys(tfiles).forEach(key => { tfiles[key].setTimeout(timeout) })
+      Object.keys(tFiles).forEach(key => { tFiles[key].setTimeout(timeout) })
 
-      setCrossSeedTorrent(tfiles[t.key], t)
-      torrentList.forEach(torrent => { setCrossSeedTorrent(tfiles[torrent.key], torrent) })
+      setCrossSeedTorrent(tFiles[t.key], t)
+      torrentList.forEach(torrent => { setCrossSeedTorrent(tFiles[torrent.key], torrent) })
 
       crossSeedTorrents[t.key].status = ESiteStatus.connecting
-      const tStatus = await tfiles[t.key].getTorrent()
-      setCrossSeedTorrent(tfiles[t.key], t)
+      const tStatus = await tFiles[t.key].getTorrent()
+      setCrossSeedTorrent(tFiles[t.key], t)
       crossSeedTorrents[t.key].status = tStatus
       if (tStatus !== ESiteStatus.succeed) {
         return
@@ -430,14 +447,14 @@ export default defineComponent({
 
       let counts = 0
       torrentList.forEach(async (torrent) => {
-        const file = tfiles[torrent.key]
+        const file = tFiles[torrent.key]
         crossSeedTorrents[torrent.key].status = ESiteStatus.connecting
         const status = await queue.add(() => file.getTorrent())
         setCrossSeedTorrent(file, torrent)
         crossSeedTorrents[torrent.key].status = status
-        if (file.cleanHash && file.cleanHash === tfiles[t.key].cleanHash) {
+        if (file.cleanHash && file.cleanHash === tFiles[t.key].cleanHash) {
           crossSeedTorrents[torrent.key].match = 'cleanHash'
-        } else if (file.filesHash && file.filesHash === tfiles[t.key].filesHash) {
+        } else if (file.filesHash && file.filesHash === tFiles[t.key].filesHash) {
           crossSeedTorrents[torrent.key].match = 'filesHash'
         } else {
           crossSeedTorrents[torrent.key].match = 'none'
@@ -449,11 +466,11 @@ export default defineComponent({
       })
     }
 
-    const handleOk = () => {
+    const downloadCompatibleTorrents = () => {
       Object.keys(crossSeedTorrents).forEach(key => {
         const t = crossSeedTorrents[key]
         if (t.match !== 'none' && t.match !== 'self') {
-          const tf = tfiles[key]
+          const tf = tFiles[key]
           const fileBlob = tf.file
           const fileName = `[${t.siteKey}].${tf.name}.torrent`
           if (fileBlob) {
@@ -477,9 +494,10 @@ export default defineComponent({
       searchStatus,
       crossSeedVisible,
       doCrossSeedAnalysis,
-      handleOk,
+      downloadCompatibleTorrents,
       crossSeedTorrents,
-      okButtonDisabled
+      okButtonDisabled,
+      ESiteStatus
     }
   }
 })

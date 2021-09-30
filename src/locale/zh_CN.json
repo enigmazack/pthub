@@ -48,7 +48,10 @@
     "retry": "重试",
     "check": "检测",
     "refresh": "刷新",
-    "getUserDataFailed": "获取用户数据失败"
+    "getUserDataFailed": "获取用户数据失败",
+    "downloading": "下载中...",
+    "matchSucceed": "匹配成功",
+    "matchFailed": "匹配失败"
   },
   "button": {
     "checkAll": "检测所有站点状态",

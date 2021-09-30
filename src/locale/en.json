@@ -50,7 +50,10 @@
     "refresh": "Refresh",
     "getUserDataFailed": "Get user data failed",
     "exportConfigs": "Export Configs",
-    "importConfigs": "Import Configs"
+    "importConfigs": "Import Configs",
+    "downloading": "Downloading...",
+    "matchSucceed": "Match Succeed",
+    "matchFailed": "Match Failed"
   },
   "button": {
     "checkAll": "Check All",

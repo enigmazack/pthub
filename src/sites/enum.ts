@@ -26,7 +26,8 @@ export enum ETorrentCatagory {
   application = 'application',
   games = 'games',
   other = 'other',
-  undefined = 'undefined'
+  undefined = 'undefined',
+  xxx = 'xxx'
 }
 
 export enum ETorrentPromotion {

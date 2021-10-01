@@ -17,6 +17,7 @@ import orpheus from './sites/orpheus'
 import dicmusic from './sites/dicmusic'
 import greatposterwall from './sites/greatposterwall'
 import jpopsuki from './sites/jpopsuki'
+import filelist from './sites/filelist'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -43,7 +44,8 @@ const sites: Sites = {
   orpheus,
   dicmusic,
   greatposterwall,
-  jpopsuki
+  jpopsuki,
+  filelist
 }
 
 export default sites

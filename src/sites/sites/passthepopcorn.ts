@@ -88,8 +88,14 @@ class PTP extends GazelleSite {
       }
       url.searchParams.set('json', 'noredirect')
       url.searchParams.set('grouping', '0')
-      const rSearch = await this.get(url.pathname + url.search)
-      const searchData = rSearch.data as PTPSearchData
+      let rSearch = await this.get(url.pathname + url.search)
+      let searchData = rSearch.data as PTPSearchData
+      if (searchData.TotalResults === '0') {
+        url.searchParams.delete('searchstr')
+        url.searchParams.set('filelist', keywords.replaceAll('.', ' '))
+        rSearch = await this.get(url.pathname + url.search)
+        searchData = rSearch.data as PTPSearchData
+      }
       const maxPage = Math.ceil(parseInt(searchData.TotalResults) / 50)
       let currentPage = 1
       let torrents = this.parseSearchData(searchData)

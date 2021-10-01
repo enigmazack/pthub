@@ -425,7 +425,7 @@ export default defineComponent({
 
       // select torrents by size from the tList to analysis
       const torrentList: TorrentProps[] = []
-      tList.filter(torrent => torrent.key !== t.key && !isSeeding(t) &&
+      tList.filter(torrent => torrent.key !== t.key && !isSeeding(torrent) &&
         Math.abs(filesize(torrent.size).calculate().result - filesize(t.size).calculate().result) <= 0.01)
         .forEach(torrent => { torrentList.push(torrent) })
 

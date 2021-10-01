@@ -94,6 +94,7 @@
     "undefined": "未知"
   },
   "icon": {
-    "download": "下载"
+    "download": "下载",
+    "crossSeed": "辅种分析"
   }
 }

@@ -88,7 +88,8 @@
           </a>
         </a-tooltip>
         <a-tooltip>
-          <DiffOutlined @click="doCrossSeedAnalysis(record)" />
+          <template #title>{{ $t('icon.crossSeed') }}</template>
+          <CloudUploadOutlined  @click="doCrossSeedAnalysis(record)" />
         </a-tooltip>
       </a-space>
     </template>
@@ -114,7 +115,7 @@
         </span>
         <LoadingOutlined v-if="t.status===ESiteStatus.connecting" :style="{color: 'blue'}" />
         <div v-if="t.status===ESiteStatus.timeout||t.status===ESiteStatus.getTorrentFailed">
-          <CloseCircleOutlined :style="{color: 'red'}"/>
+          <CloseCircleOutlined :style="{color: 'red', marginRight: '8px'}"/>
           <a @click="retryCrossSeedAnalysis(tKey)">{{ $t('siteStatus.retry') }}</a>
         </div>
       </a-space>
@@ -124,7 +125,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, onMounted, reactive, ref, watch } from 'vue'
-import { DownloadOutlined, DiffOutlined, LoadingOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
+import { DownloadOutlined, LoadingOutlined, CloseCircleOutlined, CloudUploadOutlined } from '@ant-design/icons-vue'
 import SeedingFilled from '~icons/ri/seedling-fill'
 import PromotionTag from '@/components/PromotionTag.vue'
 import SearchingTag from '@/components/SearchingTag.vue'
@@ -244,7 +245,7 @@ export default defineComponent({
     DownloadOutlined,
     PromotionTag,
     SeedingFilled,
-    DiffOutlined,
+    CloudUploadOutlined,
     SearchingTag,
     LoadingOutlined,
     CloseCircleOutlined

@@ -94,6 +94,7 @@
     "undefined": "Undefined"
   },
   "icon": {
-    "download": "Download"
+    "download": "Download",
+    "crossSeed": "Cross Seed"
   }
 }

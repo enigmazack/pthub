@@ -3,6 +3,7 @@
 import Site from './site'
 import { ETorrentCatagory, ETorrentPromotion, ESiteStatus } from '../enum'
 import { UserInfo, SeedingInfo, TorrentInfo, TorrentPromotion } from '../types'
+import $ from 'jquery'
 
 export interface GResponseData<T> {
   status: string,
@@ -128,6 +129,15 @@ export default class GazelleApiSite extends Site {
   protected passKey = ''
   protected authKey = ''
   protected userId = ''
+
+  protected parseHTML (page: string): JQuery<Document> {
+    // ignore the head
+    page = page.replace(/<head>[\s\S]*<\/head>/, '')
+    const document = new DOMParser().parseFromString(page, 'text/html')
+    const j = $(document)
+    return j
+  }
+
   async checkStatus (): Promise<ESiteStatus> {
     try {
       let isLogin = false

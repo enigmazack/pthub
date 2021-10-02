@@ -102,6 +102,7 @@ interface BHDResponseData {
 class BHD extends Site {
   private userUrl = ''
   private apiKey = ''
+
   async checkStatus (): Promise<ESiteStatus> {
     try {
       await this.get('')

@@ -2,6 +2,7 @@
 import axios from 'axios'
 import browser from 'webextension-polyfill'
 import sites from '@/sites'
+import jQuery from 'jquery'
 
 if (import.meta.hot) {
   // @ts-expect-error for background HMR on dev
@@ -18,9 +19,11 @@ browser.browserAction.onClicked.addListener(function () {
 declare global {
   interface Window {
     sites: any,
-    axios: any
+    axios: any,
+    jQuery: any
   }
 }
 
 window.sites = sites
 window.axios = axios
+window.jQuery = jQuery

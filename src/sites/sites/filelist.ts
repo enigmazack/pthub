@@ -2,7 +2,6 @@ import CommonSite from '../model/commonSite'
 import { ETorrentCatagory, ETorrentPromotion } from '../enum'
 import { SeedingInfo, SeedingTorrentInfo, TorrentPromotion } from '../types'
 import { parseSize } from '../utils'
-import { parseInt } from 'lodash'
 
 class FileList extends CommonSite {
   protected indexPath = '/index.php'

@@ -18,6 +18,7 @@ import dicmusic from './sites/dicmusic'
 import greatposterwall from './sites/greatposterwall'
 import jpopsuki from './sites/jpopsuki'
 import filelist from './sites/filelist'
+import beyondhd from './sites/beyondhd'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -45,7 +46,8 @@ const sites: Sites = {
   dicmusic,
   greatposterwall,
   jpopsuki,
-  filelist
+  filelist,
+  beyondhd
 }
 
 export default sites

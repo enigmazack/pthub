@@ -36,5 +36,7 @@ export enum ETorrentPromotion {
   doubleFree = '2xFree',
   half = '50%',
   doubleHalf = '2x50%',
-  thirtyPercent = '30%'
+  thirtyPercent = '30%',
+  quarter = '25%',
+  threeQuarters = '75%'
 }

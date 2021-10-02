@@ -19,6 +19,7 @@ import greatposterwall from './sites/greatposterwall'
 import jpopsuki from './sites/jpopsuki'
 import filelist from './sites/filelist'
 import beyondhd from './sites/beyondhd'
+import teamhd from './sites/teamhd'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -47,7 +48,8 @@ const sites: Sites = {
   greatposterwall,
   jpopsuki,
   filelist,
-  beyondhd
+  beyondhd,
+  teamhd
 }
 
 export default sites

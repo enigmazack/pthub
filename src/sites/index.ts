@@ -20,6 +20,9 @@ import jpopsuki from './sites/jpopsuki'
 import filelist from './sites/filelist'
 import beyondhd from './sites/beyondhd'
 import teamhd from './sites/teamhd'
+import avistaz from './sites/avistaz'
+import privatehd from './sites/privatehd'
+import cinemaz from './sites/cinemaz'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -49,7 +52,10 @@ const sites: Sites = {
   jpopsuki,
   filelist,
   beyondhd,
-  teamhd
+  teamhd,
+  avistaz,
+  privatehd,
+  cinemaz
 }
 
 export default sites

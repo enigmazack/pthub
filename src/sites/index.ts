@@ -25,6 +25,8 @@ import privatehd from './sites/privatehd'
 import cinemaz from './sites/cinemaz'
 import hddolby from './sites/hddolby'
 import hdtime from './sites/hdtime'
+import hdarea from './sites/hdarea'
+import hdzone from './sites/hdzone'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -59,7 +61,9 @@ const sites: Sites = {
   privatehd,
   cinemaz,
   hddolby,
-  hdtime
+  hdtime,
+  hdarea,
+  hdzone
 }
 
 export default sites

@@ -30,7 +30,7 @@
   </a-config-provider>
 </template>
 <script lang="ts">
-import { computed, defineComponent, inject } from 'vue'
+import { computed, defineComponent, inject, watch } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import Sider from './components/Sider.vue'
 import { useStore, EActions } from './store'
@@ -61,9 +61,13 @@ export default defineComponent({
     store.dispatch(EActions.initUiSettings)
     store.dispatch(EActions.initSiteSettings, { siteList })
     store.dispatch(EActions.initUserData, { siteList })
-    Object.keys(sites).forEach(siteKey => {
-      sites[siteKey].setTimeout(store.state.siteSettings.timeout)
+
+    watch(() => store.state.siteSettings.timeout, newTimeout => {
+      Object.keys(sites).forEach(siteKey => {
+        sites[siteKey].setTimeout(newTimeout)
+      })
     })
+
     const collapsed = computed(() => store.state.uiSettings.siderCollapsed)
     return {
       collapsed,

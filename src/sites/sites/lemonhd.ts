@@ -1,7 +1,7 @@
 import NexusPHPSite from '../model/nexusPHPSite'
 import { ETorrentCatagory, ETorrentPromotion } from '../enum'
 import type { SeedingInfo, TorrentPromotion } from '../types'
-import { parseSize } from '../utils'
+import { parseSize, cfDecodeEmail } from '../utils'
 
 class LHD extends NexusPHPSite {
   protected tableIndex = {
@@ -36,7 +36,13 @@ class LHD extends NexusPHPSite {
   }
 
   protected parseTorrentTitle = (query: JQuery<HTMLElement>): string => {
-    return query.find('a[href*=".php?id="]').first().text().trim() || ''
+    const b = query.find('a[href*=".php?id="]').first().find('> b')
+    let title = b.contents().filter((index, content) => content.nodeType === 3).text()
+    const cfemail = b.find('> span.__cf_email__').attr('data-cfemail')
+    if (cfemail) {
+      title += cfDecodeEmail(cfemail)
+    }
+    return title
   }
 
   protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string|undefined => {

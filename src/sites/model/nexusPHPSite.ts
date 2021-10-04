@@ -172,6 +172,7 @@ export default class NexusPHPSite extends Site {
       const torrents = await this.parsePagination(path, this.parseTorrentPage, 0, expectTorrents)
       return torrents
     } catch (error) {
+      console.log(error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

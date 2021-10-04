@@ -62,6 +62,7 @@ class THD extends Site {
         ...seedingInfo
       }
     } catch (error) {
+      console.log(this.name + ': getUserInfo', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
@@ -124,6 +125,7 @@ class THD extends Site {
       const torrents = await this.parsePagination(path, this.parseTorrentPage, 0, expectTorrents)
       return torrents
     } catch (error) {
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

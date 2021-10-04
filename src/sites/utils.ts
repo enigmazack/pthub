@@ -68,12 +68,22 @@ function getMilliseconds (num: number, unit: string): number {
   return milliseconds
 }
 
+/**
+ * unescape HTML string
+ * @param str
+ * @returns
+ */
 export function unescapeHTML (str: string): string {
   const temp = document.createElement('div')
   temp.innerHTML = str
   return temp.innerText
 }
 
+/**
+ * decode data-cfemail
+ * @param encodedString
+ * @returns
+ */
 export function cfDecodeEmail (encodedString: string): string {
   let email = ''
   const r = parseInt(encodedString.substr(0, 2), 16)

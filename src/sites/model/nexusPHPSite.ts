@@ -68,6 +68,7 @@ export default class NexusPHPSite extends Site {
         ...seedingInfo
       }
     } catch (error) {
+      console.log(this.name + ': getUserInfo', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
@@ -172,7 +173,7 @@ export default class NexusPHPSite extends Site {
       const torrents = await this.parsePagination(path, this.parseTorrentPage, 0, expectTorrents)
       return torrents
     } catch (error) {
-      console.log(error)
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

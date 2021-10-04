@@ -192,6 +192,7 @@ export default class GazelleApiSite extends Site {
         ...seedingInfo
       }
     } catch (error) {
+      console.log(this.name + ': getUserInfo', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
@@ -243,6 +244,7 @@ export default class GazelleApiSite extends Site {
       }
       return torrents
     } catch (error) {
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

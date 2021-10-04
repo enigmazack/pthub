@@ -41,6 +41,7 @@ class JPOP extends GazelleSite {
       const torrents = await this.parsePagination(path, this.parseTorrentPage, 1, expectTorrents)
       return torrents
     } catch (error) {
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

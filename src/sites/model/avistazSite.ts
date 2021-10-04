@@ -58,10 +58,10 @@ export default class AvistaZSite extends Site {
         ...seedingInfo
       }
     } catch (error) {
+      console.log(this.name + ': getUserInfo', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
-      console.log(error)
       return ESiteStatus.getUserDataFailed
     }
   }
@@ -107,6 +107,7 @@ export default class AvistaZSite extends Site {
       const torrents = await this.parsePagination(path, this.parseTorrentPage, 1, expectTorrents)
       return torrents
     } catch (error) {
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

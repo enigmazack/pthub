@@ -108,6 +108,7 @@ class PTP extends GazelleSite {
       }
       return torrents
     } catch (error) {
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

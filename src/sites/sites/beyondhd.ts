@@ -169,6 +169,7 @@ class BHD extends Site {
         ...seedingInfo
       }
     } catch (error) {
+      console.log(this.name + ': getUserInfo', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }
@@ -230,6 +231,7 @@ class BHD extends Site {
       }
       return torrents
     } catch (error) {
+      console.log(this.name + ': search', error)
       if (error instanceof Error && error.message.includes('timeout')) {
         return ESiteStatus.timeout
       }

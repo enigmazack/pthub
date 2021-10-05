@@ -1,7 +1,7 @@
 <template>
   <a-tag :color="color" @click="handleClick()" class="searching-tag">
     <div :style="{ display: 'flex', alignItems: 'center' }">
-      <img :src="sites[siteKey].icon.href" class="searching-tag-icon" />
+      <a-img :src="sites[siteKey].icon.href" height="16px" width="16px" class="searching-tag-icon" />
       {{ sites[siteKey].name }}
       <LoadingOutlined v-if="status===ESiteStatus.connecting" class="searching-tag-status" />
       <div v-if="status===ESiteStatus.succeed" class="searching-tag-status">
@@ -88,13 +88,11 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style>
 .searching-tag {
   cursor: pointer;
 }
 .searching-tag-icon {
-  height: 16px;
-  width: 16px;
   margin-right: 8px;
 }
 .searching-tag-status {

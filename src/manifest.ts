@@ -14,8 +14,8 @@ export async function getManifest (): Promise<Manifest.WebExtensionManifest> {
     description: pkg.description,
     browser_action: {
       default_icon: {
-        19: './assets/icon-19.png',
-        38: './assets/icon-38.png'
+        19: './ext_assets/icon-19.png',
+        38: './ext_assets/icon-38.png'
       }
     },
     background: {
@@ -23,9 +23,9 @@ export async function getManifest (): Promise<Manifest.WebExtensionManifest> {
       persistent: false
     },
     icons: {
-      16: './assets/icon-16.png',
-      48: './assets/icon-48.png',
-      128: './assets/icon-128.png'
+      16: './ext_assets/icon-16.png',
+      48: './ext_assets/icon-48.png',
+      128: './ext_assets/icon-128.png'
     },
     permissions: [
       'tabs',

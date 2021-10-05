@@ -32,7 +32,6 @@
     "vue": "^3.0.5",
     "vue-i18n": "^9.1.7",
     "vuex": "^4.0.2",
-    "webext-bridge": "^4.0.1",
     "webextension-polyfill": "^0.8.0"
   },
   "devDependencies": {

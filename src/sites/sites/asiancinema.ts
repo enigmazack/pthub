@@ -13,19 +13,13 @@ class AsianCinema extends Unit3D {
   }
 
   protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
-    const catagoryString = query.find('a[href*="/categories/"]').first().attr('href')
-    const catagoryMatch = catagoryString ? catagoryString.match(/categories\/(\d+)/) : undefined
-    const catagory = catagoryMatch ? catagoryMatch[1] : undefined
-    if (catagory === '1') {
-      return ETorrentCatagory.movies
-    }
-    if (catagory === '2') {
-      return ETorrentCatagory.tv
-    }
-    if (catagory === '3') {
-      return ETorrentCatagory.music
-    }
-    return ETorrentCatagory.undefined
+    const map = new Map()
+    map.set('1', ETorrentCatagory.movies)
+    map.set('2', ETorrentCatagory.tv)
+    map.set('3', ETorrentCatagory.music)
+    const cKey = this.parseTorrentCatagoryKey(query)
+    const catagory = cKey ? map.get(cKey) : undefined
+    return catagory || ETorrentCatagory.other
   }
 
   protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion|undefined => {

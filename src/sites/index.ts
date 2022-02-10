@@ -28,6 +28,7 @@ import hdtime from './sites/hdtime'
 import hdarea from './sites/hdarea'
 import hdzone from './sites/hdzone'
 import asiancinema from './sites/asiancinema'
+import torrentseeds from './sites/torrentseeds'
 
 export { ESiteStatus } from './enum'
 export type { UserInfo, TorrentInfo } from './types'
@@ -65,7 +66,8 @@ const sites: Sites = {
   hdtime,
   hdarea,
   hdzone,
-  asiancinema
+  asiancinema,
+  torrentseeds
 }
 
 export default sites

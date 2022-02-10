@@ -190,6 +190,13 @@ export default class Unit3D extends Site {
     return ETorrentCatagory.undefined
   }
 
+  protected parseTorrentCatagoryKey = (query: JQuery<HTMLElement>): string|undefined => {
+    const catagoryString = query.find('a[href*="/categories/"]').first().attr('href')
+    const catagoryMatch = catagoryString ? catagoryString.match(/categories\/(\d+)/) : undefined
+    const catagoryKey = catagoryMatch ? catagoryMatch[1] : undefined
+    return catagoryKey
+  }
+
   protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean|undefined => {
     return !!query.find('i.fas.fa-arrow-up').length
   }

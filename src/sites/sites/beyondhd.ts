@@ -130,7 +130,7 @@ class BHD extends Site {
   private async getAPIKey(): Promise<void> {
     if (!this.apiKey) {
       await this.getUserUrl()
-      const query = await this.getAsQuery(`${this.userUrl}/settings/change_api`)
+      const query = await this.getAsQuery('settings/change_api')
       this.apiKey = query.find('input.beta-form-main').attr('value') || ''
     }
   }

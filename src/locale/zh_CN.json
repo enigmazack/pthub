@@ -1,0 +1,100 @@
+{
+  "default": "默认",
+  "menu": {
+    "search": "搜索",
+    "sites": "站点",
+    "settings": "设置",
+    "searchSolutions": "搜索方案",
+    "siteSettings": "站点设置",
+    "importSites": "添加站点"
+  },
+  "placeholder": {
+    "filterTorrents": "过滤种子",
+    "searchSites": "搜索站点",
+    "search": "搜索"
+  },
+  "tableTitle": {
+    "name": "名称",
+    "site": "站点",
+    "url": "地址",
+    "status": "状态",
+    "enable": "启用",
+    "userName": "用户名",
+    "userClass": "用户等级",
+    "uploadData": "上传量",
+    "downloadData": "下载量",
+    "ratio": "比率",
+    "seedingCounts": "做种数",
+    "seedingSize": "做种体积",
+    "bonus": "积分",
+    "joinDate": "入站时间",
+    "recordDate": "记录时间",
+    "searchPattern": "搜索路径样式",
+    "operation": "操作",
+    "title": "标题",
+    "size": "体积",
+    "seeders": "做种",
+    "leechers": "下载",
+    "snatched": "完成",
+    "releaseDate": "发布日期",
+    "catagory": "分类"
+  },
+  "siteStatus": {    
+    "connecting": "连接中...",
+    "login": "已登录",
+    "logout": "未登录",
+    "unknow": "未知",
+    "timeout": "连接超时",
+    "retry": "重试",
+    "check": "检测",
+    "refresh": "刷新",
+    "getUserDataFailed": "获取用户数据失败",
+    "downloading": "下载中...",
+    "matchSucceed": "匹配成功",
+    "matchFailed": "匹配失败"
+  },
+  "button": {
+    "checkAll": "检测所有站点状态",
+    "refreshAll": "刷新所有站点数据",
+    "refreshUserData": "刷新用户数据",
+    "vistSite": "访问站点",
+    "add": "添加",
+    "save": "保存",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "sureToDelete": "确认删除?",
+    "exportConfigs": "导出设置",
+    "importConfigs": "导入设置",
+    "downloadTorrents": "下载种子"
+  },
+  "settings": {
+    "globalSettings": "全局设置",
+    "concurrencyRequests": "同时运行访问数量",
+    "concurrencyRequestsTip": "限制同时运行访问数量, 避免同时提交大量访问请求, 超出浏览器处理能力范围",
+    "searchConfig": "搜索配置",
+    "expectTorrents": "期望种子数量",
+    "expectTorrentsTip": "每次搜索期望返回的种子数量，当网站每页种子数量有限时尝试翻页",
+    "timeout": "超时时间",
+    "timeoutTip": "ms"
+  },
+  "catagory": {
+    "movies": "电影",
+    "animation": "动漫",
+    "documentary": "纪录片",
+    "tv": "电视",
+    "music": "音乐",
+    "mv": "MV",
+    "ebook": "书籍",
+    "learning": "学习",
+    "sports": "体育",
+    "application": "软件",
+    "games": "游戏",
+    "other": "其他",
+    "undefined": "未知"
+  },
+  "icon": {
+    "download": "下载",
+    "crossSeed": "辅种分析"
+  }
+}

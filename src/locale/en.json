@@ -1,0 +1,100 @@
+{
+  "default": "Default",
+  "menu": {
+    "search": "Search",
+    "sites": "Sites",
+    "settings": "Settings",
+    "searchSolutions": "Search Solution",
+    "siteSettings": "Site Settings",
+    "importSites": "Import Sites"
+  },
+  "placeholder": {
+    "filterTorrents": "Filter Torrents",
+    "searchSites": "Search Sites",
+    "search": "Search"
+  },
+  "tableTitle": {
+    "name": "Name",
+    "site": "Site",
+    "url": "URL",
+    "status": "Status",
+    "enable": "Enable",
+    "userName": "Username",
+    "userClass": "User Class",
+    "uploadData": "Upload Data",
+    "downloadData": "Download Data",
+    "ratio": "Ratio",
+    "seedingCounts": "Seeding Counts",
+    "seedingSize": "Seeding Size",
+    "bonus": "Bonus",
+    "joinDate": "Join Date",
+    "recordDate": "Record Date",
+    "searchPattern": "Search URL Pattern",
+    "operation": "Operation",
+    "title": "Title",
+    "size": "Size",
+    "seeders": "Seeders",
+    "leechers": "Leechers",
+    "snatched": "snatched",
+    "releaseDate": "Release Date",
+    "catagory": "Catagory"
+  },
+  "siteStatus": {    
+    "connecting": "Connecting...",
+    "login": "Login",
+    "logout": "Logout",
+    "unknow": "Unknow",
+    "timeout": "Timeout",
+    "retry": "Retry",
+    "check": "Check",
+    "refresh": "Refresh",
+    "getUserDataFailed": "Get user data failed",
+    "exportConfigs": "Export Configs",
+    "importConfigs": "Import Configs",
+    "downloading": "Downloading...",
+    "matchSucceed": "Match Succeed",
+    "matchFailed": "Match Failed"
+  },
+  "button": {
+    "checkAll": "Check All",
+    "refreshAll": "Refresh All",
+    "refreshUserData": "Refresh user data",
+    "vistSite": "Visit site",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "sureToDelete": "Sure to delete?",
+    "downloadTorrents": "Download Torrents"
+  },
+  "settings": {
+    "globalSettings": "Global Settings",
+    "concurrencyRequests": "Concurrency Requests",
+    "concurrencyRequestsTip": "Limit the concurrency async requests.",
+    "searchConfig": "Search Config",
+    "expectTorrents": "Expected Torrents Counts",
+    "expectTorrentsTip": "Searching will try reading torrents data from the next page, when total amount is not sufficient.",
+    "timeout": "Timeout",
+    "timeoutTip": "ms"
+  },
+  "catagory": {
+    "movies": "Movies",
+    "animation": "Animation",
+    "documentary": "Documentary",
+    "tv": "TV",
+    "music": "Music",
+    "mv": "MV",
+    "ebook": "E-Book",
+    "learning": "Learning",
+    "sports": "Sports",
+    "application": "App",
+    "games": "Games",
+    "other": "Other",
+    "undefined": "Undefined"
+  },
+  "icon": {
+    "download": "Download",
+    "crossSeed": "Cross Seed"
+  }
+}

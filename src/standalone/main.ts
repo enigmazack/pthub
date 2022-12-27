@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import Antd from 'ant-design-vue'
-import 'ant-design-vue/dist/antd.compact.css'
+import 'ant-design-vue/dist/antd.css'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'

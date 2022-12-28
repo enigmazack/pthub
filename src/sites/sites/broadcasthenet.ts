@@ -54,13 +54,11 @@ class BTN extends GazelleSite {
     return { seeding, seedingSize, seedingList }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+  protected parseTorrentCatagory = (_query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.tv
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
+  protected parseTorrentPromotion = (_query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
     return { status: ETorrentPromotion.free, isTemporary: false }
   }
 

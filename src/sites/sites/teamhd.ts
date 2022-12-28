@@ -220,8 +220,7 @@ class THD extends Site {
     return query.find('a[href*="/details/id"]').first().attr('title') || ''
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string | undefined => {
+  protected parseTorrentSubTitle = (_query: JQuery<HTMLElement>): string | undefined => {
     return ''
   }
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ESiteStatus, ETorrentCatagory } from '../enum'
 import type { SeedingInfo, TorrentInfo, TorrentPromotion, UserInfo } from '../types'
 import Site from './site'
@@ -75,31 +74,31 @@ export default class CommonSite extends Site {
     }
   }
 
-  protected parseUserName(query: JQuery<Document>): string {
+  protected parseUserName(_query: JQuery<Document>): string {
     return ''
   }
 
-  protected parseJoinDate(query: JQuery<Document>): number {
+  protected parseJoinDate(_query: JQuery<Document>): number {
     return 0
   }
 
-  protected parseUpload(query: JQuery<Document>): number {
+  protected parseUpload(_query: JQuery<Document>): number {
     return 0
   }
 
-  protected parseDownload(query: JQuery<Document>): number {
+  protected parseDownload(_query: JQuery<Document>): number {
     return 0
   }
 
-  protected parseUserClass(query: JQuery<Document>): string {
+  protected parseUserClass(_query: JQuery<Document>): string {
     return ''
   }
 
-  protected parseBonus(query: JQuery<Document>): number {
+  protected parseBonus(_query: JQuery<Document>): number {
     return -1
   }
 
-  protected async getSeedingInfo(query: JQuery<Document>): Promise<SeedingInfo> {
+  protected async getSeedingInfo(_query: JQuery<Document>): Promise<SeedingInfo> {
     return { seeding: 0, seedingSize: 0, seedingList: [] }
   }
 
@@ -159,59 +158,59 @@ export default class CommonSite extends Site {
     return torrents
   }
 
-  protected parseTorrentCatagoryKey = (query: JQuery<HTMLElement>): string | undefined => {
+  protected parseTorrentCatagoryKey = (_query: JQuery<HTMLElement>): string | undefined => {
     return ''
   }
 
-  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+  protected parseTorrentCatagory = (_query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.undefined
   }
 
-  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean | undefined => {
+  protected parseTorrentSeeding = (_query: JQuery<HTMLElement>): boolean | undefined => {
     return undefined
   }
 
-  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
+  protected parseTorrentPromotion = (_query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
     return undefined
   }
 
-  protected parseTorrentId = (query: JQuery<HTMLElement>): string => {
+  protected parseTorrentId = (_query: JQuery<HTMLElement>): string => {
     return ''
   }
 
-  protected parseTorrentTitle = (query: JQuery<HTMLElement>): string => {
+  protected parseTorrentTitle = (_query: JQuery<HTMLElement>): string => {
     return ''
   }
 
-  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string | undefined => {
+  protected parseTorrentSubTitle = (_query: JQuery<HTMLElement>): string | undefined => {
     return ''
   }
 
-  protected parseTorrentReleaseDate = (query: JQuery<HTMLElement>): number => {
+  protected parseTorrentReleaseDate = (_query: JQuery<HTMLElement>): number => {
     return 0
   }
 
-  protected parseTorrentSize = (query: JQuery<HTMLElement>): number => {
+  protected parseTorrentSize = (_query: JQuery<HTMLElement>): number => {
     return -1
   }
 
-  protected parseTorrentSeeders = (query: JQuery<HTMLElement>): number => {
+  protected parseTorrentSeeders = (_query: JQuery<HTMLElement>): number => {
     return -1
   }
 
-  protected parseTorrentLeechers = (query: JQuery<HTMLElement>): number => {
+  protected parseTorrentLeechers = (_query: JQuery<HTMLElement>): number => {
     return -1
   }
 
-  protected parseTorrentSnatched = (query: JQuery<HTMLElement>): number => {
+  protected parseTorrentSnatched = (_query: JQuery<HTMLElement>): number => {
     return NaN
   }
 
-  protected parseTorrentDetailsUrl = (query: JQuery<HTMLElement>): string => {
+  protected parseTorrentDetailsUrl = (_query: JQuery<HTMLElement>): string => {
     return ''
   }
 
-  protected parseTorrentDownloadUrl = (query: JQuery<HTMLElement>): string => {
+  protected parseTorrentDownloadUrl = (_query: JQuery<HTMLElement>): string => {
     return ''
   }
 

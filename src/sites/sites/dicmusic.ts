@@ -4,8 +4,7 @@ import type { SeedingInfo, SeedingTorrentInfo } from '../types'
 import { parseSize, unescapeHTML } from '../utils'
 
 class DIC extends GazelleApiSite {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async getBonus(rIndex: GIndex): Promise<number> {
+  protected async getBonus(_rIndex: GIndex): Promise<number> {
     const query = await this.getAsQuery('/index.php')
     const bonusString = query.find('a[href="bonus.php"]').text().trim()
     const bonusMatch = bonusString.match(/\(([\d,]+)\)/)
@@ -40,8 +39,7 @@ class DIC extends GazelleApiSite {
     return seedingTorrents
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentTitle(g: GGroup, t: GTorrent): string {
+  protected parseTorrentTitle(g: GGroup, _t: GTorrent): string {
     return `${g.artist} - ${unescapeHTML(g.groupName)} [${g.groupYear}] [${g.releaseType}]`
   }
 }

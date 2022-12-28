@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ESiteStatus, ETorrentCatagory, ETorrentPromotion } from '../enum'
 import type { SeedingInfo, TorrentInfo, TorrentPromotion, UserInfo } from '../types'
 import { parseSize } from '../utils'
@@ -229,7 +228,7 @@ export default class NexusPHPSite extends Site {
     return cNum
   }
 
-  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+  protected parseTorrentCatagory = (_query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.undefined
   }
 

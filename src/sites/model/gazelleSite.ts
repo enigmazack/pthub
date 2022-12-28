@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ESiteStatus, ETorrentCatagory } from '../enum'
 import type { SeedingInfo, TorrentInfo, TorrentPromotion, UserInfo } from '../types'
 import { parseSize } from '../utils'
@@ -178,7 +177,7 @@ export default class GazelleSite extends Site {
     return query.find('table#torrent_table > tbody > tr:not(:eq(0))')
   }
 
-  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+  protected parseTorrentCatagory = (_query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.undefined
   }
 
@@ -189,19 +188,19 @@ export default class GazelleSite extends Site {
     return id
   }
 
-  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
+  protected parseTorrentPromotion = (_query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
     return undefined
   }
 
-  protected parseTorrentTitle = (query: JQuery<HTMLElement>): string => {
+  protected parseTorrentTitle = (_query: JQuery<HTMLElement>): string => {
     return ''
   }
 
-  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string | undefined => {
+  protected parseTorrentSubTitle = (_query: JQuery<HTMLElement>): string | undefined => {
     return ''
   }
 
-  protected parseTorrentReleaseDate = (query: JQuery<HTMLElement>): number => {
+  protected parseTorrentReleaseDate = (_query: JQuery<HTMLElement>): number => {
     return 0
   }
 
@@ -215,7 +214,7 @@ export default class GazelleSite extends Site {
     return this.url.href + href
   }
 
-  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean | undefined => {
+  protected parseTorrentSeeding = (_query: JQuery<HTMLElement>): boolean | undefined => {
     return undefined
   }
 

@@ -49,8 +49,7 @@ class TS extends Unit3D {
     return catagory || ETorrentCatagory.other
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentPromotion = (query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
+  protected parseTorrentPromotion = (_query: JQuery<HTMLElement>): TorrentPromotion | undefined => {
     return undefined
   }
 }

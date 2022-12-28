@@ -54,8 +54,7 @@ class HDRoute extends CommonSite {
     return userClass
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseBonus(query: JQuery<Document>): number {
+  protected parseBonus(_query: JQuery<Document>): number {
     return -1
   }
 
@@ -164,8 +163,7 @@ class HDRoute extends CommonSite {
     return leechers
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+  protected parseTorrentCatagory = (_query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.movies
   }
 }

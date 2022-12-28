@@ -187,8 +187,7 @@ export default class Unit3D extends Site {
     return torrents
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory = (query: JQuery<HTMLElement>): ETorrentCatagory => {
+  protected parseTorrentCatagory = (_query: JQuery<HTMLElement>): ETorrentCatagory => {
     return ETorrentCatagory.undefined
   }
 
@@ -222,8 +221,7 @@ export default class Unit3D extends Site {
     return query.find('a[href*="/torrents/"]').first().text().trim()
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentSubTitle = (query: JQuery<HTMLElement>): string | undefined => {
+  protected parseTorrentSubTitle = (_query: JQuery<HTMLElement>): string | undefined => {
     return undefined
   }
 

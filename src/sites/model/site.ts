@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { AxiosResponse } from 'axios'
 import axios from 'axios'
 import $ from 'jquery'
@@ -37,7 +36,7 @@ export default class Site {
     return ESiteStatus.getUserDataFailed
   }
 
-  async search(keywords: string, expectTorrents: number, pattern?: string): Promise<TorrentInfo[] | ESiteStatus> {
+  async search(_keywords: string, _expectTorrents: number, _pattern?: string): Promise<TorrentInfo[] | ESiteStatus> {
     return ESiteStatus.searchFailed
   }
 

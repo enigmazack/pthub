@@ -59,8 +59,7 @@ class HDZone extends NexusPHPSite {
     return catagory || ETorrentCatagory.other
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentSeeding = (query: JQuery<HTMLElement>): boolean | undefined => {
+  protected parseTorrentSeeding = (_query: JQuery<HTMLElement>): boolean | undefined => {
     return undefined
   }
 }

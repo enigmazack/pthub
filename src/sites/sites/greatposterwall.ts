@@ -5,8 +5,7 @@ import type { SeedingInfo, SeedingTorrentInfo } from '../types'
 import { parseSize } from '../utils'
 
 class GPW extends GazelleApiSite {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected async getBonus(rIndex: GIndex): Promise<number> {
+  protected async getBonus(_rIndex: GIndex): Promise<number> {
     const query = await this.getAsQuery('/index.php')
     const bonusString = query.find('a[href="bonus.php"]').text().trim()
     const bonusMatch = bonusString.match(/\(([\d,]+)\)/)
@@ -58,13 +57,12 @@ class GPW extends GazelleApiSite {
     return title
   }
 
-  protected parseTorrentSubTitle(group: GGroup, t: GTorrent): string {
+  protected parseTorrentSubTitle(_group: GGroup, t: GTorrent): string {
     const subTitle = t.fileName ? t.fileName : ''
     return subTitle
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected parseTorrentCatagory(group: GGroup, torrent?: GTorrent): ETorrentCatagory {
+  protected parseTorrentCatagory(_group: GGroup, _torrent?: GTorrent): ETorrentCatagory {
     return ETorrentCatagory.movies
   }
 }

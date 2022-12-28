@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import $ from 'jquery'
 import { ESiteStatus, ETorrentCatagory, ETorrentPromotion } from '../enum'
 import type { SeedingInfo, TorrentInfo, TorrentPromotion, UserInfo } from '../types'
@@ -119,6 +117,7 @@ export interface GGroup {
   isFreeleech?: boolean
   isNeutralLeech?: boolean
   isPersonalFreeleech?: boolean
+  category?: string
 }
 
 interface GBrowse {
@@ -213,7 +212,7 @@ export default class GazelleApiSite extends Site {
     }
   }
 
-  protected async getBonus(rIndex: GIndex): Promise<number> {
+  protected async getBonus(_rIndex: GIndex): Promise<number> {
     return -1
   }
 
@@ -278,7 +277,7 @@ export default class GazelleApiSite extends Site {
           downloadUrl: dlUrl.href,
           detailUrl: detailUrl.href,
           title: this.parseTorrentTitle(group, torrent),
-          releaseDate: Date.parse(torrent.time),
+          releaseDate: this.parseTorrentReleaseDate(group, torrent),
           subTitle: this.parseTorrentSubTitle(group, torrent),
           catagory: this.parseTorrentCatagory(group, torrent),
           size: torrent.size,
@@ -305,8 +304,8 @@ export default class GazelleApiSite extends Site {
           downloadUrl: dlUrl.href,
           detailUrl: detailUrl.href,
           title: group.groupName,
-          releaseDate: parseInt(group.groupTime),
-          subTitle: undefined,
+          releaseDate: this.parseTorrentReleaseDate(group),
+          subTitle: this.parseTorrentSubTitle(group),
           catagory: this.parseTorrentCatagory(group),
           size: group.size || 0,
           seeders: group.seeders || 0,
@@ -319,19 +318,26 @@ export default class GazelleApiSite extends Site {
     return torrents
   }
 
-  protected parseTorrentTitle(group: GGroup, torrent: GTorrent): string {
+  protected parseTorrentTitle(group: GGroup, _torrent: GTorrent): string {
     return `${group.artist} - ${group.groupName} [${group.groupYear}] [${group.releaseType}]`
   }
 
-  protected parseTorrentSubTitle(group: GGroup, torrent: GTorrent): string {
-    let subTitle = `${torrent.format} / ${torrent.encoding} / ${torrent.media}`
-    subTitle += torrent.hasLog ? ` / Log(${torrent.logScore}%)` : ''
-    subTitle += torrent.hasCue ? ' / Cue' : ''
-    subTitle += torrent.scene ? ' / Scene' : ''
-    return subTitle
+  protected parseTorrentSubTitle(_group: GGroup, torrent?: GTorrent): string | undefined {
+    if (torrent) {
+      let subTitle = `${torrent.format} / ${torrent.encoding} / ${torrent.media}`
+      subTitle += torrent.hasLog ? ` / Log(${torrent.logScore}%)` : ''
+      subTitle += torrent.hasCue ? ' / Cue' : ''
+      subTitle += torrent.scene ? ' / Scene' : ''
+      return subTitle
+    }
+    return undefined
   }
 
-  protected parseTorrentCatagory(group: GGroup, torrent?: GTorrent): ETorrentCatagory {
+  protected parseTorrentReleaseDate(group: GGroup, torrent?: GTorrent): number {
+    return torrent ? Date.parse(torrent.time) : parseInt(group.groupTime) * 1000
+  }
+
+  protected parseTorrentCatagory(_group: GGroup, torrent?: GTorrent): ETorrentCatagory {
     if (torrent)
       return ETorrentCatagory.music
 
